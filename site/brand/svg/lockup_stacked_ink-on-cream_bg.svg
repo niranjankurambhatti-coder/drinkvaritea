@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360.0" width="400" height="360.0">
+<defs>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&amp;display=swap');
+.wm { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-weight: 400; }
+</style>
+</defs>
+<rect width="400" height="360.0" fill="#F8F2EA"/>
+<path d="M 174.043 44.111 A 117.640 117.640 0 0 1 225.957 203.889 A 117.640 117.640 0 0 1 174.043 44.111 Z" fill="#2D241E"/>
+<path d="M 176.638 52.100 L 223.362 195.900" stroke="#F8F2EA" stroke-width="3.70" stroke-linecap="round" fill="none"/>
+<text x="200.0" y="304.2" class="wm" font-size="88.0" fill="#2D241E" text-anchor="middle" letter-spacing="0.8">Varitea</text>
+</svg>

@@ -2,549 +2,601 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f5efe4">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F8F2EA">
 
 <!-- Primary SEO -->
-<title>Varitea First Sip Box — Curated 3-Tea Starter for People Who Want Better Than Coffee</title>
-<meta name="description" content="Skip the guessing. The Varitea First Sip Box is a curated 3-tea sampler — a loose leaf tea sampler, herbal tea sampler and beginner tea box in one. $19 founder launch offer.">
-<meta name="keywords" content="custom tea blend, loose leaf tea sampler, tea gift box, iced tea starter, coffee alternative tea, herbal tea sampler, beginner tea box">
+<title>Varitea — A better daily drink. Three honest cups, no guesswork.</title>
+<meta name="description" content="Varitea is a curated three-tea First Sip Box for people who want a better daily drink. One bold, one floral, one smooth — $19 founder launch offer.">
 <link rel="canonical" href="https://drinkvaritea.com/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Varitea">
-<meta property="og:title" content="Varitea First Sip Box — A better daily drink, without the guesswork">
-<meta property="og:description" content="A curated 3-tea starter for coffee refugees, variety seekers, and gifters. Founder launch offer: $19.">
+<meta property="og:title" content="Varitea — A better daily drink">
+<meta property="og:description" content="A curated three-tea starter for coffee refugees, variety seekers, and gifters. Founder launch offer: $19.">
 <meta property="og:url" content="https://drinkvaritea.com/">
 <meta property="og:image" content="https://drinkvaritea.com/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Varitea First Sip Box — a planned 3-tea starter sampler, $19 founder launch offer">
+<meta property="og:image:alt" content="Varitea First Sip Box — a curated three-tea starter, $19 founder launch offer">
 <meta property="og:locale" content="en_US">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Varitea First Sip Box">
-<meta name="twitter:description" content="A curated 3-tea starter for people who want a better daily drink without guessing what tea to buy.">
+<meta name="twitter:description" content="A curated three-tea starter for people who want a better daily drink without the guesswork.">
 <meta name="twitter:image" content="https://drinkvaritea.com/assets/og-image.png">
 
-<!-- Fonts: warm, premium, Apple-like pairing -->
+<!-- Favicon -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="assets/brand/glyph-plum.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/brand/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- Favicon (inline svg) -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='18' r='10' fill='none' stroke='%23264a3a' stroke-width='2'/><path d='M16 8 Q19 14 16 18 Q13 14 16 8 Z' fill='%23264a3a'/></svg>">
-
-<link rel="stylesheet" href="css/styles.css">
-
-<!-- JSON-LD: Organization + Product/Offer -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://drinkvaritea.com/#org",
-      "name": "Varitea",
-      "url": "https://drinkvaritea.com/",
-      "logo": "https://drinkvaritea.com/assets/logo.svg",
-      "description": "Taste-first DTC tea discovery brand. Curated loose-leaf tea boxes for people who want a better daily drink without the guesswork.",
-      "foundingDate": "2026",
-      "sameAs": []
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://drinkvaritea.com/#website",
-      "url": "https://drinkvaritea.com/",
-      "name": "Varitea",
-      "publisher": { "@id": "https://drinkvaritea.com/#org" }
-    },
-    {
-      "@type": "Product",
-      "name": "Varitea First Sip Box",
-      "description": "A curated 3-tea starter sampler. One bright green, one bold black, one calming herbal — chosen so you can find your daily drink fast. Loose-leaf, beginner-friendly.",
-      "brand": { "@type": "Brand", "name": "Varitea" },
-      "category": "Tea sampler",
-      "image": "https://drinkvaritea.com/assets/og-image.png",
-      "sku": "VT-FSB-001",
-      "offers": {
-        "@type": "Offer",
-        "url": "https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00",
-        "priceCurrency": "USD",
-        "price": "19.00",
-        "availability": "https://schema.org/PreOrder",
-        "itemCondition": "https://schema.org/NewCondition"
-      }
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F8F2EA;
+    --cream-2:#FCF8F2;
+    --ink:#2D241E;
+    --plum:#463047;
+    --cta:#8E78A6;
+    --cta-hover:#7a649a;
+    --lavender:#D8C8E4;
+    --sage:#A2AD8E;
+    --amber:#D2AE64;
+    --serif:'Instrument Serif',Georgia,serif;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+  body{
+    scroll-snap-type:y mandatory;
+    overflow-x:hidden;
+    overflow-y:scroll;
+    height:100vh;
+    height:100dvh;
+  }
+  /* leaf canvas — fixed full-viewport overlay */
+  #leaf-canvas{
+    position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;
+    pointer-events:none;z-index:50;
+  }
+  /* progress rail */
+  .rail{
+    position:fixed;top:0;left:0;height:2px;width:100%;z-index:60;
+    background:transparent;
+  }
+  .rail__fill{
+    height:100%;width:0;background:var(--plum);
+    transition:width .15s linear;
+  }
+  /* skip link / wordmark */
+  .top{
+    position:fixed;top:0;left:0;right:0;z-index:55;
+    padding:18px 22px;display:flex;justify-content:space-between;align-items:center;
+    pointer-events:none;
+  }
+  .wordmark{
+    font-family:var(--serif);font-size:22px;line-height:1;color:var(--ink);
+    letter-spacing:.01em;pointer-events:auto;text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .wordmark__glyph{
+    width:18px;height:18px;display:block;
+  }
+  .skip{
+    font-family:var(--sans);font-size:12px;letter-spacing:.04em;color:var(--ink);
+    text-decoration:none;opacity:.65;pointer-events:auto;
+    border-bottom:1px solid rgba(45,36,30,.25);padding-bottom:1px;
+  }
+  .skip:hover{opacity:1}
+  /* each screen */
+  section{
+    position:relative;width:100vw;height:100vh;height:100dvh;
+    scroll-snap-align:start;scroll-snap-stop:always;
+    display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+    overflow:hidden;
+    padding:0 24px 56px;
+    isolation:isolate;
+  }
+  /* full-bleed media */
+  .bg{
+    position:absolute;inset:0;z-index:-1;
+    display:block;width:100%;height:100%;object-fit:cover;
+  }
+  .bg-tint{
+    position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(180deg,rgba(45,36,30,0) 35%,rgba(45,36,30,.55) 100%);
+  }
+  /* screen 1 — Awaken */
+  .s1{justify-content:space-between;padding:96px 24px 56px}
+  .s1 .copy-top{color:var(--ink);text-align:center;max-width:320px;width:100%}
+  .s1 .copy{color:var(--ink);text-align:center;max-width:320px}
+  .s1 h1{
+    font-family:var(--serif);font-weight:400;font-style:italic;
+    font-size:clamp(36px,9vw,52px);line-height:1.02;
+    margin:0;color:var(--plum);
+  }
+  /* screen 2 — Three teas: auto-rotating stack with crossfade */
+  .s2{padding:0;align-items:stretch;justify-content:flex-start}
+  .s2::after{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:
+      radial-gradient(120% 80% at 30% 20%,#D8C8E4 0%,#F8F2EA 60%,#FCF8F2 100%);
+    transition:background .9s ease;
+  }
+  .s2[data-active="0"]::after{background:radial-gradient(120% 80% at 30% 20%,#EFE3D6 0%,#F8F2EA 60%,#FCF8F2 100%)}
+  .s2[data-active="1"]::after{background:radial-gradient(120% 80% at 30% 20%,#E5D5EE 0%,#F4E7E9 60%,#FCF8F2 100%)}
+  .s2[data-active="2"]::after{background:radial-gradient(120% 80% at 30% 20%,#CCD4BC 0%,#EBE6D2 60%,#FCF8F2 100%)}
+  .pouches{
+    position:absolute;inset:0;
+    display:grid;place-items:center;
+  }
+  .pouch{
+    grid-area:1/1;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:0 28px 96px;text-align:center;
+    width:100%;height:100%;
+    opacity:0;transform:scale(.92) translateY(20px);
+    transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);
+    pointer-events:none;
+  }
+  .pouch.is-active{opacity:1;transform:none;pointer-events:auto}
+  .pouch__shape{
+    width:min(72vw,300px);height:min(72vw,300px);
+    border-radius:24px;
+    display:flex;align-items:flex-end;justify-content:center;padding:24px;
+    box-shadow:0 30px 60px -28px rgba(45,36,30,.28),0 16px 30px -22px rgba(45,36,30,.18);
+    margin-bottom:32px;position:relative;overflow:hidden;
+  }
+  .pouch__shape::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:38%;
+    background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,0));
+  }
+  .pouch--dark      .pouch__shape{background:#2D241E;color:#F8F2EA}
+  .pouch--lavender  .pouch__shape{background:linear-gradient(180deg,#D8C8E4 0%,#EFD9DC 100%);color:#463047}
+  .pouch--tangerine .pouch__shape{background:linear-gradient(180deg,#A2AD8E 0%,#CDC9A6 100%);color:#2D241E}
+  /* subtle pouch branding */
+  .pouch__brand{
+    position:absolute;top:22px;left:0;right:0;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-family:var(--serif);font-style:italic;font-size:20px;line-height:1;
+    opacity:.72;letter-spacing:.01em;
+  }
+  .pouch__brand small{
+    font-family:var(--sans);font-style:normal;font-size:8.5px;font-weight:500;
+    letter-spacing:.22em;text-transform:uppercase;opacity:.7;
+  }
+  .pouch__band{
+    font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.06em;
+    padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);
+  }
+  .pouch h2{
+    font-family:var(--serif);font-weight:400;font-size:clamp(32px,8vw,44px);
+    line-height:1;margin:0;color:var(--plum);
+  }
+  .pouch__note{
+    margin-top:10px;font-size:13px;color:rgba(45,36,30,.6);letter-spacing:.02em;
+  }
+  /* dot pagination for s2 */
+  .dots{
+    position:absolute;bottom:84px;left:0;right:0;
+    display:flex;gap:8px;justify-content:center;z-index:2;
+  }
+  .dots span{
+    width:6px;height:6px;border-radius:999px;background:rgba(45,36,30,.22);
+    transition:background .3s ease,width .3s ease;
+  }
+  .dots span.is-active{background:var(--plum);width:22px}
+  /* screen 3 — Ritual: looping video */
+  .s3 video.bg{filter:saturate(1.05) contrast(1.02)}
+  .s3 .copy{text-align:center;color:#FCF8F2;max-width:300px;padding-bottom:24px}
+  .s3 h2{
+    font-family:var(--serif);font-weight:400;font-style:italic;
+    font-size:clamp(36px,9vw,48px);line-height:1.05;margin:0;
+    text-shadow:0 2px 30px rgba(0,0,0,.35);
+  }
+  /* screen 4 — Take it home */
+  .s4{justify-content:flex-end}
+  .s4 .copy{text-align:center;color:#FCF8F2;max-width:320px;padding-bottom:8px}
+  .s4 .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(252,248,242,.92);color:var(--plum);
+    padding:8px 14px;border-radius:999px;font-size:12px;font-weight:500;letter-spacing:.04em;
+    margin-bottom:18px;backdrop-filter:blur(6px);
+  }
+  .chip__dot{width:6px;height:6px;background:var(--cta);border-radius:999px}
+  .s4 h2{
+    font-family:var(--serif);font-weight:400;font-style:italic;
+    font-size:clamp(40px,10vw,56px);line-height:1.02;margin:0 0 24px;
+    color:#FCF8F2;text-shadow:0 2px 36px rgba(0,0,0,.35);
+  }
+  /* CTAs */
+  .cta-stack{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:100%;max-width:340px;margin:0 auto}
+  .cta{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    padding:16px 22px;border-radius:999px;text-decoration:none;
+    font-family:var(--sans);font-size:15px;font-weight:500;letter-spacing:.01em;
+    transition:transform .25s cubic-bezier(.2,.7,.2,1),background .25s ease,box-shadow .25s ease;
+  }
+  .cta--primary{
+    background:var(--cta);color:#FCF8F2;
+    box-shadow:0 20px 40px -18px rgba(142,120,166,.65),0 0 0 1px rgba(255,255,255,.08) inset;
+  }
+  .cta--primary:hover,.cta--primary:active{background:var(--cta-hover);transform:translateY(-1px)}
+  .cta--ghost{
+    background:rgba(252,248,242,.12);color:#FCF8F2;border:1px solid rgba(252,248,242,.35);
+    backdrop-filter:blur(6px);
+  }
+  .cta--ghost:hover{background:rgba(252,248,242,.2)}
+  .cta__arrow{
+    width:16px;height:16px;transition:transform .25s ease;
+  }
+  .cta:hover .cta__arrow{transform:translateX(3px)}
+  /* pulse ring on s1 cta */
+  .pulse{position:relative}
+  .pulse::after{
+    content:"";position:absolute;inset:-4px;border-radius:999px;
+    border:1.5px solid var(--cta);opacity:.6;
+    animation:pulse 2.2s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{transform:scale(1);opacity:.55}
+    100%{transform:scale(1.35);opacity:0}
+  }
+  /* scroll hint */
+  .hint{
+    position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    color:var(--ink);opacity:.55;font-size:11px;letter-spacing:.08em;text-transform:lowercase;
+  }
+  .hint__line{width:1px;height:24px;background:currentColor;animation:drop 1.6s ease-in-out infinite}
+  @keyframes drop{
+    0%{transform:scaleY(0);transform-origin:top}
+    50%{transform:scaleY(1);transform-origin:top}
+    51%{transform:scaleY(1);transform-origin:bottom}
+    100%{transform:scaleY(0);transform-origin:bottom}
+  }
+  /* reveal */
+  [data-reveal]{opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease}
+  .is-visible [data-reveal],section.is-visible [data-reveal]{opacity:1;transform:none}
+  [data-reveal][data-d="1"]{transition-delay:.1s}
+  [data-reveal][data-d="2"]{transition-delay:.22s}
+  [data-reveal][data-d="3"]{transition-delay:.34s}
+  /* desktop framing — present mobile as a phone-shaped viewport when wide */
+  @media (min-width:900px){
+    body{
+      background:#221c1a;display:flex;align-items:center;justify-content:center;
+      height:100vh;height:100dvh;overflow:hidden;scroll-snap-type:none;
     }
-  ]
-}
-</script>
-
-<!-- JSON-LD: FAQ -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What is the Varitea First Sip Box?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "A curated 3-tea starter sampler designed to help you find your daily drink fast. The planned box includes one bright green, one bold black, and one calming herbal — all loose-leaf and beginner-friendly. Brewing guide and tasting notes included."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How much tea is in the First Sip Box?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Three pouches, each planned to brew about 8–10 cups — enough to live with a tea for a few mornings and figure out what you love."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "I drink coffee. Will Varitea tea actually keep me going?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The box is built around this question. It includes a bold black tea with caffeine in the same neighborhood as a light coffee, plus a green for a smoother lift — both designed to work as a morning replacement."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How much does shipping cost?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Shipping is calculated at checkout based on your address. Final rates will be confirmed when the founder launch opens for orders."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I give the First Sip Box as a gift?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. The box is designed to be giftable — a clean tea gift box that works for tea drinkers, coffee switchers, and anyone curious. A Gift Edition with a hand-written note is planned at launch."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I drink these teas iced?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. The green and the herbal both make an excellent iced tea starter — cold-brew instructions are printed on every pouch."
-      }
+    #stage{
+      width:390px;height:844px;border-radius:48px;overflow:hidden;
+      box-shadow:0 60px 120px -40px rgba(0,0,0,.55),0 0 0 10px #0f0c0b,0 0 0 11px #2a2522;
+      position:relative;
+      scroll-snap-type:y mandatory;overflow-y:scroll;overflow-x:hidden;
     }
-  ]
-}
-</script>
+    #leaf-canvas{position:absolute}
+    .top{position:absolute}
+    .rail{position:absolute}
+    section{width:390px;height:844px}
+  }
+  @media (max-width:899px){
+    #stage{display:contents}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .pulse::after{animation:none}
+    .hint__line{animation:none;opacity:.6}
+    [data-reveal]{opacity:1;transform:none;transition:none}
+  }
+</style>
 </head>
+<body>
 
-<body data-analytics-page="landing-home">
+<div id="stage">
+  <canvas id="leaf-canvas" aria-hidden="true"></canvas>
 
-<!-- Skip link for a11y -->
-<a class="skip-link" href="#main">Skip to content</a>
+  <div class="rail" aria-hidden="true"><div class="rail__fill" id="rail"></div></div>
 
-<!-- Top announcement bar -->
-<div class="announce" role="status">
-  <span class="dot" aria-hidden="true"></span>
-  Founder launch — reserve your First Sip Box.
+  <header class="top">
+    <a class="wordmark" href="#s1" aria-label="Varitea home">
+      <img class="wordmark__glyph" src="assets/brand/glyph-plum.svg" alt="" aria-hidden="true">
+      <span>Varitea</span>
+    </a>
+    <a class="skip" href="#s4">Why Varitea?</a>
+  </header>
+
+  <!-- ============ SCREEN 1 — AWAKEN ============ -->
+  <section class="s1" id="s1" data-i="0">
+    <img class="bg" src="assets/hero-mobile.png" alt="">
+    <div class="copy-top">
+      <h1 data-reveal data-d="1">A better daily drink.</h1>
+    </div>
+    <div class="copy">
+      <a href="#s2" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin">
+        Tap to begin
+        <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    <div class="hint" aria-hidden="true"><span class="hint__line"></span></div>
+  </section>
+
+  <!-- ============ SCREEN 2 — THREE TEAS ============ -->
+  <section class="s2" id="s2" data-i="1" aria-label="Three teas">
+    <div class="pouches" id="pouches">
+      <div class="pouch pouch--dark is-active" data-pouch="0">
+        <div class="pouch__shape">
+          <span class="pouch__brand">Varitea<small>No. 001</small></span>
+          <span class="pouch__band">Bold black</span>
+        </div>
+        <h2>Morning dark</h2>
+      </div>
+      <div class="pouch pouch--lavender" data-pouch="1">
+        <div class="pouch__shape">
+          <span class="pouch__brand">Varitea<small>No. 002</small></span>
+          <span class="pouch__band">Floral herbal</span>
+        </div>
+        <h2>Lavender &amp; mango</h2>
+      </div>
+      <div class="pouch pouch--tangerine" data-pouch="2">
+        <div class="pouch__shape">
+          <span class="pouch__brand">Varitea<small>No. 003</small></span>
+          <span class="pouch__band">Smooth green</span>
+        </div>
+        <h2>Tangerine grove</h2>
+      </div>
+    </div>
+    <div class="dots" aria-hidden="true">
+      <span class="is-active"></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3 — RITUAL ============ -->
+  <section class="s3" id="s3" data-i="2" aria-label="Ritual">
+    <video class="bg" id="ritual-video" src="assets/amber-pour.mp4" playsinline muted loop preload="metadata" aria-hidden="true"></video>
+    <div class="bg-tint" aria-hidden="true"></div>
+    <div class="copy">
+      <h2 data-reveal data-d="1">Three honest cups.<br>No guesswork.</h2>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 4 — TAKE IT HOME ============ -->
+  <section class="s4" id="s4" data-i="3" aria-label="Take it home">
+    <img class="bg" src="assets/box-reveal.png" alt="">
+    <div class="bg-tint" aria-hidden="true"></div>
+    <div class="copy">
+      <span class="chip" data-reveal data-d="1"><span class="chip__dot"></span>First Sip Box · $19</span>
+      <h2 data-reveal data-d="2">Take it home.</h2>
+      <div class="cta-stack" data-reveal data-d="3">
+        <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00" class="cta cta--primary" data-analytics="s4_checkout">
+          Get yours
+          <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#quiz" class="cta cta--ghost" data-analytics="s4_quiz">60-second taste quiz</a>
+      </div>
+    </div>
+  </section>
 </div>
 
-<!-- Nav -->
-<header class="nav">
-  <div class="nav__wrap">
-    <a class="brand" href="#" aria-label="Varitea home">
-      <!-- Inline SVG logo: a tea leaf inside a circle -->
-      <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <circle cx="20" cy="22" r="13" stroke="currentColor" stroke-width="1.6"/>
-        <path d="M20 9 C24 16 24 22 20 28 C16 22 16 16 20 9 Z" fill="currentColor"/>
-        <path d="M20 14 V26" stroke="#f5efe4" stroke-width="1" stroke-linecap="round"/>
-      </svg>
-      <span class="brand__word">Varitea</span>
-    </a>
-    <nav class="nav__links" aria-label="Primary">
-      <a href="#box">The box</a>
-      <a href="#how">How it works</a>
-      <a href="#faq">FAQ</a>
-      <a href="/branding/">Branding</a>
-    </nav>
-    <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00" class="btn btn--ghost btn--sm" data-analytics-event="nav_checkout_click">Get the box</a>
-  </div>
-</header>
+<script type="module">
+import * as THREE from 'https://esm.sh/three@0.160.0';
 
-<main id="main">
+/* ============ THREE.JS FALLING TEA LEAVES ============ */
+const canvas = document.getElementById('leaf-canvas');
+const stage  = document.getElementById('stage');
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="hero__grid">
-      <div class="hero__copy">
-        <p class="eyebrow" data-reveal>
-          <span class="eyebrow__dot"></span> Founder launch · First Sip Box
-        </p>
-        <h1 class="display" data-reveal>
-          A better daily drink,<br>
-          <em>without the guesswork.</em>
-        </h1>
-        <p class="lede" data-reveal>
-          Three teas. One bright green, one bold black, one calming herbal —
-          curated so you can stop scrolling shop pages and start drinking
-          something you actually love.
-        </p>
-        <div class="hero__cta" data-reveal>
-          <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00"
-             class="btn btn--primary btn--lg"
-             data-analytics-event="hero_cta_click"
-             data-cta-label="get_first_sip_box">
-            Get the First Sip Box — $19
-            <svg viewBox="0 0 24 24" class="btn__icon" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a href="#quiz"
-             class="btn btn--link"
-             data-analytics-event="quiz_cta_click"
-             data-cta-label="hero_take_quiz">
-            Take the 60-second taste quiz →
-          </a>
-        </div>
-        <ul class="trust" data-reveal>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Founder launch offer</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Loose-leaf, tasting-flight format</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Shipping calculated at checkout</li>
-        </ul>
-      </div>
+const isDesktop = () => window.matchMedia('(min-width:900px)').matches;
+const sizeTarget = () => isDesktop() ? stage : window;
 
-      <div class="hero__visual" data-reveal>
-        <figure class="papercraft">
-          <picture>
-            <source media="(max-width: 720px)" srcset="/branding/assets/hero-papercraft-mobile.png">
-            <img src="/branding/assets/hero-papercraft-desktop.png"
-                 alt="Three Varitea pouches — Morning dark, Lavender and mango, Tangerine grove — arranged on a soft papercraft landscape."
-                 loading="eager"
-                 decoding="async"
-                 width="1600" height="1200">
-          </picture>
-          <figcaption class="papercraft__caption">
-            <span class="papercraft__chip papercraft__chip--dark">Morning dark</span>
-            <span class="papercraft__chip papercraft__chip--lavender">Lavender &amp; mango</span>
-            <span class="papercraft__chip papercraft__chip--tangerine">Tangerine grove</span>
-          </figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
+const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  <!-- ============ MARQUEE / VALUES ============ -->
-  <section class="strip" aria-label="What Varitea is about">
-    <div class="strip__track">
-      <span>Taste-first tea discovery</span><span>·</span>
-      <span>Loose-leaf, tasting-flight format</span><span>·</span>
-      <span>Three honest cups, not eighty choices</span><span>·</span>
-      <span>Beginner-friendly brewing guide</span><span>·</span>
-      <span>A box built to be giftable</span><span>·</span>
-      <span>Founder launch — $19</span><span>·</span>
-      <span>Honest tasting notes, no jargon</span><span>·</span>
-    </div>
-  </section>
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1,1,1,-1,0.1,10);
+camera.position.z = 1;
 
-  <!-- ============ PROBLEM ============ -->
-  <section class="section section--narrow" id="why">
-    <p class="kicker" data-reveal>Why Varitea exists</p>
-    <h2 class="h2" data-reveal>Tea shopping shouldn't feel like a research project.</h2>
-    <div class="two-col">
-      <p data-reveal>
-        You wanted to drink less coffee. Or you wanted a calmer afternoon.
-        Or you wanted a gift that wasn't another candle.
-      </p>
-      <p data-reveal>
-        Then you opened a tea site and got 84 options, a wall of latin names,
-        and no idea what any of it actually tastes like. So you closed the tab.
-        Again.
-      </p>
-    </div>
-    <p class="punchline" data-reveal>
-      Varitea is the opposite of that. We pick. You sip.
-    </p>
-  </section>
+let W = 1, H = 1;
+function resize(){
+  const t = sizeTarget();
+  W = isDesktop() ? t.clientWidth  : window.innerWidth;
+  H = isDesktop() ? t.clientHeight : window.innerHeight;
+  renderer.setSize(W, H, false);
+  camera.left   = -W/2;
+  camera.right  =  W/2;
+  camera.top    =  H/2;
+  camera.bottom = -H/2;
+  camera.updateProjectionMatrix();
+}
+resize();
+window.addEventListener('resize', resize);
 
-  <!-- ============ HOW IT WORKS ============ -->
-  <section class="section how" id="how">
-    <p class="kicker" data-reveal>How it works</p>
-    <h2 class="h2" data-reveal>Three teas. Three mornings. One favorite.</h2>
+const loader = new THREE.TextureLoader();
+const tex1 = loader.load('assets/leaf1.png');
+const tex2 = loader.load('assets/leaf2.png');
+[tex1,tex2].forEach(t=>{ t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; });
 
-    <ol class="steps">
-      <li class="step" data-reveal>
-        <span class="step__n">01</span>
-        <h3 class="step__h">Reserve your box</h3>
-        <p>Curated 3-tea starter, $19. No subscription. Shipping calculated at checkout.</p>
-      </li>
-      <li class="step" data-reveal>
-        <span class="step__n">02</span>
-        <h3 class="step__h">Brew the guide</h3>
-        <p>Each pouch has a clear hot-brew and iced-tea starter recipe printed on it. Two minutes to a perfect cup.</p>
-      </li>
-      <li class="step" data-reveal>
-        <span class="step__n">03</span>
-        <h3 class="step__h">Find your daily</h3>
-        <p>Pick the one you reach for first. We'll restock that one — or use your taste quiz to recommend what's next.</p>
-      </li>
-    </ol>
-  </section>
+const LEAF_COUNT = matchMedia('(max-width:600px)').matches ? 7 : 11;
+const leaves = [];
 
-  <!-- ============ THE BOX (PRODUCT) ============ -->
-  <section class="section box" id="box">
-    <div class="box__grid">
-      <div class="box__visual" aria-hidden="true">
-        <div class="card-stack">
-          <article class="tea-card tea-card--green">
-            <header>
-              <span class="tea-card__type">Green</span>
-              <span class="tea-card__caf">~25mg caffeine</span>
-            </header>
-            <h3>Morning Jade</h3>
-            <p class="tea-card__notes">Toasted rice · sweet grass · honey finish</p>
-            <p class="tea-card__use">Best for: gentle morning lift, iced over lunch</p>
-          </article>
-          <article class="tea-card tea-card--black">
-            <header>
-              <span class="tea-card__type">Black</span>
-              <span class="tea-card__caf">~50mg caffeine</span>
-            </header>
-            <h3>Wake Assam</h3>
-            <p class="tea-card__notes">Malt · cocoa · dried fig</p>
-            <p class="tea-card__use">Best for: replacing your morning coffee</p>
-          </article>
-          <article class="tea-card tea-card--herbal">
-            <header>
-              <span class="tea-card__type">Herbal</span>
-              <span class="tea-card__caf">Caffeine-free</span>
-            </header>
-            <h3>Quiet Bloom</h3>
-            <p class="tea-card__notes">Chamomile · rose petal · vanilla</p>
-            <p class="tea-card__use">Best for: the 9pm wind-down</p>
-          </article>
-        </div>
-      </div>
+function rand(a,b){ return a + Math.random()*(b-a); }
 
-      <div class="box__copy">
-        <p class="kicker" data-reveal>The First Sip Box</p>
-        <h2 class="h2" data-reveal>One box. Three honest tastes. Zero overwhelm.</h2>
-        <p class="lede" data-reveal>
-          A curated loose leaf tea sampler built like a tasting flight —
-          green, black, herbal. Each pouch is planned to brew 8–10 cups, with hot and iced
-          recipes printed on the bag.
-        </p>
+function spawnLeaf(initial=false){
+  const tex = Math.random() < 0.5 ? tex1 : tex2;
+  const size = rand(14, 26);
+  const mat  = new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false, opacity:rand(0.18, 0.35) });
+  const geo  = new THREE.PlaneGeometry(size, size);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.x = rand(-W/2 + 20, W/2 - 20);
+  mesh.position.y = initial ? rand(0, H/2) : rand(H/2 + 40, H/2 + 300);
+  mesh.rotation.z = rand(0, Math.PI*2);
+  scene.add(mesh);
+  return {
+    mesh,
+    vy: rand(0.08, 0.22),     // slow base fall speed
+    vx: rand(-0.15, 0.15),    // gentle drift
+    wob: rand(0.3, 0.8),      // small sway amplitude
+    wobFreq: rand(0.0006, 0.0014),
+    spin: rand(-0.002, 0.002),
+    spinDamp: 1,
+    settled: false,
+    restY: 0,                 // y-position where this leaf will rest
+    size,
+    seed: rand(0, 1000),
+  };
+}
 
-        <div class="bundle" role="radiogroup" aria-label="Box options" data-reveal>
-          <label class="bundle__opt" data-analytics-event="bundle_option_click" data-bundle-id="single">
-            <input type="radio" name="bundle" value="single" checked>
-            <span class="bundle__title">First Sip Box</span>
-            <span class="bundle__sub">3 teas · $19 · founder launch</span>
-            <span class="bundle__price">$19</span>
-          </label>
-          <label class="bundle__opt bundle__opt--featured" data-analytics-event="bundle_option_click" data-bundle-id="double">
-            <input type="radio" name="bundle" value="double">
-            <span class="bundle__title">Double Sip <span class="badge">Save $5</span></span>
-            <span class="bundle__sub">2 boxes · perfect for gifting</span>
-            <span class="bundle__price">$33</span>
-          </label>
-          <label class="bundle__opt" data-analytics-event="bundle_option_click" data-bundle-id="gift">
-            <input type="radio" name="bundle" value="gift">
-            <span class="bundle__title">Gift Edition</span>
-            <span class="bundle__sub">Includes hand-written note card</span>
-            <span class="bundle__price">$24</span>
-          </label>
-        </div>
+for(let i=0;i<LEAF_COUNT;i++) leaves.push(spawnLeaf(true));
 
-        <div class="box__cta" data-reveal>
-          <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00"
-             class="btn btn--primary btn--lg btn--full"
-             data-analytics-event="checkout_cta_click"
-             data-cta-label="box_section_checkout">
-            Send me the box →
-          </a>
-          <p class="micro">No subscription. Shipping calculated at checkout.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+/* ============ SCROLL → MOTION COUPLING ============ */
+let scrollProgress = 0;     // 0..1 over the whole 4-screen scroll
+let velocityBoost  = 0;     // momentary boost when user scrolls
+let lastScroll = 0;
+let lastTs = performance.now();
 
-  <!-- ============ AUDIENCE / WHO IT'S FOR ============ -->
-  <section class="section section--soft" id="who">
-    <p class="kicker center" data-reveal>Who it's for</p>
-    <h2 class="h2 center" data-reveal>The box is designed for three kinds of people.</h2>
+function getScroller(){ return isDesktop() ? stage : (document.scrollingElement || document.documentElement); }
 
-    <div class="persona-grid">
-      <article class="persona" data-reveal>
-        <div class="persona__icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M12 28c0-4 3-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="20" cy="14" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M9 32h22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </div>
-        <h3>The Coffee Refugee</h3>
-        <p>You love coffee but the jitters are no longer worth it. You need a real morning drink — not a sad herbal tea bag. Start with <strong>Wake Assam</strong>.</p>
-        <p class="persona__kw">coffee alternative tea · bold black tea</p>
-      </article>
+function onScroll(){
+  const sc  = getScroller();
+  const max = Math.max(1, sc.scrollHeight - sc.clientHeight);
+  const p   = Math.min(1, Math.max(0, sc.scrollTop / max));
+  const dy  = sc.scrollTop - lastScroll;
+  lastScroll = sc.scrollTop;
+  velocityBoost = Math.min(8, velocityBoost + Math.abs(dy) * 0.012);
+  scrollProgress = p;
+  document.getElementById('rail').style.width = (p*100).toFixed(2)+'%';
+  syncSections(p);
+  syncVideo(p);
+  syncPouches();
+}
 
-      <article class="persona" data-reveal>
-        <div class="persona__icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="14" cy="20" r="5" stroke="currentColor" stroke-width="1.6"/><circle cx="26" cy="20" r="5" stroke="currentColor" stroke-width="1.6"/><circle cx="20" cy="28" r="5" stroke="currentColor" stroke-width="1.6"/></svg>
-        </div>
-        <h3>The Variety Seeker</h3>
-        <p>You're already a tea drinker. You want a curated tasting flight — not another tin of the same English Breakfast. The box is your new tasting menu.</p>
-        <p class="persona__kw">loose leaf tea sampler · herbal tea sampler</p>
-      </article>
+const sections = [...document.querySelectorAll('section')];
+function syncSections(p){
+  // 4 sections → index = p * 3
+  const idx = Math.round(p * (sections.length - 1));
+  sections.forEach((s,i)=> s.classList.toggle('is-visible', i <= idx));
+}
 
-      <article class="persona" data-reveal>
-        <div class="persona__icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="9" y="14" width="22" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 19h22M20 14v16" stroke="currentColor" stroke-width="1.6"/><path d="M15 14c-1-3 2-5 5-2 3-3 6-1 5 2" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
-        </div>
-        <h3>The Gifter</h3>
-        <p>You need a gift that doesn't feel generic. The box is premium, beautiful, and gives the recipient an experience — not just an object. Add a hand-written note at checkout.</p>
-        <p class="persona__kw">tea gift box · beginner tea box</p>
-      </article>
-    </div>
-  </section>
+const video = document.getElementById('ritual-video');
+let videoPlaying = false;
+function syncVideo(p){
+  // s3 is index 2 of 4 → centered around p≈0.66
+  const inRitual = p > 0.45 && p < 0.85;
+  if(inRitual && !videoPlaying){
+    video.play().catch(()=>{});
+    videoPlaying = true;
+  } else if(!inRitual && videoPlaying){
+    video.pause();
+    videoPlaying = false;
+  }
+}
 
-  <!-- ============ QUIZ CTA ============ -->
-  <section class="section quiz" id="quiz">
-    <div class="quiz__card">
-      <p class="kicker" data-reveal>Not sure what to start with?</p>
-      <h2 class="h2" data-reveal>Take the 60-second taste quiz.</h2>
-      <p class="lede" data-reveal>
-        Six quick questions. We tell you which Varitea is your daily drink, and
-        send you a $5-off code for the First Sip Box.
-      </p>
+/* auto-rotate pouches while s2 is in view */
+const s2el     = document.getElementById('s2');
+const pouchEls = [...document.querySelectorAll('.pouch')];
+const dots     = [...document.querySelectorAll('.dots span')];
+let activePouch = 0;
+let rotateTimer = null;
+function showPouch(i){
+  activePouch = (i + 3) % 3;
+  pouchEls.forEach((el,k)=> el.classList.toggle('is-active', k === activePouch));
+  dots.forEach((d,k)=> d.classList.toggle('is-active', k === activePouch));
+  s2el.setAttribute('data-active', String(activePouch));
+}
+function startRotate(){
+  stopRotate();
+  rotateTimer = setInterval(()=> showPouch(activePouch + 1), 2400);
+}
+function stopRotate(){ if(rotateTimer){ clearInterval(rotateTimer); rotateTimer = null; } }
 
-      <!-- Email capture; static mailto fallback. Replace with backend endpoint when ready. -->
-      <form class="email-capture"
-            action="mailto:hello@drinkvaritea.com"
-            method="post"
-            enctype="text/plain"
-            data-analytics-event="email_capture_submit"
-            data-capture-source="quiz_block">
-        <label class="sr-only" for="email-quiz">Email address</label>
-        <input id="email-quiz"
-               name="email"
-               type="email"
-               required
-               autocomplete="email"
-               placeholder="you@example.com"
-               data-analytics-event="email_capture_focus"
-               data-capture-source="quiz_block">
-        <button type="submit"
-                class="btn btn--primary"
-                data-analytics-event="quiz_cta_click"
-                data-cta-label="quiz_start_email">
-          Start the quiz
-        </button>
-      </form>
-      <p class="micro">One email at a time. Unsubscribe in one tap.</p>
-    </div>
-  </section>
+const io = new IntersectionObserver((entries)=>{
+  for(const e of entries){
+    if(e.isIntersecting && e.intersectionRatio > 0.6){
+      showPouch(0);
+      startRotate();
+    } else {
+      stopRotate();
+    }
+  }
+},{ threshold:[0, 0.6, 1] });
+io.observe(s2el);
 
-  <!-- ============ INSIDE THE BOX / SENSORY ============ -->
-  <section class="section sensory">
-    <p class="kicker" data-reveal>Inside the box</p>
-    <h2 class="h2" data-reveal>What you actually get.</h2>
-    <ul class="feature-grid">
-      <li class="feature" data-reveal>
-        <span class="feature__num">01</span>
-        <h3>3 curated loose-leaf teas</h3>
-        <p>Green, black, herbal. Sealed for freshness, planned at around 8–10 cups per pouch.</p>
-      </li>
-      <li class="feature" data-reveal>
-        <span class="feature__num">02</span>
-        <h3>Brew &amp; iced-tea card</h3>
-        <p>Clear instructions for hot and cold brew on every pouch. No water-temperature math.</p>
-      </li>
-      <li class="feature" data-reveal>
-        <span class="feature__num">03</span>
-        <h3>Tasting notes</h3>
-        <p>Honest, sensory language — “toasted rice, honey finish” — not vague marketing words.</p>
-      </li>
-      <li class="feature" data-reveal>
-        <span class="feature__num">04</span>
-        <h3>Founder launch pricing</h3>
-        <p>$19 for the first batch. Tell us what you loved and we'll restock that one — or recommend what's next.</p>
-      </li>
-    </ul>
-  </section>
+// tap on s2 advances manually
+s2el.addEventListener('click', ()=>{ showPouch(activePouch + 1); startRotate(); });
+function syncPouches(){ /* no-op: handled by interval + observer */ }
 
-  <!-- ============ FAQ ============ -->
-  <section class="section section--narrow faq" id="faq">
-    <p class="kicker center" data-reveal>FAQ</p>
-    <h2 class="h2 center" data-reveal>Quick answers, then go drink some tea.</h2>
+getScroller().addEventListener('scroll', onScroll, { passive:true });
+window.addEventListener('scroll', onScroll, { passive:true });
+onScroll();
 
-    <div class="faq__list">
-      <details class="faq__item" data-reveal>
-        <summary>What is the Varitea First Sip Box?</summary>
-        <p>A curated 3-tea starter sampler designed to help you find your daily drink fast. The planned box includes one bright green, one bold black, and one calming herbal — all loose-leaf and beginner-friendly. Brewing guide and tasting notes included.</p>
-      </details>
-      <details class="faq__item" data-reveal>
-        <summary>How much tea is in the box?</summary>
-        <p>Three pouches, each planned to brew about 8–10 cups — enough to live with a tea for a few mornings and figure out what you love.</p>
-      </details>
-      <details class="faq__item" data-reveal>
-        <summary>I drink coffee. Will this actually keep me going?</summary>
-        <p>The box is built around this question. It includes a bold black tea with caffeine in the same neighborhood as a light coffee, plus a green for a smoother lift — both designed to work as a morning replacement.</p>
-      </details>
-      <details class="faq__item" data-reveal>
-        <summary>How much does shipping cost?</summary>
-        <p>Shipping is calculated at checkout based on your address. Final rates will be confirmed when the founder launch opens for orders.</p>
-      </details>
-      <details class="faq__item" data-reveal>
-        <summary>Can I give this as a gift?</summary>
-        <p>Yes. The box is designed to feel like a tea gift box that works for tea drinkers, coffee switchers, and the curious. A Gift Edition with a hand-written note is planned at launch.</p>
-      </details>
-      <details class="faq__item" data-reveal>
-        <summary>Can I drink these teas iced?</summary>
-        <p>Yes. The green and the herbal both make an excellent iced tea starter. Cold-brew instructions are printed on every pouch.</p>
-      </details>
-    </div>
-  </section>
+/* ============ ANIMATION LOOP ============ */
+// leaves settle and pile up at the bottom of the viewport.
+// each leaf gets a slightly randomized rest line just inside the bottom edge.
+function floorYFor(L){
+  // small jitter so they don't form a perfect line
+  return -H/2 + L.size * 0.35 + (L.seed % 14);
+}
 
-  <!-- ============ FINAL CTA ============ -->
-  <section class="section finale">
-    <div class="finale__card">
-      <h2 class="display display--sm" data-reveal>
-        Stop guessing.<br><em>Start sipping.</em>
-      </h2>
-      <p class="lede" data-reveal>
-        The founder launch is small on purpose. Get a First Sip Box while the
-        first batch is still going out.
-      </p>
-      <div class="finale__cta" data-reveal>
-        <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00"
-           class="btn btn--primary btn--xl"
-           data-analytics-event="checkout_cta_click"
-           data-cta-label="finale_checkout">
-          Get the First Sip Box — $19
-        </a>
-        <p class="micro">$19 founder launch offer · shipping calculated at checkout</p>
-      </div>
-    </div>
-  </section>
+function tick(ts){
+  const dt = Math.min(40, ts - lastTs);
+  lastTs = ts;
 
-</main>
+  // damp velocity boost
+  velocityBoost *= 0.92;
 
-<footer class="footer">
-  <div class="footer__wrap">
-    <div class="footer__brand">
-      <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <circle cx="20" cy="22" r="13" stroke="currentColor" stroke-width="1.6"/>
-        <path d="M20 9 C24 16 24 22 20 28 C16 22 16 16 20 9 Z" fill="currentColor"/>
-      </svg>
-      <span class="brand__word">Varitea</span>
-    </div>
-    <nav class="footer__links" aria-label="Footer">
-      <a href="#box">The Box</a>
-      <a href="#how">How it works</a>
-      <a href="#faq">FAQ</a>
-      <a href="mailto:hello@drinkvaritea.com">Contact</a>
-    </nav>
-    <p class="footer__copy">© <span id="year"></span> Varitea. A taste-first tea brand. Made with care.</p>
-  </div>
-</footer>
+  // gentler global gravity — we want a calm fall, not a storm
+  const gravity = 0.35 + scrollProgress * 0.6 + velocityBoost * 0.25;
 
-<script src="js/app.js" defer></script>
+  for(const L of leaves){
+    if(L.settled){
+      // resting at the bottom — hold position, let rotation slowly decay
+      L.mesh.rotation.z += L.spin * dt * L.spinDamp;
+      L.spinDamp *= 0.985;
+      if(Math.abs(L.spinDamp) < 0.01) L.spinDamp = 0;
+      continue;
+    }
+
+    L.mesh.position.y -= (L.vy * dt * gravity);
+    L.mesh.position.x += Math.sin((ts + L.seed*1000) * L.wobFreq) * L.wob + L.vx;
+    L.mesh.rotation.z += L.spin * dt * (1 + velocityBoost * 0.15);
+
+    // settle on the floor
+    const restY = floorYFor(L);
+    if(L.mesh.position.y <= restY){
+      L.mesh.position.y = restY;
+      L.settled = true;
+      L.restY = restY;
+      // ease rotation to a more natural resting tilt
+      L.spin *= 0.4;
+    }
+
+    // wrap horizontally so drifting leaves don't disappear off-screen
+    if(L.mesh.position.x >  W/2 - 10) L.mesh.position.x =  W/2 - 10;
+    if(L.mesh.position.x < -W/2 + 10) L.mesh.position.x = -W/2 + 10;
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// when viewport size changes, re-anchor any settled leaves to the new floor
+window.addEventListener('resize', ()=>{
+  for(const L of leaves){
+    if(L.settled){ L.mesh.position.y = floorYFor(L); L.restY = L.mesh.position.y; }
+  }
+});
+
+/* respect reduced motion */
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+  canvas.style.display = 'none';
+}
+</script>
 </body>
 </html>
