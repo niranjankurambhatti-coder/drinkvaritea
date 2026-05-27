@@ -11,9 +11,7 @@
   /* -----------------------------------------------------------
      CONFIG — replace these placeholders when checkout is ready.
      ----------------------------------------------------------- */
-  // TODO: set to your Stripe Payment Link or Shopify product URL,
-  // e.g. 'https://buy.stripe.com/abc123' or 'https://shop.drinkvaritea.com/products/first-sip-box'.
-  window.VARITEA_CHECKOUT_URL = window.VARITEA_CHECKOUT_URL || '#checkout';
+  window.VARITEA_CHECKOUT_URL = window.VARITEA_CHECKOUT_URL || 'https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00';
 
   // Optional: per-bundle URLs. Falls back to VARITEA_CHECKOUT_URL.
   window.VARITEA_CHECKOUT_URLS = window.VARITEA_CHECKOUT_URLS || {
@@ -79,22 +77,19 @@
 
     track(event, props);
 
-    // If a checkout link, redirect to the configured URL.
+    // If a checkout link, optionally route to a per-bundle URL.
     if (
       (event === 'hero_cta_click' || event === 'checkout_cta_click' || event === 'nav_checkout_click')
       && el.tagName === 'A'
-      && el.getAttribute('href') === '#checkout'
     ) {
       var bundleInput = document.querySelector('input[name="bundle"]:checked');
       var bundleId = bundleInput ? bundleInput.value : 'single';
-      var url = (window.VARITEA_CHECKOUT_URLS && window.VARITEA_CHECKOUT_URLS[bundleId])
-                 || window.VARITEA_CHECKOUT_URL;
-      if (url && url !== '#checkout') {
+      var bundleUrl = window.VARITEA_CHECKOUT_URLS && window.VARITEA_CHECKOUT_URLS[bundleId];
+      if (bundleUrl) {
         e.preventDefault();
-        window.location.href = url;
+        window.location.href = bundleUrl;
       }
-      // Otherwise: leave the in-page anchor behavior so the user
-      // sees the bundle section / final CTA until checkout is live.
+      // Otherwise: follow the link's href (now the Stripe Payment Link).
     }
   }
 
