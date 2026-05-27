@@ -88,7 +88,7 @@ All clicked elements with `[data-analytics-event]` are tracked via a single dele
 - **Semantic headings:** one `<h1>`, multiple `<h2>` per section, `<h3>` for cards
 - **JSON-LD:**
   - `Organization` + `WebSite`
-  - `Product` with `Offer` ($19, USD, free US shipping, PreOrder), `aggregateRating`
+  - `Product` with `Offer` ($19 USD, `PreOrder` availability) — no `aggregateRating`, no shipping rate (real values to be added post-launch)
   - `FAQPage` with six Q/A pairs
 - **Targeted keywords** woven into copy: *custom tea blend, loose leaf tea sampler, tea gift box, iced tea starter, coffee alternative tea, herbal tea sampler, beginner tea box*
 - **`robots.txt` + `sitemap.xml`** in place

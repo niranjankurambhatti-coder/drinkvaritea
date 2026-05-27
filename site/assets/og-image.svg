@@ -24,11 +24,11 @@
     <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="2" fill="#264a3a">FOUNDER LAUNCH · FIRST SIP BOX</text>
     <text x="0" y="90" font-family="Fraunces, Georgia, serif" font-size="78" font-weight="400" fill="#1f2a24">A better daily drink,</text>
     <text x="0" y="170" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="78" font-weight="400" fill="#264a3a">without the guesswork.</text>
-    <text x="0" y="250" font-family="Inter, Arial, sans-serif" font-size="26" fill="#4a5a52">Three teas. Hand-picked. Ships free. $19.</text>
+    <text x="0" y="250" font-family="Inter, Arial, sans-serif" font-size="26" fill="#4a5a52">Three teas. Curated. Founder launch — $19.</text>
 
     <g transform="translate(0,290)">
       <rect x="0" y="0" rx="999" ry="999" width="320" height="64" fill="#264a3a"/>
-      <text x="160" y="42" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600" fill="#fbf7ef">Get the First Sip Box</text>
+      <text x="160" y="42" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600" fill="#fbf7ef">Reserve the First Sip Box</text>
     </g>
   </g>
 
