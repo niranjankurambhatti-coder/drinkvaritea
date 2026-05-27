@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbf7ef"/>
+      <stop offset="1" stop-color="#efe7d7"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f6e57"/>
+      <stop offset="1" stop-color="#244a39"/>
+    </linearGradient>
+    <linearGradient id="black" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a3325"/>
+      <stop offset="1" stop-color="#261712"/>
+    </linearGradient>
+    <linearGradient id="herbal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b5826f"/>
+      <stop offset="1" stop-color="#7a4d3d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- left copy -->
+  <g transform="translate(80,140)">
+    <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="2" fill="#264a3a">FOUNDER LAUNCH · FIRST SIP BOX</text>
+    <text x="0" y="90" font-family="Fraunces, Georgia, serif" font-size="78" font-weight="400" fill="#1f2a24">A better daily drink,</text>
+    <text x="0" y="170" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="78" font-weight="400" fill="#264a3a">without the guesswork.</text>
+    <text x="0" y="250" font-family="Inter, Arial, sans-serif" font-size="26" fill="#4a5a52">Three teas. Hand-picked. Ships free. $19.</text>
+
+    <g transform="translate(0,290)">
+      <rect x="0" y="0" rx="999" ry="999" width="320" height="64" fill="#264a3a"/>
+      <text x="160" y="42" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600" fill="#fbf7ef">Get the First Sip Box</text>
+    </g>
+  </g>
+
+  <!-- right: tea box -->
+  <g transform="translate(760,120)">
+    <rect x="0" y="0" width="360" height="430" rx="32" fill="#fbf7ef" stroke="#1f2a3614"/>
+    <rect x="30" y="30" width="300" height="60" rx="8" fill="url(#green)"/>
+    <text x="180" y="72" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="38" fill="#f5efe4">V</text>
+    <g transform="translate(30,110)">
+      <rect x="0"   y="0" width="93" height="240" rx="6" fill="url(#green)"/>
+      <rect x="103" y="0" width="93" height="240" rx="6" fill="url(#black)"/>
+      <rect x="207" y="0" width="93" height="240" rx="6" fill="url(#herbal)"/>
+      <text x="47"  y="230" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#f5efe4">GREEN</text>
+      <text x="150" y="230" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#f5efe4">BLACK</text>
+      <text x="253" y="230" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#f5efe4">HERBAL</text>
+    </g>
+    <text x="30"  y="400" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="22" fill="#264a3a">First Sip Box</text>
+    <text x="330" y="400" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2" fill="#7c8a82">NO. 001</text>
+  </g>
+
+  <!-- brand wordmark -->
+  <g transform="translate(80,60)">
+    <circle cx="14" cy="16" r="11" stroke="#264a3a" stroke-width="1.6" fill="none"/>
+    <path d="M14 5 C17 11 17 16 14 21 C11 16 11 11 14 5 Z" fill="#264a3a"/>
+    <text x="36" y="26" font-family="Fraunces, Georgia, serif" font-size="26" fill="#1f2a24">Varitea</text>
+  </g>
+</svg>
