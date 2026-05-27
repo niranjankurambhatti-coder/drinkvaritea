@@ -165,9 +165,10 @@
       <span class="brand__word">Varitea</span>
     </a>
     <nav class="nav__links" aria-label="Primary">
-      <a href="#box">The Box</a>
+      <a href="#box">The box</a>
       <a href="#how">How it works</a>
       <a href="#faq">FAQ</a>
+      <a href="/branding/">Branding</a>
     </nav>
     <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00" class="btn btn--ghost btn--sm" data-analytics-event="nav_checkout_click">Get the box</a>
   </div>
@@ -213,29 +214,22 @@
         </ul>
       </div>
 
-      <div class="hero__visual" data-reveal aria-hidden="true">
-        <div class="box-art">
-          <div class="box-art__lid"></div>
-          <div class="box-art__base">
-            <div class="pouch pouch--green">
-              <span class="pouch__tag">Green</span>
-              <span class="pouch__leaf"></span>
-            </div>
-            <div class="pouch pouch--black">
-              <span class="pouch__tag">Black</span>
-              <span class="pouch__leaf"></span>
-            </div>
-            <div class="pouch pouch--herbal">
-              <span class="pouch__tag">Herbal</span>
-              <span class="pouch__leaf"></span>
-            </div>
-          </div>
-          <div class="box-art__label">
-            <span class="box-art__label-top">First Sip Box</span>
-            <span class="box-art__label-bot">No. 001 · Founder Launch</span>
-          </div>
-          <div class="steam" aria-hidden="true"><span></span><span></span><span></span></div>
-        </div>
+      <div class="hero__visual" data-reveal>
+        <figure class="papercraft">
+          <picture>
+            <source media="(max-width: 720px)" srcset="/branding/assets/hero-papercraft-mobile.png">
+            <img src="/branding/assets/hero-papercraft-desktop.png"
+                 alt="Three Varitea pouches — Morning dark, Lavender and mango, Tangerine grove — arranged on a soft papercraft landscape."
+                 loading="eager"
+                 decoding="async"
+                 width="1600" height="1200">
+          </picture>
+          <figcaption class="papercraft__caption">
+            <span class="papercraft__chip papercraft__chip--dark">Morning dark</span>
+            <span class="papercraft__chip papercraft__chip--lavender">Lavender &amp; mango</span>
+            <span class="papercraft__chip papercraft__chip--tangerine">Tangerine grove</span>
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>
