@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DrinkVaritea Campaign Experiment",
+  "description": "Data model for a single paid growth PMF experiment. One record per experiment.",
+  "type": "object",
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "description": "Unique ID. Format: EXP-001, EXP-002, etc."
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Human-readable campaign name. E.g., 'Choice Overload — Reel v1'"
+    },
+    "pmf_question": {
+      "type": "string",
+      "description": "The exact PMF hypothesis being tested. E.g., 'Do people pay to avoid tea confusion?'"
+    },
+    "persona": {
+      "type": "string",
+      "enum": ["ritual_seeker", "gifter", "coffee_refugee", "wellness_optimizer", "variety_seeker", "iced_tea_explorer"],
+      "description": "Target persona slug from persona library."
+    },
+    "pain_point": {
+      "type": "string",
+      "description": "Specific pain point addressed. E.g., 'Too many tea choices, no guidance'"
+    },
+    "desire": {
+      "type": "string",
+      "description": "What the persona wants to feel or achieve. E.g., 'Confident first tea purchase'"
+    },
+    "offer": {
+      "type": "string",
+      "description": "Exact offer in the ad. E.g., 'First Sip Box — 3 teas for $19'"
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["meta_ig", "meta_fb", "google_search", "google_display", "reddit", "youtube", "email", "organic_ig", "organic_reddit"],
+      "description": "Ad channel."
+    },
+    "keyword_cluster": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Keywords or audience descriptors. E.g., ['beginner tea box', 'loose leaf tea sampler']"
+    },
+    "audience": {
+      "type": "string",
+      "description": "Meta audience targeting or Google match type. E.g., 'Interests: tea, wellness, coffee — 25-44 US'"
+    },
+    "creative_angle": {
+      "type": "string",
+      "description": "The core creative angle. E.g., 'Problem/solution: too many choices, here's the fix'"
+    },
+    "copy_variant": {
+      "type": "string",
+      "description": "Which copy variant: A, B, C. Reference copy file."
+    },
+    "creative_asset_id": {
+      "type": "string",
+      "description": "Asset ID from utm-builder content convention. E.g., 'ig_reel_founder_001'"
+    },
+    "landing_page": {
+      "type": "string",
+      "description": "Landing page path. E.g., '/' or '/coffee-alternative' or '/gift'"
+    },
+    "utm_string": {
+      "type": "string",
+      "description": "Full UTM string per utm-builder.md convention."
+    },
+    "cta_label": {
+      "type": "string",
+      "description": "CTA text on landing page. E.g., 'Get the First Sip Box'"
+    },
+    "budget_daily_usd": {
+      "type": "number",
+      "description": "Daily budget in USD. Founder must approve before entry."
+    },
+    "budget_total_usd": {
+      "type": "number",
+      "description": "Total campaign budget cap. Founder must approve."
+    },
+    "primary_kpi": {
+      "type": "string",
+      "enum": ["ctr", "cpc", "checkout_cta_clicks", "email_captures", "purchases", "cac", "roas"],
+      "description": "The one metric that determines kill/iterate/scale."
+    },
+    "guardrail_metric": {
+      "type": "string",
+      "description": "The metric that triggers an automatic pause regardless of primary KPI. E.g., 'CPC > $TBD founder approval'"
+    },
+    "kill_rule": {
+      "type": "string",
+      "description": "Exact condition to kill this experiment. E.g., 'After $[X] spend with zero checkout CTA clicks'"
+    },
+    "scale_rule": {
+      "type": "string",
+      "description": "Exact condition to scale. E.g., 'CTR > [X]% AND at least 1 purchase AND CPC < $[Y]'"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "decision_rule": {
+      "type": "string",
+      "description": "Decision logic: e.g., 'Review after 3 days or $[X] spend, whichever comes first'"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "ready_to_launch", "live", "paused", "killed", "scaled", "completed"]
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "spend_usd": {"type": "number"},
+        "impressions": {"type": "integer"},
+        "clicks": {"type": "integer"},
+        "ctr_pct": {"type": "number"},
+        "cpc_usd": {"type": "number"},
+        "landing_page_visits": {"type": "integer"},
+        "cta_clicks": {"type": "integer"},
+        "email_captures": {"type": "integer"},
+        "checkout_starts": {"type": "integer"},
+        "purchases": {"type": "integer"},
+        "revenue_usd": {"type": "number"},
+        "cac_usd": {"type": "number"},
+        "roas": {"type": "number"}
+      }
+    },
+    "learning": {
+      "type": "string",
+      "description": "What this experiment proved or disproved about PMF."
+    },
+    "next_experiment_id": {
+      "type": "string",
+      "description": "The experiment that logically follows from this learning."
+    },
+    "github_issue_url": {
+      "type": "string",
+      "description": "Link to GitHub issue tracking this experiment."
+    },
+    "notion_log_url": {
+      "type": "string",
+      "description": "Link to Notion experiment log page."
+    }
+  },
+  "required": ["experiment_id", "campaign_name", "pmf_question", "persona", "channel", "primary_kpi", "status"]
+}
