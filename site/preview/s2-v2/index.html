@@ -328,26 +328,26 @@
 
   <!-- Pouch stack -->
   <div class="pouches" id="pouches">
-    <button class="pouch is-active" data-i="0" data-role="bold black"
+    <button class="pouch is-active" data-i="0" data-role="Bold Black"
             data-sub="rich · warm · morning-ready"
             data-tint-a="#EFE3D6" data-tint-b="#F8F2EA"
             data-leaf="#5A3E2A"
-            aria-label="Bold black — tap for a leaf burst">
-      <img src="/preview/s2-v2/assets/pouch-bold.jpg" alt="Bold black tea pouch in matte deep brown with a cream label">
+            aria-label="Bold Black — tap for a leaf burst">
+      <img src="/preview/s2-v2/assets/pouch-bold.jpg" alt="Bold Black tea pouch in matte deep brown with a cream label">
     </button>
-    <button class="pouch" data-i="1" data-role="floral herbal"
-            data-sub="soft · fragrant · caffeine-free"
+    <button class="pouch" data-i="1" data-role="Floral Herbal"
+            data-sub="floral · soothing · evening-calm"
             data-tint-a="#E9D9EE" data-tint-b="#F4E7E9"
             data-leaf="#B07AB0"
-            aria-label="Floral herbal — tap for a leaf burst">
-      <img src="/preview/s2-v2/assets/pouch-floral.jpg" alt="Floral herbal tea pouch with a powder lavender to blush gradient">
+            aria-label="Floral Herbal — tap for a leaf burst">
+      <img src="/preview/s2-v2/assets/pouch-floral.jpg" alt="Floral Herbal tea pouch with a powder lavender to blush gradient">
     </button>
-    <button class="pouch" data-i="2" data-role="smooth green"
-            data-sub="light · clean · easy to brew"
+    <button class="pouch" data-i="2" data-role="Smooth Green"
+            data-sub="smooth · fresh · gentle-lift"
             data-tint-a="#D8DEC5" data-tint-b="#EBE6D2"
             data-leaf="#6A7A52"
-            aria-label="Smooth green — tap for a leaf burst">
-      <img src="/preview/s2-v2/assets/pouch-smooth.jpg" alt="Smooth green tea pouch in sage with a cream label">
+            aria-label="Smooth Green — tap for a leaf burst">
+      <img src="/preview/s2-v2/assets/pouch-smooth.jpg" alt="Smooth Green tea pouch in sage with a cream label">
     </button>
   </div>
 
@@ -364,7 +364,7 @@
 
   <!-- Meta -->
   <div class="meta is-in" id="meta">
-    <div class="meta__role" id="role">bold black</div>
+    <div class="meta__role" id="role">Bold Black</div>
     <div class="meta__sub" id="sub">rich · warm · morning-ready</div>
   </div>
 
@@ -405,6 +405,30 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let active = 0;
 const seen = new Set([0]);
+
+/* ============================================================
+   PARENT BRIDGE — s2_tea_selected
+   When embedded in the landing page (?embed=1), postMessage the
+   selected tea up to the parent so it can fire the canonical
+   `s2_tea_selected` event. `tea_name` MUST equal Jared's final
+   flavor names (proper case) — they come straight from data-role.
+   Parent listener + window.varitea.track() is owned by Ronny.
+   ============================================================ */
+function reportSelection(i, interaction){
+  try {
+    const p = pouches[i];
+    if (!p) return;
+    const msg = {
+      type: 'varitea:s2_tea_selected',
+      tea_name: p.dataset.role,        // 'Bold Black' | 'Floral Herbal' | 'Smooth Green'
+      lane_index: i,                   // 0 | 1 | 2
+      interaction: interaction || 'tap' // 'tap' | 'swipe' | 'arrow' | 'dot'
+    };
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(msg, window.location.origin);
+    }
+  } catch (e) {}
+}
 
 /* ============================================================
    THREE.JS LEAF BURST
@@ -599,6 +623,9 @@ function setActive(i, opts = {}){
     const cy = -((rect.top - stageRect.top) + rect.height/2) + stageRect.height/2;
     burst(cx, cy, p.dataset.leaf);
   }
+
+  // Report the new selection to the parent landing tracker
+  reportSelection(i, opts.interaction);
 }
 
 /* ============================================================
@@ -614,6 +641,8 @@ pouches.forEach(p => {
     const x = e.clientX - stageRect.left - stageRect.width/2;
     const y = -(e.clientY - stageRect.top - stageRect.height/2);
     burst(x, y, p.dataset.leaf);
+    // a tap on the already-active pouch is still an explicit selection
+    reportSelection(active, 'tap');
     // tiny brand-mark wink
     p.animate(
       [{transform:'translateY(0) scale(1)'},{transform:'translateY(-4px) scale(1.015)'},{transform:'translateY(0) scale(1)'}],
@@ -623,11 +652,11 @@ pouches.forEach(p => {
 });
 
 // Arrows
-prevBtn.addEventListener('click', ()=>setActive(active-1));
-nextBtn.addEventListener('click', ()=>setActive(active+1));
+prevBtn.addEventListener('click', ()=>setActive(active-1, {interaction:'arrow'}));
+nextBtn.addEventListener('click', ()=>setActive(active+1, {interaction:'arrow'}));
 
 // Dots
-dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i)));
+dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i, {interaction:'dot'})));
 
 // Swipe
 let touchX = null;
@@ -636,15 +665,15 @@ stage.addEventListener('touchend', e => {
   if(touchX == null) return;
   const dx = (e.changedTouches[0].clientX) - touchX;
   if(Math.abs(dx) > 50){
-    setActive(active + (dx < 0 ? 1 : -1));
+    setActive(active + (dx < 0 ? 1 : -1), {interaction:'swipe'});
   }
   touchX = null;
 }, {passive:true});
 
 // Keyboard
 window.addEventListener('keydown', e => {
-  if(e.key === 'ArrowRight') setActive(active+1);
-  if(e.key === 'ArrowLeft')  setActive(active-1);
+  if(e.key === 'ArrowRight') setActive(active+1, {interaction:'arrow'});
+  if(e.key === 'ArrowLeft')  setActive(active-1, {interaction:'arrow'});
 });
 
 // Pause ambient video when tab is hidden (battery)
