@@ -294,15 +294,30 @@
   <!-- Ambient pour video backdrop -->
   <video class="ambient" id="ambient"
          autoplay muted loop playsinline preload="metadata"
-         poster="assets/pour-poster.jpg" aria-hidden="true">
-    <source src="assets/pour-loop-muted.mp4" type="video/mp4">
+         poster="/preview/s2-v2/assets/pour-poster.jpg" aria-hidden="true">
+    <source src="/preview/s2-v2/assets/pour-loop-muted.mp4" type="video/mp4">
   </video>
 
   <!-- Three.js leaf burst layer -->
   <canvas id="leaves" aria-hidden="true"></canvas>
 
-  <!-- Brand mark -->
-  <span class="mark">varitea</span>
+  <!-- Brand mark (hidden when embedded in the landing page, which has its own header) -->
+  <span class="mark" data-brandmark>varitea</span>
+  <script>
+    /* When embedded (?embed=1) inside the landing page, hide the duplicate
+       brand mark so it doesn't overlap the parent header. */
+    (function () {
+      try {
+        var embedded = new URLSearchParams(location.search).get('embed') === '1'
+          || window.self !== window.top;
+        if (embedded) {
+          document.documentElement.setAttribute('data-embed', '1');
+          var m = document.querySelector('[data-brandmark]');
+          if (m) m.style.display = 'none';
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Progress dots -->
   <nav class="nav" aria-label="Pouch position">
@@ -318,21 +333,21 @@
             data-tint-a="#EFE3D6" data-tint-b="#F8F2EA"
             data-leaf="#5A3E2A"
             aria-label="Bold black — tap for a leaf burst">
-      <img src="assets/pouch-bold.jpg" alt="Bold black tea pouch in matte deep brown with a cream label">
+      <img src="/preview/s2-v2/assets/pouch-bold.jpg" alt="Bold black tea pouch in matte deep brown with a cream label">
     </button>
     <button class="pouch" data-i="1" data-role="floral herbal"
             data-sub="soft · fragrant · caffeine-free"
             data-tint-a="#E9D9EE" data-tint-b="#F4E7E9"
             data-leaf="#B07AB0"
             aria-label="Floral herbal — tap for a leaf burst">
-      <img src="assets/pouch-floral.jpg" alt="Floral herbal tea pouch with a powder lavender to blush gradient">
+      <img src="/preview/s2-v2/assets/pouch-floral.jpg" alt="Floral herbal tea pouch with a powder lavender to blush gradient">
     </button>
     <button class="pouch" data-i="2" data-role="smooth green"
             data-sub="light · clean · easy to brew"
             data-tint-a="#D8DEC5" data-tint-b="#EBE6D2"
             data-leaf="#6A7A52"
             aria-label="Smooth green — tap for a leaf burst">
-      <img src="assets/pouch-smooth.jpg" alt="Smooth green tea pouch in sage with a cream label">
+      <img src="/preview/s2-v2/assets/pouch-smooth.jpg" alt="Smooth green tea pouch in sage with a cream label">
     </button>
   </div>
 

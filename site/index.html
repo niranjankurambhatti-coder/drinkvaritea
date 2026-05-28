@@ -192,6 +192,10 @@
   }
   /* screen 2 — Three teas: auto-rotating stack with crossfade */
   .s2{padding:0;align-items:stretch;justify-content:flex-start}
+  /* s2 v2 — embedded three-teas experience (papercraft + Three.js leaf burst) */
+  .s2--v2{position:relative;overflow:hidden;background:var(--cream)}
+  .s2--v2::after{display:none}
+  .s2__frame{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:var(--cream)}
   .s2::after{
     content:"";position:absolute;inset:0;z-index:-1;
     background:
@@ -375,7 +379,7 @@
       <img class="wordmark__glyph" src="assets/brand/glyph-plum.svg" alt="" aria-hidden="true">
       <span>Varitea</span>
     </a>
-    <a class="skip" href="#s4">Why Varitea?</a>
+
   </header>
 
   <!-- ============ SCREEN 1 — AWAKEN ============ -->
@@ -395,34 +399,11 @@
     <div class="hint" aria-hidden="true"><span class="hint__line"></span></div>
   </section>
 
-  <!-- ============ SCREEN 2 — THREE TEAS ============ -->
-  <section class="s2" id="s2" data-i="1" aria-label="Three teas">
-    <div class="pouches" id="pouches">
-      <div class="pouch pouch--dark is-active" data-pouch="0">
-        <div class="pouch__shape">
-          <span class="pouch__brand">Varitea<small>No. 001</small></span>
-          <span class="pouch__band">Bold black</span>
-        </div>
-        <h2>Morning dark</h2>
-      </div>
-      <div class="pouch pouch--lavender" data-pouch="1">
-        <div class="pouch__shape">
-          <span class="pouch__brand">Varitea<small>No. 002</small></span>
-          <span class="pouch__band">Floral herbal</span>
-        </div>
-        <h2>Lavender &amp; mango</h2>
-      </div>
-      <div class="pouch pouch--tangerine" data-pouch="2">
-        <div class="pouch__shape">
-          <span class="pouch__brand">Varitea<small>No. 003</small></span>
-          <span class="pouch__band">Smooth green</span>
-        </div>
-        <h2>Tangerine grove</h2>
-      </div>
-    </div>
-    <div class="dots" aria-hidden="true">
-      <span class="is-active"></span><span></span><span></span>
-    </div>
+  <!-- ============ SCREEN 2 — THREE TEAS (s2 v2: papercraft + Three.js) ============ -->
+  <section class="s2 s2--v2" id="s2" data-i="1" aria-label="Three teas">
+    <iframe class="s2__frame" src="/preview/s2-v2/?embed=1"
+            title="Choose your tea" loading="lazy"
+            allow="autoplay" scrolling="no"></iframe>
   </section>
 
   <!-- ============ SCREEN 3 — RITUAL ============ -->
@@ -566,39 +547,11 @@ function syncVideo(p){
   }
 }
 
-/* auto-rotate pouches while s2 is in view */
-const s2el     = document.getElementById('s2');
-const pouchEls = [...document.querySelectorAll('.pouch')];
-const dots     = [...document.querySelectorAll('.dots span')];
-let activePouch = 0;
-let rotateTimer = null;
-function showPouch(i){
-  activePouch = (i + 3) % 3;
-  pouchEls.forEach((el,k)=> el.classList.toggle('is-active', k === activePouch));
-  dots.forEach((d,k)=> d.classList.toggle('is-active', k === activePouch));
-  s2el.setAttribute('data-active', String(activePouch));
-}
-function startRotate(){
-  stopRotate();
-  rotateTimer = setInterval(()=> showPouch(activePouch + 1), 2400);
-}
-function stopRotate(){ if(rotateTimer){ clearInterval(rotateTimer); rotateTimer = null; } }
-
-const io = new IntersectionObserver((entries)=>{
-  for(const e of entries){
-    if(e.isIntersecting && e.intersectionRatio > 0.6){
-      showPouch(0);
-      startRotate();
-    } else {
-      stopRotate();
-    }
-  }
-},{ threshold:[0, 0.6, 1] });
-io.observe(s2el);
-
-// tap on s2 advances manually
-s2el.addEventListener('click', ()=>{ showPouch(activePouch + 1); startRotate(); });
-function syncPouches(){ /* no-op: handled by interval + observer */ }
+/* Screen 2 is now the embedded s2-v2 experience (papercraft + Three.js leaf burst).
+   The interactive tea selection lives inside the /preview/s2-v2/ iframe, which owns
+   its own taps, swipes, lane-color reveal, and burst animation. No parent-side
+   carousel logic is needed here. */
+function syncPouches(){ /* no-op: s2 handled inside the embedded experience */ }
 
 getScroller().addEventListener('scroll', onScroll, { passive:true });
 window.addEventListener('scroll', onScroll, { passive:true });
