@@ -1,0 +1,112 @@
+{
+  "experiment_id": "EXP-001",
+  "campaign_name": "First Paid Order — Static A/B (Choice Overload vs Coffee Switch)",
+  "pmf_question": "Will cold paid-social traffic pay $19 for a no-subscription First Sip Box, and which framing converts better — 'too many tea choices, here is the curated fix' (variety_seeker) or 'a better afternoon than coffee' (coffee_refugee)?",
+  "channel": "meta_ig",
+  "offer": "First Sip Box — 3 teas for $19, no subscription",
+  "landing_page": "/",
+  "primary_kpi": "checkout_cta_clicks",
+  "guardrail_metric": "CPC > $[FA] (founder approval) OR daily CTR < 0.3% with zero CTA clicks",
+  "kill_rule": "Pause immediately if: $[FA] total spend with zero checkout_cta_click events, OR CTR < 0.3% after 2,000 impressions, OR no email captures after $[FA] spend.",
+  "scale_rule": "Scale winner +20%/week only if: >=1 purchase_completed AND CTR above channel minimum (Meta feed static 0.5%) AND CPC < $[FA] warning AND checkout_cta_click rate > 5% AND margin-adjusted ROAS positive (Finance sign-off) AND founder approval.",
+  "decision_rule": "Review at 3 days OR $[FA] total spend, whichever comes first. Call A/B winner by checkout_cta_click rate (primary KPI), tie-broken by purchases then CTR. Output kill/iterate/scale recommendation + PMF learning + seed EXP-002.",
+  "status": "planned",
+  "start_date": null,
+  "end_date": null,
+  "budget_daily_usd": null,
+  "budget_total_usd": null,
+  "notes_budget": "budget_daily_usd, budget_total_usd, and all $[FA] thresholds in kill/guardrail/scale rules are BLANK pending founder budget approval. No ad goes live until founder sets these and approves. Single ad set, two creatives, even split.",
+  "structure": {
+    "meta_campaign_objective": "Sales / Conversions (optimize for checkout_cta_click via Meta Pixel InitiateCheckout, or Landing Page Views if pixel conversions not yet warmed)",
+    "ad_set": "One ad set, cold prospecting, US, even budget split across the 2 creatives (A/B by utm_content).",
+    "audience": "Interests: tea, loose leaf tea, wellness, specialty coffee — US, age 25-44. Both variants share the same audience so the only variable is creative + page framing.",
+    "platform_status_at_build": "PAUSED — built in Meta Ads Manager but never enabled. Founder flips live only after budget approval + Tier 6 QA sign-off."
+  },
+  "variants": [
+    {
+      "label": "A",
+      "campaign_name": "Choice Overload — Static A",
+      "persona": "variety_seeker",
+      "pain_point": "Tea stores have overwhelming choice and no guidance for a beginner; fear of buying the wrong thing.",
+      "desire": "A confident, curated first tea purchase — 'just tell me what to start with.'",
+      "creative_angle": "Problem/solution: tea stores have too many choices; here is the curated 3-tea fix.",
+      "copy_variant": "A",
+      "creative_asset_id": "ig_static_3teas_a01",
+      "hero_headline": "Tea stores have too many choices.",
+      "cta_label": "Start with 3 Teas — $19",
+      "page_variant": "choice_overload",
+      "utm_source": "instagram",
+      "utm_medium": "paid_social",
+      "utm_campaign": "pmf_choice_overload",
+      "utm_content": "ig_static_3teas_a01",
+      "utm_term": "tea_curious_broad",
+      "utm_string": "https://drinkvaritea.com/?utm_source=instagram&utm_medium=paid_social&utm_campaign=pmf_choice_overload&utm_content=ig_static_3teas_a01&utm_term=tea_curious_broad",
+      "creative_asset_status": "OWED by Jared (Brand/UX) — static IG image + ad copy matching hero_headline and cta_label."
+    },
+    {
+      "label": "B",
+      "campaign_name": "Coffee Switch — Static B",
+      "persona": "coffee_refugee",
+      "pain_point": "Coffee jitters / afternoon crash; wants a calmer daily ritual without giving up flavor.",
+      "desire": "A better, calmer afternoon drink that still feels like a treat.",
+      "creative_angle": "Reframe: swap your afternoon coffee for a better afternoon — calmer energy, real flavor.",
+      "copy_variant": "B",
+      "creative_asset_id": "ig_static_coffeeswitch_b01",
+      "hero_headline": "A better afternoon than coffee.",
+      "cta_label": "Try the Switch — $19",
+      "page_variant": "coffee_switch",
+      "utm_source": "instagram",
+      "utm_medium": "paid_social",
+      "utm_campaign": "pmf_coffee_alt",
+      "utm_content": "ig_static_coffeeswitch_b01",
+      "utm_term": "coffee_drinkers_25_44",
+      "utm_string": "https://drinkvaritea.com/?utm_source=instagram&utm_medium=paid_social&utm_campaign=pmf_coffee_alt&utm_content=ig_static_coffeeswitch_b01&utm_term=coffee_drinkers_25_44",
+      "creative_asset_status": "OWED by Jared (Brand/UX) — static IG image + ad copy matching hero_headline and cta_label."
+    }
+  ],
+  "default_organic_fallback": {
+    "note": "Direct/organic traffic with no UTM lands on the default page framing.",
+    "page_variant": "default",
+    "hero_headline": "A better daily drink.",
+    "cta_label": "Get the First Sip Box — $19",
+    "utm_campaign": "organic_founder_launch"
+  },
+  "tea_lineup": [
+    {"lane_index": 0, "tea_name": "Bold Black"},
+    {"lane_index": 1, "tea_name": "Floral Herbal"},
+    {"lane_index": 2, "tea_name": "Smooth Green"}
+  ],
+  "instrumentation": {
+    "micro_journey_events": ["scroll_depth", "s2_tea_selected"],
+    "funnel_events": ["page_view", "hero_cta_click", "checkout_cta_click", "stripe_checkout_started", "purchase_completed"],
+    "attribution": "utm_* captured client-side, decorated onto Stripe Payment Link href + client_reference_id at click time; mirrored to GA4 + PostHog + dataLayer.",
+    "instrumentation_pr": "https://github.com/niranjankurambhatti-coder/drinkvaritea/pull/17",
+    "verification": "All events verified end-to-end via Playwright on local server. Live destination verification (GA4 DebugView / PostHog Live Events / Meta Pixel Helper) pending founder-supplied IDs."
+  },
+  "result": {
+    "spend_usd": null,
+    "impressions": null,
+    "clicks": null,
+    "ctr_pct": null,
+    "cpc_usd": null,
+    "landing_page_visits": null,
+    "cta_clicks": null,
+    "email_captures": null,
+    "checkout_starts": null,
+    "purchases": null,
+    "revenue_usd": null,
+    "cac_usd": null,
+    "roas": null
+  },
+  "learning": null,
+  "next_experiment_id": "EXP-002",
+  "github_issue_url": null,
+  "notion_log_url": null,
+  "blockers": [
+    "Founder budget approval: budget_daily_usd, budget_total_usd, and all $[FA] kill/guardrail/scale thresholds.",
+    "Jared: 2 static creative assets (ig_static_3teas_a01, ig_static_coffeeswitch_b01) + ad copy; confirm page_variant copy-swap (choice_overload / coffee_switch / default) + cta_label match shipped landing page.",
+    "Founder credentials: GA4_MEASUREMENT_ID, POSTHOG_PROJECT_KEY+HOST, GTM_CONTAINER_ID, Meta Pixel ID — gate live event verification (Tier 6 QA).",
+    "Founder: Stripe live mode + /thank-you?session_id={CHECKOUT_SESSION_ID} redirect.",
+    "Tier 6 full-funnel QA must pass with joint Ronny+Jared sign-off before any spend."
+  ]
+}
