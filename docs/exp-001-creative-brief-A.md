@@ -42,3 +42,28 @@ Asset file + this brief → tag Ronny. Ronny attaches `utm_source=facebook/insta
 
 ## Iterate rule
 If CTR is strong (>1%) but `hero_cta_click` < 5%, the hero copy is the suspect — not this creative. If CTR < 0.3% after 2,000 impressions, retire and bump to `ig_static_3teas_a02` with a new visual hook. Keep the A/B history clean.
+
+---
+
+## Formats for this variant (2026-05-28 founder scope)
+
+We only change/manage **ad → landing-page copy**. Variant A ships **2 ad text copies + 2 static images + a video idea**. Each format gets its own `utm_content`; both route to `page_variant=choice_overload` (same landing hero).
+
+| Format | `utm_content` | Asset | Status |
+|---|---|---|---|
+| Static image 1 | `ig_static_3teas_a01` | `docs/exp-001-mockups/A1_choice-overload_three-pouches.png` (three canisters in a row, headline space top) | mockup for review |
+| Static image 2 (alt) | `ig_static_3teas_a01` | `docs/exp-001-mockups/A2_choice-overload_box-reveal.png` (open box, three pouches, papercraft hills) | mockup for review |
+| Video | `ig_video_3teas_a01` | idea-prompt below | for review |
+
+### Ad text copies (both → landing hero "Tea stores have too many choices.")
+- **Copy 1 — primary text:** "A whole wall of tea is a lot. We picked the three worth starting with — one bold, one floral, one green. $19, no subscription." · **on-image headline:** `Too many teas? Start with 3.`
+- **Copy 2 — primary text:** "You don't need to be a tea person to start. Three teas, chosen for you. Brew one tonight. $19, no subscription." · **on-image / on-video headline:** `Start with three.`
+
+### Video idea prompt (6–8s, 9:16, sound-off-safe)
+> **Hook (0–1.5s):** quick top-down of a crowded tea shelf / many tins — visual overwhelm. On-screen: `Too many teas?`
+> **Turn (1.5–4s):** hand sweeps the clutter away; cut to clean cream surface as the three matte canisters (bold black / floral herbal / smooth green) land in a calm row. On-screen: `Start with 3.`
+> **Resolve (4–7s):** slow push-in on the three labels; a single pouch is lifted. On-screen: `$19 · no subscription`.
+> **End card (7–8s):** the three in a row on cream + CTA text `Start with 3 Teas — $19`.
+- **Production:** can be assembled from the static mockups + `site/preview/s2-v2/assets/pour-loop-muted.mp4` as optional B-roll, or generated. Matte everywhere; gloss only on tea liquid if a pour is shown. Captions burned in (runs muted in feed).
+- **Must-not:** no health claims, no shipping/delivery promise, no review/testimonial, no "#1/best-seller". Only factual claims allowed: `$19`, `no subscription`, the three flavor names.
+- **Naming map:** the three on-screen names must read exactly `bold black` / `floral herbal` / `smooth green` (lowercase on-pack), matching landing Screen-2 `tea_name` `Bold Black` / `Floral Herbal` / `Smooth Green`.

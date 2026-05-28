@@ -20,9 +20,36 @@ The single experiment variable is the **message angle**. Offer, price ($19), lan
 | **Hero CTA label** (Screen 1) | Start with 3 Teas — $19 | Try the Switch — $19 | Tap to begin |
 | **Reassurance line** (Screen 4) | You don't need to know anything about tea to order. | Made for coffee drinkers. No bitterness, no crash. | _(none)_ |
 | **Checkout CTA** (Screen 4 — CONSTANT) | Get the First Sip Box — $19 | Get the First Sip Box — $19 | Get the First Sip Box — $19 |
-| `utm_content` (creative id) | `ig_static_3teas_a01` | `ig_static_coffeeswitch_b01` | — |
 
 > **Note on the checkout CTA:** it is intentionally identical across variants. The experiment variable lives only in the hero angle (Screen 1) + the Screen-4 reassurance line. Keeping the checkout CTA constant isolates the message variable.
+
+---
+
+## Creative matrix (ad format × variant) — `utm_content` map
+
+Scope (founder, 2026-05-28): we **only change and manage the ad → landing-page copy**. Each variant ships **2 ad text copies + 2 static image creatives + video-idea prompts**. **Each format gets its own `utm_content`** so image vs video can be read separately in the KPI log. `utm_campaign` + `page_variant` stay the same within a variant — format does NOT change which landing copy renders; it only changes which creative drove the visit.
+
+| Variant | Format | `utm_content` | Drives `page_variant` | Status |
+|---|---|---|---|---|
+| A — Choice Overload | Static image | `ig_static_3teas_a01` | `choice_overload` | mockups for review |
+| A — Choice Overload | Video | `ig_video_3teas_a01` | `choice_overload` | idea-prompt for review |
+| B — Coffee Switch | Static image | `ig_static_coffeeswitch_b01` | `coffee_switch` | mockups for review |
+| B — Coffee Switch | Video | `ig_video_coffeeswitch_b01` | `coffee_switch` | idea-prompt for review |
+
+> All four creatives point to `/` with the same per-variant `utm_campaign`. The landing copy-swap keys off `utm_campaign` only — so image and video of the same variant land on identical hero/reassurance copy. The `utm_content` differs only so analytics can attribute the click to image vs video.
+
+### Ad text copies (2 per variant) — primary text + on-image headline
+
+These are the **ad-side** strings (what runs in Meta), each mapped to the **same landing hero** for that variant so the ad→LP scent matches.
+
+| Variant | # | Ad primary text (caption) | On-image / on-video headline | → Landing hero (must match) |
+|---|---|---|---|---|
+| A — Choice Overload | 1 | A whole wall of tea is a lot. We picked the three worth starting with — one bold, one floral, one green. $19, no subscription. | Too many teas? Start with 3. | Tea stores have too many choices. |
+| A — Choice Overload | 2 | You don't need to be a tea person to start. Three teas, chosen for you. Brew one tonight. $19, no subscription. | Start with three. | Tea stores have too many choices. |
+| B — Coffee Switch | 1 | The 3pm coffee isn't the only option. A smoother afternoon — bold black, smooth green, or a caffeine-free evening. $19, no subscription. | Swap the 3pm coffee. | A better afternoon than coffee. |
+| B — Coffee Switch | 2 | Made for coffee drinkers. Three teas for energy, calm, and caffeine-free evenings — no bitterness, no crash. $19, no subscription. | A better afternoon than coffee. | A better afternoon than coffee. |
+
+> Copy #2 in each variant is the alternate hook for the **video** creative (and a static B-roll if the first image underperforms). Both copies in a variant route to the **same** landing hero — the ad-level test is hook/format, the page is held constant per variant. Guardrails: no health claims, no shipping promise, no invented reviews, $19 + "no subscription" are the only factual claims.
 
 ---
 

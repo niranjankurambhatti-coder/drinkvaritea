@@ -42,3 +42,28 @@ Asset file + this brief → tag Ronny. Ronny attaches `utm_source=facebook/insta
 
 ## Iterate rule
 If CTR strong (>1%) but `hero_cta_click` < 5%, rework hero copy (not this creative). If CTR < 0.3% after 2,000 impressions, retire and bump to `ig_static_coffeeswitch_b02` with a new hook. Keep the A/B history clean.
+
+---
+
+## Formats for this variant (2026-05-28 founder scope)
+
+We only change/manage **ad → landing-page copy**. Variant B ships **2 ad text copies + 2 static images + a video idea**. Each format gets its own `utm_content`; both route to `page_variant=coffee_switch` (same landing hero).
+
+| Format | `utm_content` | Asset | Status |
+|---|---|---|---|
+| Static image 1 | `ig_static_coffeeswitch_b01` | `docs/exp-001-mockups/B1_coffee-switch_desk-mug.png` (bold black canister + put-down coffee mug, desk) | mockup for review |
+| Static image 2 (alt) | `ig_static_coffeeswitch_b01` | `docs/exp-001-mockups/B2_coffee-switch_brewed-cup.png` (bold black canister + brewed cup, steam) | mockup for review |
+| Video | `ig_video_coffeeswitch_b01` | idea-prompt below | for review |
+
+### Ad text copies (both → landing hero "A better afternoon than coffee.")
+- **Copy 1 — primary text:** "The 3pm coffee isn't the only option. A smoother afternoon — bold black, smooth green, or a caffeine-free evening. $19, no subscription." · **on-image headline:** `Swap the 3pm coffee.`
+- **Copy 2 — primary text:** "Made for coffee drinkers. Three teas for energy, calm, and caffeine-free evenings — no bitterness, no crash. $19, no subscription." · **on-image / on-video headline:** `A better afternoon than coffee.`
+
+### Video idea prompt (6–8s, 9:16, sound-off-safe)
+> **Hook (0–1.5s):** a coffee mug being set down on a warm desk, late-afternoon light, a slight tired beat. On-screen: `The 3pm coffee again?`
+> **Turn (1.5–4s):** hand reaches past the mug; the matte `bold black` canister comes into focus beside it. On-screen: `Try the switch.`
+> **Resolve (4–7s):** a calm amber cup of tea is poured — the ONLY gloss is the liquid; soft steam. On-screen: `No bitterness. No crash.`
+> **End card (7–8s):** canister + cup on cream + CTA text `Try the Switch — $19`.
+- **Production:** assemble from the static mockups + `site/preview/s2-v2/assets/pour-loop-muted.mp4` (amber pour) as B-roll, or generate. Matte canister; gloss only on tea liquid. Captions burned in (runs muted).
+- **Must-not:** no health claims, no "coffee is bad" moralizing, no shipping/delivery promise, no review/testimonial, no "#1/best-seller". Only factual claims: `$19`, `no subscription`, `caffeine-free` (true of Floral Herbal), `no bitterness/no crash` (sensory, product-true).
+- **Naming map:** on-screen `bold black` (and any flavor name shown) must match landing Screen-2 `tea_name` exactly — `Bold Black` / `Floral Herbal` / `Smooth Green`.
