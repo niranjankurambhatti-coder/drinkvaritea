@@ -28,14 +28,17 @@
 
 | # | Check | Status | Owner | Validated By |
 |---|---|---|---|---|
-| 13 | Meta Pixel created in Meta Events Manager | ⬜ | Paid Growth Agent | Meta Events Manager |
-| 14 | Meta Pixel firing `PageView` on landing page | ⬜ | Paid Growth Agent | Meta Pixel Helper extension |
-| 15 | Meta Pixel firing `InitiateCheckout` event | ⬜ | Paid Growth Agent | Meta Events Manager test |
-| 16 | Meta Pixel firing `Purchase` event with value | ⬜ | Paid Growth Agent | Meta Events Manager test |
-| 17 | Google Ads account created | ⬜ | Paid Growth Agent | Google Ads console |
-| 18 | Google Ads conversion action created: `checkout_cta_click` | ⬜ | Paid Growth Agent | Google Ads conversions tab |
-| 19 | Google Ads conversion action created: `purchase_completed` | ⬜ | Paid Growth Agent | Google Ads conversions tab |
-| 20 | Google Ads tag firing via GTM | ⬜ | Paid Growth Agent | GTM preview mode |
+| — | **Connector: Google Tag Manager** authorized (founder) | ✅ | Paid Growth Agent | `google_tag_manager__pipedream` CONNECTED (2026-05-28) |
+| — | **Connector: Meta / Facebook** authorized (founder) | ✅ | Paid Growth Agent | `facebook_pages__pipedream` CONNECTED (2026-05-28) |
+| — | **Connector: Google Ads** authorized (founder) | ✅ | Paid Growth Agent | `google_ads__pipedream` CONNECTED (2026-05-28) |
+| 13 | Meta Pixel created in Meta Events Manager | ❌ | Paid Growth Agent | Meta Events Manager — **need Meta Pixel ID from founder** |
+| 14 | Meta Pixel firing `PageView` on landing page | ⬜ | Paid Growth Agent | Meta Pixel Helper extension (blocked on #13) |
+| 15 | Meta Pixel firing `InitiateCheckout` event | ⬜ | Paid Growth Agent | Meta Events Manager test (blocked on #13) |
+| 16 | Meta Pixel firing `Purchase` event with value | ⬜ | Paid Growth Agent | Meta Events Manager test (blocked on #13) |
+| 17 | Google Ads account created / accessible | ✅ | Paid Growth Agent | Connector authorized 2026-05-28; account list via API |
+| 18 | Google Ads conversion action created: `checkout_cta_click` | ⬜ | Paid Growth Agent | Google Ads conversions tab (blocked on GTM container ID) |
+| 19 | Google Ads conversion action created: `purchase_completed` | ⬜ | Paid Growth Agent | Google Ads conversions tab (blocked on GTM container ID) |
+| 20 | Google Ads tag firing via GTM | ⬜ | Paid Growth Agent | GTM preview mode (blocked on GTM container ID) |
 
 ## Tier 4 — Event Tracking (specific events per taxonomy)
 
@@ -45,6 +48,8 @@
 | 22 | `hero_cta_click` | Hero section CTA button click | GA4, GTM, Meta, PostHog | ⬜ |
 | 23 | `quiz_cta_click` | Quiz entry CTA click | GA4, GTM, Meta, PostHog | ⬜ |
 | 24 | `bundle_option_change` | User changes bundle selection | GA4, PostHog | ⬜ |
+| 24a | `scroll_depth` | 25/50/75/100% scroll, once/session | GA4, GTM, PostHog | 🔄 code merged-pending (PR #17), verified locally via Playwright; live verify blocked on GA4/PH IDs |
+| 24b | `s2_tea_selected` | Tea selected in Screen-2 iframe | GA4, GTM, PostHog | 🔄 code merged-pending (PR #17), verified locally via Playwright; live verify blocked on GA4/PH IDs |
 | 25 | `checkout_cta_click` | Final checkout button click | GA4, GTM, Meta, Google Ads, PostHog | ⬜ |
 | 26 | `email_capture_submit` | Email form submission | GA4, GTM, Meta, PostHog, Klaviyo | ⬜ |
 | 27 | `stripe_checkout_started` | Redirect to Stripe checkout | GA4, GTM, Meta, PostHog | ⬜ |
@@ -83,10 +88,12 @@
 
 _Update this section daily._
 
-- [ ] Domain DNS not yet configured
-- [ ] GTM, Meta Pixel, Google Ads accounts need to be created
-- [ ] Stripe live mode requires business verification
-- [ ] PostHog project not yet created
+- [x] ~~GTM, Google Ads, Meta connectors~~ — **all three authorized by founder 2026-05-28** ✅
+- [ ] **Founder credentials still owed** — `GA4_MEASUREMENT_ID`, `POSTHOG_PROJECT_KEY` + `POSTHOG_HOST`, `GTM_CONTAINER_ID`, **Meta Pixel ID**. These gate ALL live destination verification (Tier 2, Tier 3 #13-20, Tier 4 live, Tier 6 #36-37). Config blocks in `site/index.html` + `site/thank-you.html` are empty (safe no-op) until pasted.
+- [ ] Domain DNS not yet configured (Tier 1 #1)
+- [ ] Stripe live mode + `/thank-you` redirect requires founder action (Tier 1 #4-5)
+- [ ] PR #17 (scroll_depth + s2_tea_selected) awaiting founder approval before merge (merge = production deploy)
+- [ ] EXP-001 ad spend gated on founder budget approval (`[FA]` values in campaign schema + budget-guardrails)
 
 ## Event bridge — installed, awaiting credentials
 
