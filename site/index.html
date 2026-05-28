@@ -38,6 +38,31 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- Structured data: Organization + WebSite -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://drinkvaritea.com/#org",
+      "name": "Varitea",
+      "url": "https://drinkvaritea.com/",
+      "logo": "https://drinkvaritea.com/assets/brand/glyph-plum.svg",
+      "description": "Varitea is a zero-caffeine, daypart tea brand. A curated three-tea First Sip Box for a better daily drink."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://drinkvaritea.com/#website",
+      "url": "https://drinkvaritea.com/",
+      "name": "Varitea",
+      "publisher": { "@id": "https://drinkvaritea.com/#org" },
+      "inLanguage": "en-US"
+    }
+  ]
+}
+</script>
+
 <!-- ============ ANALYTICS CONFIG (placeholders) ============
      Set real IDs here before deploying paid traffic. Empty values
      are safe — the tracker no-ops on missing destinations and
@@ -157,6 +182,14 @@
   .wordmark__glyph{
     width:18px;height:18px;display:block;
   }
+  .nav-why{
+    font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.02em;
+    color:var(--plum);text-decoration:none;pointer-events:auto;
+    background:rgba(252,248,242,.7);backdrop-filter:blur(6px);
+    padding:7px 14px;border-radius:999px;border:1px solid rgba(70,48,71,.14);
+    transition:background .2s,transform .2s;
+  }
+  .nav-why:hover{background:rgba(252,248,242,.95);transform:translateY(-1px)}
   .skip{
     font-family:var(--sans);font-size:12px;letter-spacing:.04em;color:var(--ink);
     text-decoration:none;opacity:.65;pointer-events:auto;
@@ -379,7 +412,7 @@
       <img class="wordmark__glyph" src="assets/brand/glyph-plum.svg" alt="" aria-hidden="true">
       <span>Varitea</span>
     </a>
-
+    <a class="nav-why" href="/blog" data-analytics="hero_nav_why" data-analytics-event="nav_click" data-cta-label="Why Varitea">Why Varitea?</a>
   </header>
 
   <!-- ============ SCREEN 1 — AWAKEN ============ -->

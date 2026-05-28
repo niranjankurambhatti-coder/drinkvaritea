@@ -1,0 +1,118 @@
+:root{
+  --cream:#F8F2EA; --cream-2:#FCF8F2; --ink:#2D241E; --plum:#463047;
+  --cta:#8E78A6; --cta-hover:#7a649a; --lavender:#D8C8E4; --sage:#A2AD8E;
+  --amber:#D2AE64;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.7;
+}
+a{color:inherit}
+
+/* Fixed daypart canvas behind everything */
+#daypart-canvas{
+  position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;
+  z-index:0;pointer-events:none;
+}
+body > *{position:relative;z-index:1}
+
+/* Header */
+.top{
+  position:sticky;top:0;z-index:30;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px clamp(20px,5vw,48px);
+  background:rgba(248,242,234,.82);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(70,48,71,.08);
+}
+.wordmark{font-family:var(--serif);font-size:22px;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.wordmark img{width:18px;height:18px;display:block}
+.top nav{display:flex;gap:22px;align-items:center;font-size:14px}
+.top nav a{text-decoration:none;opacity:.72;transition:opacity .2s}
+.top nav a:hover{opacity:1}
+.top .cta-mini{background:var(--cta);color:var(--cream-2);text-decoration:none;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:500;opacity:1;transition:background .2s}
+.top .cta-mini:hover{background:var(--cta-hover)}
+
+/* Breadcrumb */
+.crumbs{max-width:760px;margin:0 auto;padding:24px clamp(20px,5vw,32px) 0;font-size:13px;color:rgba(45,36,30,.55)}
+.crumbs a{text-decoration:none;color:rgba(45,36,30,.6)}
+.crumbs a:hover{color:var(--cta)}
+.crumbs span[aria-hidden]{margin:0 6px;opacity:.5}
+
+/* Article */
+.post{max-width:760px;margin:0 auto;padding:8px clamp(20px,5vw,32px) 80px}
+.post__head{padding:24px 0 8px;text-align:center}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cta);font-weight:500;margin:0 0 14px}
+.post__head h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(34px,6.5vw,56px);line-height:1.04;margin:0 0 18px;color:var(--plum)}
+.standfirst{font-size:clamp(17px,2.6vw,21px);color:rgba(45,36,30,.8);max-width:620px;margin:0 auto 18px}
+.byline{font-size:13px;letter-spacing:.04em;color:rgba(45,36,30,.5);margin:0}
+
+.post__hero{margin:36px 0 8px}
+.post__hero img{width:100%;height:auto;border-radius:24px;display:block;box-shadow:0 30px 70px -38px rgba(45,36,30,.4)}
+.post__hero figcaption{text-align:center;font-size:13px;color:rgba(45,36,30,.55);margin-top:12px;font-style:italic}
+
+/* Prose */
+.prose{font-size:clamp(16px,2.2vw,18px);color:var(--ink);padding-top:24px}
+.prose h2{font-family:var(--serif);font-weight:400;font-size:clamp(26px,4vw,36px);line-height:1.1;color:var(--plum);margin:48px 0 14px}
+.prose h3{font-family:var(--sans);font-weight:500;font-size:18px;margin:0 0 6px;color:var(--plum)}
+.prose p{margin:0 0 18px}
+.prose a{color:var(--cta);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.prose a:hover{color:var(--cta-hover)}
+.prose em{font-style:italic}
+
+/* Pull quote */
+.pull{
+  font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.6vw,30px);
+  line-height:1.25;color:var(--plum);text-align:center;
+  margin:36px 0;padding:24px 8px;border-top:1px solid rgba(70,48,71,.16);border-bottom:1px solid rgba(70,48,71,.16)
+}
+.pull strong{font-style:normal;color:var(--cta)}
+
+/* Daypart cards */
+.daypart-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:24px 0 8px}
+.daypart{background:var(--cream-2);border-radius:18px;padding:22px 20px;box-shadow:0 18px 44px -32px rgba(45,36,30,.32);transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+.daypart:hover{transform:translateY(-3px)}
+.daypart__icon{font-size:24px;display:block;margin-bottom:8px}
+.daypart[data-part="morning"] .daypart__icon{color:var(--amber)}
+.daypart[data-part="afternoon"] .daypart__icon{color:var(--sage)}
+.daypart[data-part="evening"] .daypart__icon{color:var(--cta)}
+.daypart[data-part="night"] .daypart__icon{color:var(--plum)}
+.daypart h3{margin-bottom:6px}
+.daypart p{font-size:14px;color:rgba(45,36,30,.7);margin:0;line-height:1.5}
+
+/* Ingredient table (science post) */
+.tbl-wrap{overflow-x:auto;margin:8px 0 24px;border-radius:16px;box-shadow:0 18px 44px -34px rgba(45,36,30,.3)}
+table.ing{width:100%;border-collapse:collapse;background:var(--cream-2);font-size:14px;min-width:520px}
+table.ing th,table.ing td{text-align:left;padding:12px 16px;border-bottom:1px solid rgba(70,48,71,.1);vertical-align:top}
+table.ing th{background:rgba(70,48,71,.06);font-weight:500;color:var(--plum);letter-spacing:.02em}
+table.ing tr:last-child td{border-bottom:0}
+
+/* Callout / note */
+.note{background:rgba(216,200,228,.32);border-radius:14px;padding:16px 18px;font-size:14px;color:rgba(45,36,30,.78);margin:20px 0}
+.note strong{color:var(--plum)}
+
+/* CTA band */
+.cta-band{
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
+  background:var(--plum);color:var(--cream-2);border-radius:24px;
+  padding:28px 30px;margin:44px 0 28px;
+}
+.cta-band__eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lavender);margin:0 0 6px}
+.cta-band__title{font-family:var(--serif);font-size:28px;margin:0 0 4px}
+.cta-band__sub{font-size:14px;color:rgba(252,248,242,.78);margin:0}
+.cta-band__btn,.prose a.cta-band__btn{background:var(--cta);color:var(--cream-2);text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:500;font-size:15px;white-space:nowrap;transition:background .2s,transform .2s}
+.cta-band__btn:hover,.prose a.cta-band__btn:hover{background:var(--cta-hover);color:var(--cream-2);transform:translateY(-1px)}
+
+.next{font-size:15px;border-top:1px solid rgba(70,48,71,.12);padding-top:22px;margin-top:8px}
+
+/* Footer */
+.post-footer{border-top:1px solid rgba(70,48,71,.1);padding:40px 24px 64px;text-align:center;color:rgba(45,36,30,.6);font-size:13px}
+.post-footer a{color:var(--cta);text-decoration:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .daypart,.cta-band__btn{transition:none}
+}
