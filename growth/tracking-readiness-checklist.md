@@ -87,3 +87,41 @@ _Update this section daily._
 - [ ] GTM, Meta Pixel, Google Ads accounts need to be created
 - [ ] Stripe live mode requires business verification
 - [ ] PostHog project not yet created
+
+## Event bridge — installed, awaiting credentials
+
+The client-side event bridge is wired up on the live homepage and on
+`/thank-you`. It currently no-ops on missing destinations and always
+pushes events to `window.dataLayer` + the `varitea:track` CustomEvent.
+
+**Founder-supplied values still needed** (paste into the
+`window.VARITEA_CONFIG` block in `site/index.html` AND
+`site/thank-you.html` — the two files must stay in sync):
+
+| Key | What | Where to get it |
+|---|---|---|
+| `GA4_MEASUREMENT_ID` | `G-XXXXXXXXXX` | GA4 Admin → Data Streams → Web |
+| `GTM_CONTAINER_ID` | `GTM-XXXXXXX` (optional) | GTM → Container Settings |
+| `POSTHOG_PROJECT_KEY` | `phc_…` public project API key | PostHog → Project Settings → Project API key |
+| `POSTHOG_HOST` | `https://us.i.posthog.com` or `https://eu.i.posthog.com` | PostHog region |
+
+**Stripe Payment Link configuration still needed:**
+
+1. In the Stripe Dashboard → Payment Links → the live link → **after payment**, set redirect URL to:
+   `https://drinkvaritea.com/thank-you?session_id={CHECKOUT_SESSION_ID}`
+   (Stripe interpolates `{CHECKOUT_SESSION_ID}` automatically.)
+2. Confirm `client_reference_id` and `utm_*` are visible in the Stripe Dashboard for completed sessions — the tracker appends these to the Payment Link href at click time.
+
+**P1 server-side follow-ups (out of scope for this P0 PR):**
+
+- Stripe webhook → server endpoint to fire `purchase_completed` with real `revenue`, `currency`, line items, and `utm_*` from `client_reference_id` lookup. Client-side `purchase_completed` is best-effort only (ad blockers, refreshes, deep links can drop it).
+- Klaviyo + Meta CAPI server-side mirrors for `purchase_completed` and `email_capture_submit`.
+
+## How to verify the bridge
+
+1. Visit `https://drinkvaritea.com/?utm_source=test&utm_campaign=qa` in an incognito window.
+2. In DevTools Console: `window.varitea.context()` → should show `utm_source: "test"`, `anonymous_id`, `session_id`.
+3. `window.dataLayer` should contain a `page_view` event with utm fields.
+4. Click "Tap to begin" → `hero_cta_click` appears in `window.dataLayer`.
+5. Click "Get yours" → href is rewritten to include `utm_*` + `client_reference_id` before navigation; `checkout_cta_click` and `stripe_checkout_started` both appear in `window.dataLayer`.
+6. Once GA4 / PostHog keys are pasted in, the same events should show in GA4 DebugView and PostHog Live Events.
