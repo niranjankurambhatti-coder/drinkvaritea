@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F8F2EA">
+<title>Three teas — Varitea (s2 v2 preview)</title>
+
+<!--
+  Screen 2 v2 — three teas
+  Designer: Jared (UX) · Built by: Computer (Web App Agent)
+  Variation of landing screen 2 only. Not wired into main landing yet.
+
+  Principles enforced:
+  - Less text, more sensory (soul doc)
+  - One pouch at a time, user-controlled (no auto-rotate trap)
+  - Glossy reserved for tea liquid (the pour video) — pouches stay matte
+  - Three.js leaf burst on tap = satisfying interaction, ends in a settle
+  - Respects prefers-reduced-motion: video pauses, burst becomes a CSS fade
+  - All copy stays inside Jared's per-screen budget
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    /* Tokens — extracted from site/index.html + jared-spool-varitea-ux-workspace.md */
+    --off-white:#F8F2EA;
+    --cream:#FCF8F2;
+    --linen:#E9DDCF;
+    --ink:#2D241E;
+    --charcoal:#2E241F;
+    --lavender:#D8C8E4;
+    --dusty:#A793BD;
+    --plum:#8E78A6;
+    --plum-deep:#463047;
+    --sage:#A2AD8E;
+    --amber:#D2AE64;
+    --blush:#EFD9DC;
+    --tan:#CDC9A6;
+
+    --serif:'Instrument Serif',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+
+    --r-sm:10px; --r-md:18px; --r-lg:28px;
+    --shadow-soft:0 24px 60px -28px rgba(45,36,30,.35);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--off-white)}
+  body{
+    font-family:var(--sans);
+    color:var(--charcoal);
+    overflow:hidden;
+    overscroll-behavior:none;
+    touch-action:pan-y;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== Stage ===== */
+  .stage{
+    position:relative;
+    width:100%;
+    height:100dvh;
+    min-height:100svh;
+    overflow:hidden;
+    isolation:isolate;
+    background:var(--off-white);
+  }
+
+  /* Lane-tinted radial that shifts as the active pouch changes */
+  .stage::before{
+    content:"";
+    position:absolute;inset:0;
+    background:radial-gradient(120% 80% at 30% 18%,
+      var(--lane-tint-a,#EFE3D6) 0%,
+      var(--lane-tint-b,#F8F2EA) 55%,
+      var(--cream) 100%);
+    transition:background 900ms var(--ease);
+    z-index:0;
+  }
+
+  /* Ambient pour video — quiet, restrained, never the focus */
+  .ambient{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    opacity:.14;
+    mix-blend-mode:multiply;
+    filter:saturate(.7) contrast(.95) blur(0.5px);
+    z-index:1;
+    pointer-events:none;
+    transition:opacity 900ms var(--ease);
+  }
+  .stage[data-active="0"] .ambient{opacity:.18}
+  .stage[data-active="1"] .ambient{opacity:.10}
+  .stage[data-active="2"] .ambient{opacity:.13}
+
+  /* Three.js canvas for leaf burst — sits between video and pouch */
+  #leaves{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    z-index:2;
+    pointer-events:none;
+  }
+
+  /* ===== Top: progress dots ===== */
+  .nav{
+    position:absolute;top:max(20px,env(safe-area-inset-top));left:0;right:0;
+    display:flex;justify-content:center;gap:10px;
+    z-index:6;
+  }
+  .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:rgba(45,36,30,.22);
+    transition:width 400ms var(--ease),background 400ms var(--ease);
+  }
+  .dot.is-active{width:22px;border-radius:6px;background:var(--ink)}
+
+  /* ===== Pouch card stack ===== */
+  .pouches{
+    position:absolute;inset:0;
+    z-index:4;
+    display:flex;align-items:center;justify-content:center;
+    padding:60px 24px 200px;
+  }
+  .pouch{
+    position:absolute;
+    width:min(72vw,340px);
+    aspect-ratio:3/4;
+    border-radius:var(--r-lg);
+    overflow:hidden;
+    box-shadow:var(--shadow-soft);
+    opacity:0;
+    pointer-events:none;
+    border:0;background:transparent;padding:0;
+    transform:translateY(28px) scale(.94);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease),
+      box-shadow 300ms var(--ease);
+    cursor:pointer;
+    -webkit-user-select:none;user-select:none;
+  }
+  .pouch img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    pointer-events:none;
+  }
+  .pouch.is-active{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+  }
+  /* Subtle press response */
+  .pouch.is-active:active{
+    transform:translateY(0) scale(.985);
+    box-shadow:0 14px 40px -22px rgba(45,36,30,.45);
+    transition:transform 120ms var(--ease),box-shadow 120ms var(--ease);
+  }
+  /* Soft "settled" pulse on activation — invitation to tap */
+  @keyframes settled{
+    0%,100%{box-shadow:var(--shadow-soft)}
+    50%   {box-shadow:0 28px 70px -28px rgba(45,36,30,.42)}
+  }
+  .pouch.is-active{animation:settled 4.2s var(--ease) infinite}
+
+  /* ===== Lower text block ===== */
+  .meta{
+    position:absolute;
+    left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom));
+    z-index:5;
+    text-align:center;
+    padding:0 24px;
+    transition:bottom 600ms var(--ease);
+  }
+  /* When CTA appears, push meta up so they don't collide */
+  .stage.has-cta .meta{bottom:calc(max(28px,env(safe-area-inset-bottom)) + 96px)}
+  .meta__role{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:clamp(28px,7vw,38px);
+    line-height:1.05;
+    color:var(--ink);
+    letter-spacing:-.01em;
+    opacity:0;transform:translateY(8px);
+    transition:opacity 600ms var(--ease) 80ms,transform 600ms var(--ease) 80ms;
+  }
+  .meta__sub{
+    margin-top:8px;
+    font-family:var(--sans);
+    font-size:14px;
+    color:var(--charcoal);
+    opacity:0;transform:translateY(8px);
+    transition:opacity 600ms var(--ease) 160ms,transform 600ms var(--ease) 160ms;
+  }
+  .meta.is-in .meta__role,
+  .meta.is-in .meta__sub{opacity:1;transform:none}
+
+  /* ===== Quiet controls (arrows + caption) ===== */
+  .controls{
+    position:absolute;
+    left:0;right:0;
+    bottom:calc(max(28px,env(safe-area-inset-bottom)) + 96px);
+    display:flex;align-items:center;justify-content:center;gap:18px;
+    z-index:5;
+    pointer-events:none;
+    transition:opacity 500ms var(--ease),transform 500ms var(--ease);
+  }
+  /* When CTA appears, controls fade up & out — their job is done */
+  .stage.has-cta .controls{opacity:0;transform:translateY(-12px);pointer-events:none}
+  .stage.has-cta .arrow{pointer-events:none}
+  .arrow{
+    pointer-events:auto;
+    width:42px;height:42px;border-radius:50%;
+    border:1px solid rgba(45,36,30,.14);
+    background:rgba(252,248,242,.6);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    display:grid;place-items:center;
+    cursor:pointer;
+    transition:background 220ms var(--ease),transform 220ms var(--ease);
+  }
+  .arrow:hover{background:rgba(252,248,242,.95)}
+  .arrow:active{transform:scale(.94)}
+  .arrow svg{width:14px;height:14px;stroke:var(--ink);fill:none;stroke-width:1.6}
+  .arrow[disabled]{opacity:.35;cursor:not-allowed}
+
+  .tap-hint{
+    pointer-events:none;
+    font-family:var(--sans);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:rgba(45,36,30,.5);
+  }
+
+  /* ===== Bottom CTA — sticks to safe area ===== */
+  .cta-row{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    padding:0 20px max(20px,env(safe-area-inset-bottom)) 20px;
+    z-index:6;
+    display:none; /* hidden by default; appears once user has seen all 3 */
+    justify-content:center;
+  }
+  .cta-row.is-in{display:flex;animation:fadeup 700ms var(--ease) both}
+  @keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .cta{
+    display:inline-flex;align-items:center;justify-content:center;
+    height:54px;padding:0 28px;
+    background:var(--ink);color:var(--off-white);
+    border-radius:999px;
+    text-decoration:none;
+    font-family:var(--sans);font-weight:500;font-size:15px;letter-spacing:.01em;
+    box-shadow:0 18px 40px -18px rgba(45,36,30,.55);
+    transition:transform 220ms var(--ease),box-shadow 220ms var(--ease);
+  }
+  .cta:hover{transform:translateY(-2px);box-shadow:0 22px 50px -18px rgba(45,36,30,.6)}
+  .cta:active{transform:translateY(0) scale(.985)}
+
+  /* Top-left brand mark */
+  .mark{
+    position:absolute;top:max(16px,env(safe-area-inset-top));left:18px;
+    z-index:6;
+    font-family:var(--serif);font-style:italic;
+    font-size:18px;color:var(--ink);letter-spacing:.005em;
+    opacity:.92;
+  }
+
+  /* prefers-reduced-motion fallbacks */
+  @media (prefers-reduced-motion: reduce){
+    .ambient{display:none}
+    .pouch{transition:opacity 400ms linear}
+    .pouch.is-active{animation:none}
+    .stage::before{transition:none}
+    #leaves{display:none}
+  }
+
+  /* Wider screens: keep mobile-first frame but center comfortably */
+  @media (min-width: 720px){
+    .pouch{width:min(420px,40vw)}
+  }
+</style>
+</head>
+<body>
+
+<main class="stage" id="stage" data-active="0"
+      style="--lane-tint-a:#EFE3D6;--lane-tint-b:#F8F2EA;"
+      aria-label="Three teas, choose one">
+
+  <!-- Ambient pour video backdrop -->
+  <video class="ambient" id="ambient"
+         autoplay muted loop playsinline preload="metadata"
+         poster="assets/pour-poster.jpg" aria-hidden="true">
+    <source src="assets/pour-loop-muted.mp4" type="video/mp4">
+  </video>
+
+  <!-- Three.js leaf burst layer -->
+  <canvas id="leaves" aria-hidden="true"></canvas>
+
+  <!-- Brand mark -->
+  <span class="mark">varitea</span>
+
+  <!-- Progress dots -->
+  <nav class="nav" aria-label="Pouch position">
+    <span class="dot is-active" data-i="0"></span>
+    <span class="dot" data-i="1"></span>
+    <span class="dot" data-i="2"></span>
+  </nav>
+
+  <!-- Pouch stack -->
+  <div class="pouches" id="pouches">
+    <button class="pouch is-active" data-i="0" data-role="bold black"
+            data-sub="rich · warm · morning-ready"
+            data-tint-a="#EFE3D6" data-tint-b="#F8F2EA"
+            data-leaf="#5A3E2A"
+            aria-label="Bold black — tap for a leaf burst">
+      <img src="assets/pouch-bold.jpg" alt="Bold black tea pouch in matte deep brown with a cream label">
+    </button>
+    <button class="pouch" data-i="1" data-role="floral herbal"
+            data-sub="soft · fragrant · caffeine-free"
+            data-tint-a="#E9D9EE" data-tint-b="#F4E7E9"
+            data-leaf="#B07AB0"
+            aria-label="Floral herbal — tap for a leaf burst">
+      <img src="assets/pouch-floral.jpg" alt="Floral herbal tea pouch with a powder lavender to blush gradient">
+    </button>
+    <button class="pouch" data-i="2" data-role="smooth green"
+            data-sub="light · clean · easy to brew"
+            data-tint-a="#D8DEC5" data-tint-b="#EBE6D2"
+            data-leaf="#6A7A52"
+            aria-label="Smooth green — tap for a leaf burst">
+      <img src="assets/pouch-smooth.jpg" alt="Smooth green tea pouch in sage with a cream label">
+    </button>
+  </div>
+
+  <!-- Quiet controls + tap hint -->
+  <div class="controls">
+    <button class="arrow" id="prev" aria-label="Previous tea" disabled>
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <span class="tap-hint" id="hint">tap the pouch</span>
+    <button class="arrow" id="next" aria-label="Next tea">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta is-in" id="meta">
+    <div class="meta__role" id="role">bold black</div>
+    <div class="meta__sub" id="sub">rich · warm · morning-ready</div>
+  </div>
+
+  <!-- CTA appears once the user has seen all three -->
+  <div class="cta-row" id="ctaRow">
+    <a class="cta" href="#quiz" id="cta">Start with three teas — $19</a>
+  </div>
+
+</main>
+
+<!-- Three.js (module, ES build) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.161.0/build/three.module.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const stage   = document.getElementById('stage');
+const pouches = [...document.querySelectorAll('.pouch')];
+const dots    = [...document.querySelectorAll('.dot')];
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const role    = document.getElementById('role');
+const sub     = document.getElementById('sub');
+const meta    = document.getElementById('meta');
+const hint    = document.getElementById('hint');
+const ctaRow  = document.getElementById('ctaRow');
+const ambient = document.getElementById('ambient');
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let active = 0;
+const seen = new Set([0]);
+
+/* ============================================================
+   THREE.JS LEAF BURST
+   - Instanced quads, transparent leaf texture drawn to canvas
+   - On tap: burst N leaves from tap origin (in normalized device coords)
+   - Leaves rise, drift sideways, rotate, settle, fade
+   ============================================================ */
+const canvas   = document.getElementById('leaves');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,10);
+camera.position.z = 5;
+
+function resize(){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  // Orthographic camera matches pixel space, centered. We'll convert px → world manually.
+  camera.left = -w/2; camera.right = w/2;
+  camera.top = h/2;   camera.bottom = -h/2;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize); resize();
+
+/* Draw a small leaf shape onto an offscreen canvas → reuse as texture */
+function leafTexture(color){
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 128;
+  const g = c.getContext('2d');
+  // soft drop shadow
+  g.translate(64,64);
+  g.shadowColor = 'rgba(45,36,30,.25)';
+  g.shadowBlur = 8; g.shadowOffsetY = 2;
+  // leaf path — elongated ellipse with pointed ends
+  g.beginPath();
+  g.moveTo(0,-48);
+  g.bezierCurveTo(28,-36, 28,36, 0,48);
+  g.bezierCurveTo(-28,36, -28,-36, 0,-48);
+  g.closePath();
+  g.fillStyle = color;
+  g.fill();
+  // tiny mid-vein
+  g.shadowColor = 'transparent';
+  g.strokeStyle = 'rgba(0,0,0,.18)';
+  g.lineWidth = 1.2;
+  g.beginPath();
+  g.moveTo(0,-44); g.lineTo(0,44); g.stroke();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+const textures = {
+  '#5A3E2A': leafTexture('#5A3E2A'),
+  '#B07AB0': leafTexture('#B07AB0'),
+  '#6A7A52': leafTexture('#6A7A52'),
+};
+
+/* Pool of leaf sprites — reuse instead of allocate */
+const POOL_SIZE = 80;
+const pool = [];
+for(let i=0;i<POOL_SIZE;i++){
+  const mat = new THREE.MeshBasicMaterial({ transparent:true, depthWrite:false });
+  const geo = new THREE.PlaneGeometry(38, 38); // ~38px leaves
+  const m = new THREE.Mesh(geo, mat);
+  m.visible = false;
+  scene.add(m);
+  pool.push({ mesh:m, alive:false });
+}
+
+function burst(originX, originY, colorHex){
+  const tex = textures[colorHex] || textures['#5A3E2A'];
+  const count = 22 + Math.floor(Math.random()*8);
+  const t0 = performance.now();
+  let spawned = 0;
+
+  for(const slot of pool){
+    if(spawned >= count) break;
+    if(slot.alive) continue;
+    slot.alive = true;
+    spawned++;
+
+    const m = slot.mesh;
+    m.material.map = tex;
+    m.material.opacity = 0;
+    m.material.needsUpdate = true;
+    m.visible = true;
+    m.position.set(originX, originY, 0);
+    const angle = (-Math.PI/2) + (Math.random()-.5)*Math.PI*0.9; // mostly upward
+    const speed = 120 + Math.random()*220;
+    const drift = (Math.random()-.5)*0.8;
+    const spin  = (Math.random()-.5)*4;
+    const life  = 1500 + Math.random()*1200;
+    const scale = 0.5 + Math.random()*0.9;
+    m.scale.set(scale, scale, 1);
+
+    slot.start = t0;
+    slot.vx = Math.cos(angle)*speed;
+    slot.vy = Math.sin(angle)*speed;
+    slot.drift = drift;
+    slot.spin = spin;
+    slot.life = life;
+    slot.x = originX;
+    slot.y = originY;
+    slot.rot = (Math.random()-.5)*Math.PI;
+  }
+}
+
+let prevT = performance.now();
+function tick(now){
+  const dt = Math.min(50, now - prevT) / 1000;
+  prevT = now;
+
+  for(const slot of pool){
+    if(!slot.alive) continue;
+    const elapsed = now - slot.start;
+    const t = elapsed / slot.life;
+    if(t >= 1){
+      slot.alive = false;
+      slot.mesh.visible = false;
+      continue;
+    }
+    // ease-out velocity + gravity-down feel
+    const decay = 1 - t;
+    slot.x += slot.vx * dt * decay;
+    slot.y += (slot.vy * decay + 80 * t) * dt * -1; // gravity pulls down (negative y in our coords = up)
+    // actually our camera y+ is up, so gravity reduces y over time:
+    // (rewriting): use proper gravity below instead
+    slot.vy += 280 * dt;  // gravity in screen-space px/s²
+    slot.x += slot.drift * 40 * dt;
+    slot.rot += slot.spin * dt;
+    slot.mesh.position.set(slot.x, slot.y - slot.vy*dt, 0);
+    slot.mesh.rotation.z = slot.rot;
+
+    // fade in (first 12%), hold, fade out (last 35%)
+    let a = 1;
+    if(t < .12) a = t / .12;
+    else if(t > .65) a = 1 - (t - .65) / .35;
+    slot.mesh.material.opacity = Math.max(0, a) * 0.95;
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+if(!reduceMotion) requestAnimationFrame(tick);
+
+/* ============================================================
+   POUCH SWITCHING
+   ============================================================ */
+function setActive(i, opts = {}){
+  if(i < 0 || i > 2 || i === active) return;
+  active = i;
+  seen.add(i);
+
+  // Pouches
+  pouches.forEach((p,k)=>p.classList.toggle('is-active', k===i));
+
+  // Dots
+  dots.forEach((d,k)=>d.classList.toggle('is-active', k===i));
+
+  // Meta text fade
+  meta.classList.remove('is-in');
+  const p = pouches[i];
+  // small timing so the text re-enters with the new card
+  setTimeout(()=>{
+    role.textContent = p.dataset.role;
+    sub.textContent  = p.dataset.sub;
+    meta.classList.add('is-in');
+  }, 220);
+
+  // Lane tint
+  stage.dataset.active = String(i);
+  stage.style.setProperty('--lane-tint-a', p.dataset.tintA);
+  stage.style.setProperty('--lane-tint-b', p.dataset.tintB);
+
+  // Arrows
+  prevBtn.disabled = i === 0;
+  nextBtn.disabled = i === 2;
+
+  // CTA appears once all three seen
+  if(seen.size === 3){
+    ctaRow.classList.add('is-in');
+    stage.classList.add('has-cta');
+    hint.textContent = 'pick your start';
+  }
+
+  // Light burst on switch (gentle)
+  if(!reduceMotion && !opts.silent){
+    const rect = p.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const cx = (rect.left - stageRect.left) + rect.width/2 - stageRect.width/2;
+    const cy = -((rect.top - stageRect.top) + rect.height/2) + stageRect.height/2;
+    burst(cx, cy, p.dataset.leaf);
+  }
+}
+
+/* ============================================================
+   INPUT
+   ============================================================ */
+
+// Tap a pouch → burst from tap point
+pouches.forEach(p => {
+  p.addEventListener('pointerdown', (e) => {
+    if(reduceMotion) return;
+    if(!p.classList.contains('is-active')) return;
+    const stageRect = stage.getBoundingClientRect();
+    const x = e.clientX - stageRect.left - stageRect.width/2;
+    const y = -(e.clientY - stageRect.top - stageRect.height/2);
+    burst(x, y, p.dataset.leaf);
+    // tiny brand-mark wink
+    p.animate(
+      [{transform:'translateY(0) scale(1)'},{transform:'translateY(-4px) scale(1.015)'},{transform:'translateY(0) scale(1)'}],
+      {duration:520, easing:'cubic-bezier(.22,.61,.36,1)'}
+    );
+  });
+});
+
+// Arrows
+prevBtn.addEventListener('click', ()=>setActive(active-1));
+nextBtn.addEventListener('click', ()=>setActive(active+1));
+
+// Dots
+dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i)));
+
+// Swipe
+let touchX = null;
+stage.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
+stage.addEventListener('touchend', e => {
+  if(touchX == null) return;
+  const dx = (e.changedTouches[0].clientX) - touchX;
+  if(Math.abs(dx) > 50){
+    setActive(active + (dx < 0 ? 1 : -1));
+  }
+  touchX = null;
+}, {passive:true});
+
+// Keyboard
+window.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight') setActive(active+1);
+  if(e.key === 'ArrowLeft')  setActive(active-1);
+});
+
+// Pause ambient video when tab is hidden (battery)
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) ambient.pause(); else ambient.play().catch(()=>{});
+});
+
+/* Quiet first-load: ambient video can fail to autoplay on some mobile browsers — that's fine, poster fills the gap. */
+ambient.play().catch(()=>{});
+</script>
+</body>
+</html>
