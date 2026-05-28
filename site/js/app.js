@@ -275,6 +275,9 @@
   window.varitea.context = baseContext;
   window.varitea.anonymousId = ANON_ID;
   window.varitea.sessionId   = SESSION_ID;
+  // Exposed so the inline scroll module in index.html can fire
+  // scroll_depth thresholds through the bridge (full context attached).
+  window.varitea.reportScroll = reportScroll;
 
   /* -----------------------------------------------------------
      Stripe link decoration
@@ -379,6 +382,60 @@
   }
 
   /* -----------------------------------------------------------
+     s2_tea_selected — bridge from the Screen-2 iframe.
+     The /preview/s2-v2/?embed=1 iframe postMessages each tea
+     selection up to this parent window; we re-emit it through
+     the standard tracker so it carries the full utm/context and
+     fans out to GA4 + PostHog like every other event.
+     ----------------------------------------------------------- */
+  function wireS2Bridge() {
+    window.addEventListener('message', function (e) {
+      var data = e && e.data;
+      if (!data || data.source !== 'varitea-s2') return;
+      if (data.type !== 's2_tea_selected') return;
+      var p = data.payload || {};
+      track('s2_tea_selected', {
+        tea_name: p.tea_name || null,
+        lane_index: (typeof p.lane_index === 'number') ? p.lane_index : null,
+        interaction: p.interaction || null,
+        page_variant: document.body.getAttribute('data-page-variant') || null
+      });
+    }, false);
+  }
+
+  /* -----------------------------------------------------------
+     scroll_depth — fired by the inline scroll module in
+     index.html, which owns the authoritative scroll progress
+     (it handles both the desktop #stage scroller and the mobile
+     window scroller). We expose a guarded helper so that module
+     can fire each 25/50/75/100% threshold exactly once per
+     session, with full utm/context attached.
+     ----------------------------------------------------------- */
+  var SCROLL_THRESHOLDS = [25, 50, 75, 100];
+  var scrollFired = {}; // depth_pct -> true (per page load / session)
+  var maxSectionReached = 0;
+
+  function reportScroll(progress01, sectionIndex) {
+    // progress01: 0..1 scroll progress across the 4 scroll-snap screens.
+    // sectionIndex: 0..3 (s1..s4) currently in view, if known.
+    if (typeof sectionIndex === 'number' && sectionIndex > maxSectionReached) {
+      maxSectionReached = sectionIndex;
+    }
+    var pct = Math.round(Math.max(0, Math.min(1, progress01)) * 100);
+    for (var i = 0; i < SCROLL_THRESHOLDS.length; i++) {
+      var th = SCROLL_THRESHOLDS[i];
+      if (pct >= th && !scrollFired[th]) {
+        scrollFired[th] = true;
+        track('scroll_depth', {
+          depth_pct: th,
+          max_section_reached: 's' + (maxSectionReached + 1), // s1..s4
+          page_variant: document.body.getAttribute('data-page-variant') || null
+        });
+      }
+    }
+  }
+
+  /* -----------------------------------------------------------
      page_view
      ----------------------------------------------------------- */
   function firePageView() {
@@ -446,6 +503,7 @@
     wireReveal();
     wireEmailCapture();
     wireBundleRadios();
+    wireS2Bridge();
     document.addEventListener('click', onDocClick, { passive: false });
     firePageView();
 

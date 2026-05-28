@@ -524,6 +524,24 @@ function onScroll(){
   syncSections(p);
   syncVideo(p);
   syncPouches();
+  reportScrollDepth(p);
+}
+
+/* ============ SCROLL DEPTH ANALYTICS ============
+   Forward scroll progress to the analytics bridge (app.js), which
+   fires scroll_depth at 25/50/75/100% exactly once per session.
+   Guarded: app.js loads deferred, so window.varitea.reportScroll
+   may not exist on the first onScroll() call — that's fine, the
+   user hasn't scrolled past s1 yet and 0% has no threshold. */
+function currentSectionIndex(p){
+  return Math.round(p * (sections.length - 1)); // 0..3 → s1..s4
+}
+function reportScrollDepth(p){
+  try {
+    if (window.varitea && typeof window.varitea.reportScroll === 'function') {
+      window.varitea.reportScroll(p, currentSectionIndex(p));
+    }
+  } catch (e) {}
 }
 
 const sections = [...document.querySelectorAll('section')];

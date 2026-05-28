@@ -407,6 +407,46 @@ let active = 0;
 const seen = new Set([0]);
 
 /* ============================================================
+   ANALYTICS BRIDGE — s2_tea_selected
+   - This experience lives inside an iframe on the landing page
+     (/preview/s2-v2/?embed=1). It does NOT load the parent's
+     analytics bridge. Instead it postMessages each tea selection
+     up to the parent window, which calls window.varitea.track().
+   - tea_name is normalized to Jared's FINAL flavor names (title
+     case) so s2_tea_selected.tea_name matches ads, box, and the
+     event taxonomy exactly. data-role stays lowercase in the DOM
+     for display; the map below is the single source of truth.
+   - When NOT embedded (standalone preview), this is a safe no-op.
+   ============================================================ */
+const TEA_NAME_BY_INDEX = {
+  0: 'Bold Black',     // data-role="bold black"
+  1: 'Floral Herbal',  // data-role="floral herbal"
+  2: 'Smooth Green'    // data-role="smooth green"
+};
+
+const IS_EMBEDDED = (function () {
+  try {
+    return new URLSearchParams(location.search).get('embed') === '1'
+      || window.self !== window.top;
+  } catch (e) { return false; }
+})();
+
+function emitTeaSelected(i, interaction) {
+  if (!IS_EMBEDDED) return;            // standalone preview: no-op
+  try {
+    window.parent.postMessage({
+      source: 'varitea-s2',
+      type: 's2_tea_selected',
+      payload: {
+        tea_name: TEA_NAME_BY_INDEX[i] || null,
+        lane_index: i,
+        interaction: interaction || 'unknown'
+      }
+    }, '*'); // same-origin parent; '*' is acceptable for this fire-and-forget signal
+  } catch (e) {}
+}
+
+/* ============================================================
    THREE.JS LEAF BURST
    - Instanced quads, transparent leaf texture drawn to canvas
    - On tap: burst N leaves from tap origin (in normalized device coords)
@@ -599,6 +639,12 @@ function setActive(i, opts = {}){
     const cy = -((rect.top - stageRect.top) + rect.height/2) + stageRect.height/2;
     burst(cx, cy, p.dataset.leaf);
   }
+
+  // Analytics: a navigation to a new tea is a selection signal.
+  // opts.interaction is supplied by the arrow / swipe / dot / keyboard
+  // handlers. Tapping an already-active pouch is handled separately
+  // (pointerdown handler) since setActive early-returns on i === active.
+  emitTeaSelected(i, opts.interaction);
 }
 
 /* ============================================================
@@ -606,8 +652,20 @@ function setActive(i, opts = {}){
    ============================================================ */
 
 // Tap a pouch → burst from tap point
+let lastTapEmit = { i: -1, ts: 0 };
 pouches.forEach(p => {
   p.addEventListener('pointerdown', (e) => {
+    // Tapping the active pouch is a deliberate "this tea" signal — fire
+    // s2_tea_selected even though setActive isn't called (same index).
+    // Debounce so a quick double-tap doesn't double-count.
+    if(p.classList.contains('is-active')){
+      const idx = +p.dataset.i;
+      const now = Date.now();
+      if(!(lastTapEmit.i === idx && (now - lastTapEmit.ts) < 600)){
+        emitTeaSelected(idx, 'tap');
+        lastTapEmit = { i: idx, ts: now };
+      }
+    }
     if(reduceMotion) return;
     if(!p.classList.contains('is-active')) return;
     const stageRect = stage.getBoundingClientRect();
@@ -623,11 +681,11 @@ pouches.forEach(p => {
 });
 
 // Arrows
-prevBtn.addEventListener('click', ()=>setActive(active-1));
-nextBtn.addEventListener('click', ()=>setActive(active+1));
+prevBtn.addEventListener('click', ()=>setActive(active-1, { interaction:'arrow' }));
+nextBtn.addEventListener('click', ()=>setActive(active+1, { interaction:'arrow' }));
 
 // Dots
-dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i)));
+dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i, { interaction:'dot' })));
 
 // Swipe
 let touchX = null;
@@ -636,15 +694,15 @@ stage.addEventListener('touchend', e => {
   if(touchX == null) return;
   const dx = (e.changedTouches[0].clientX) - touchX;
   if(Math.abs(dx) > 50){
-    setActive(active + (dx < 0 ? 1 : -1));
+    setActive(active + (dx < 0 ? 1 : -1), { interaction:'swipe' });
   }
   touchX = null;
 }, {passive:true});
 
 // Keyboard
 window.addEventListener('keydown', e => {
-  if(e.key === 'ArrowRight') setActive(active+1);
-  if(e.key === 'ArrowLeft')  setActive(active-1);
+  if(e.key === 'ArrowRight') setActive(active+1, { interaction:'arrow' });
+  if(e.key === 'ArrowLeft')  setActive(active-1, { interaction:'arrow' });
 });
 
 // Pause ambient video when tab is hidden (battery)
