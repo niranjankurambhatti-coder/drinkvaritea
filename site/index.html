@@ -190,6 +190,15 @@
     font-size:clamp(36px,9vw,52px);line-height:1.02;
     margin:0;color:var(--plum);
   }
+  .s1 .hero-sub{
+    font-family:var(--sans);font-size:15px;line-height:1.45;font-weight:400;
+    margin:14px auto 0;max-width:300px;color:var(--ink);opacity:.78;
+  }
+  .s4 .reassure{
+    font-family:var(--sans);font-size:13px;line-height:1.45;font-weight:400;
+    margin:0 auto 18px;max-width:300px;color:#FCF8F2;opacity:.92;
+    text-shadow:0 1px 16px rgba(0,0,0,.4);
+  }
   /* screen 2 — Three teas: auto-rotating stack with crossfade */
   .s2{padding:0;align-items:stretch;justify-content:flex-start}
   /* s2 v2 — embedded three-teas experience (papercraft + Three.js leaf burst) */
@@ -386,11 +395,12 @@
   <section class="s1" id="s1" data-i="0">
     <img class="bg" src="assets/hero-mobile.png" alt="">
     <div class="copy-top">
-      <h1 data-reveal data-d="1">A better daily drink.</h1>
+      <h1 data-reveal data-d="1" id="hero-headline">A better daily drink.</h1>
+      <p class="hero-sub" data-reveal data-d="2" id="hero-subhead" hidden></p>
     </div>
     <div class="copy">
-      <a href="#s2" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin" data-analytics-event="hero_cta_click" data-cta-label="Tap to begin">
-        Tap to begin
+      <a href="#s2" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin" data-analytics-event="hero_cta_click" data-cta-label="Tap to begin" id="hero-cta">
+        <span class="cta__text">Tap to begin</span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -422,9 +432,10 @@
     <div class="copy">
       <span class="chip" data-reveal data-d="1"><span class="chip__dot"></span>First Sip Box · $19</span>
       <h2 data-reveal data-d="2">Take it home.</h2>
+      <p class="reassure" data-reveal data-d="3" id="hero-reassure" hidden></p>
       <div class="cta-stack" data-reveal data-d="3">
-        <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00" class="cta cta--primary" data-analytics="s4_checkout" data-analytics-event="checkout_cta_click" data-cta-label="Get yours" data-bundle-id="single">
-          Get yours
+        <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00" class="cta cta--primary" data-analytics="s4_checkout" data-analytics-event="checkout_cta_click" data-cta-label="Get the First Sip Box — $19" data-bundle-id="single" id="checkout-cta">
+          <span class="cta__text">Get the First Sip Box — $19</span>
           <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -619,6 +630,91 @@ window.addEventListener('resize', ()=>{
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){
   canvas.style.display = 'none';
 }
+</script>
+
+<!-- ============================================================
+     EXP-001 UTM HERO COPY-SWAP  (owner: Jared / Brand+UX)
+     --------------------------------------------------------------
+     Single experiment variable: the message angle. Same offer,
+     same price, same landing structure, same checkout. We read
+     utm_campaign and swap Screen-1 headline + subhead + hero CTA
+     and the Screen-4 reassurance line. Sets body[data-page-variant]
+     BEFORE app.js (deferred) runs, so every tracked event carries
+     the correct page_variant for the A/B read.
+
+     Source of truth for these strings: jared-dispatch.md §2/§5 and
+     docs/exp-001-variants.md (CMS table). Do NOT edit copy here
+     without bumping the CMS table + telling Ronny — it changes the
+     A/B read.
+     ============================================================ -->
+<script>
+  (function () {
+    var VARIANTS = {
+      pmf_choice_overload: {
+        page_variant: 'choice_overload',
+        headline: 'Tea stores have too many choices.',
+        subhead:  'We made it easy. Start with three.',
+        hero_cta: 'Start with 3 Teas — $19',
+        reassure: "You don't need to know anything about tea to order."
+      },
+      pmf_coffee_alt: {
+        page_variant: 'coffee_switch',
+        headline: 'A better afternoon than coffee.',
+        subhead:  'Three teas for energy, calm, and caffeine-free evenings. No jitters.',
+        hero_cta: 'Try the Switch — $19',
+        reassure: 'Made for coffee drinkers. No bitterness, no crash.'
+      }
+    };
+
+    // 1) utm_campaign from the URL wins; otherwise fall back to the
+    //    value the tracker persisted (varitea.utm, 30-day TTL) so the
+    //    swap is consistent on reloads / returning sessions.
+    function campaignFromUrl() {
+      try { return new URLSearchParams(location.search).get('utm_campaign'); }
+      catch (e) { return null; }
+    }
+    function campaignFromStorage() {
+      try {
+        var raw = window.localStorage.getItem('varitea.utm');
+        if (!raw) return null;
+        var o = JSON.parse(raw);
+        if (!o || !o._ts) return null;
+        if (Date.now() - o._ts > 30 * 24 * 60 * 60 * 1000) return null;
+        return o.utm_campaign || null;
+      } catch (e) { return null; }
+    }
+
+    var campaign = campaignFromUrl() || campaignFromStorage();
+    var v = (campaign && VARIANTS[campaign]) || null;
+    var pageVariant = v ? v.page_variant : 'default';
+
+    // Always set page_variant so the tracker reads it on every event.
+    document.body.setAttribute('data-page-variant', pageVariant);
+
+    if (!v) return; // default copy already in the HTML — nothing to swap.
+
+    function setText(id, text) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+    function showText(id, text) {
+      var el = document.getElementById(id);
+      if (el) { el.textContent = text; el.hidden = false; }
+    }
+
+    setText('hero-headline', v.headline);
+    showText('hero-subhead', v.subhead);
+    showText('hero-reassure', v.reassure);
+
+    // Hero CTA: swap the visible label AND the data-cta-label attribute
+    // so the tracked cta_label matches the shipped copy (Ronny reads it).
+    var heroCta = document.getElementById('hero-cta');
+    if (heroCta) {
+      heroCta.setAttribute('data-cta-label', v.hero_cta);
+      var t = heroCta.querySelector('.cta__text');
+      if (t) t.textContent = v.hero_cta;
+    }
+  })();
 </script>
 
 <!-- Analytics + event bridge (UTM capture, GA4/GTM/PostHog fanout, Stripe link decoration) -->
