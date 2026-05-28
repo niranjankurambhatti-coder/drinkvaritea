@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F8F2EA">
+<title>Thank you — Varitea</title>
+<meta name="description" content="Your Varitea First Sip Box is on its way.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://drinkvaritea.com/thank-you">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="assets/brand/glyph-plum.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============ ANALYTICS CONFIG (placeholders) ============
+     Keep these IDs identical to the homepage. The tracker auto-fires
+     `purchase_completed` on this page because of data-analytics-page="thank_you".
+============================================================ -->
+<script>
+  window.VARITEA_CONFIG = {
+    GA4_MEASUREMENT_ID:  '',
+    GTM_CONTAINER_ID:    '',
+    POSTHOG_PROJECT_KEY: '',
+    POSTHOG_HOST:        'https://us.i.posthog.com',
+    DEBUG: false
+  };
+</script>
+
+<script>
+  (function () {
+    var id = (window.VARITEA_CONFIG || {}).GA4_MEASUREMENT_ID;
+    if (!id) return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', id, { send_page_view: false });
+  })();
+</script>
+
+<script>
+  (function () {
+    var id = (window.VARITEA_CONFIG || {}).GTM_CONTAINER_ID;
+    if (!id) return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    var f = document.getElementsByTagName('script')[0];
+    var j = document.createElement('script');
+    j.async = true;
+    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(id);
+    f.parentNode.insertBefore(j, f);
+  })();
+</script>
+
+<script>
+  (function () {
+    var cfg = window.VARITEA_CONFIG || {};
+    var key = cfg.POSTHOG_PROJECT_KEY;
+    if (!key) return;
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    window.posthog.init(key, {
+      api_host: cfg.POSTHOG_HOST || 'https://us.i.posthog.com',
+      capture_pageview: false,
+      persistence: 'localStorage+cookie'
+    });
+  })();
+</script>
+
+<style>
+  :root{
+    --cream:#F8F2EA; --ink:#2D241E; --plum:#463047;
+    --cta:#8E78A6; --cta-hover:#7a649a;
+    --serif:'Instrument Serif',Georgia,serif;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--cream);color:var(--ink);font-family:var(--sans)}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}
+  .glyph{width:36px;height:36px;margin-bottom:24px;opacity:.8}
+  h1{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(36px,8vw,52px);line-height:1.05;margin:0 0 18px;color:var(--plum)}
+  p{max-width:420px;margin:0 auto 14px;line-height:1.55;color:rgba(45,36,30,.78);font-size:15px}
+  .order{font-family:var(--sans);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(45,36,30,.55);margin-top:24px}
+  .order code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0;text-transform:none}
+  .cta{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    padding:14px 22px;border-radius:999px;text-decoration:none;
+    font-family:var(--sans);font-size:14px;font-weight:500;
+    background:var(--cta);color:#FCF8F2;margin-top:32px;
+    box-shadow:0 16px 32px -16px rgba(142,120,166,.6);
+    transition:background .25s ease,transform .25s ease;
+  }
+  .cta:hover{background:var(--cta-hover);transform:translateY(-1px)}
+</style>
+</head>
+<body data-analytics-page="thank_you">
+
+<img class="glyph" src="assets/brand/glyph-plum.svg" alt="" aria-hidden="true">
+<h1>Thank you.</h1>
+<p>Your First Sip Box is being packed. You'll get a shipping note as soon as it leaves the studio.</p>
+<p>Keep an eye on your inbox for brewing notes for each of the three teas.</p>
+<p class="order" id="order-line" hidden>Order reference <code id="order-id"></code></p>
+<a href="/" class="cta">Back to varitea.com</a>
+
+<script>
+  (function () {
+    var p = new URLSearchParams(location.search);
+    var orderId = p.get('session_id') || p.get('order_id');
+    if (orderId) {
+      document.getElementById('order-id').textContent = orderId;
+      document.getElementById('order-line').hidden = false;
+    }
+  })();
+</script>
+
+<!-- Analytics — fires `purchase_completed` automatically via data-analytics-page="thank_you" -->
+<script src="js/app.js" defer></script>
+</body>
+</html>
