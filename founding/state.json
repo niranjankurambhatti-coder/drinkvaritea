@@ -2,42 +2,164 @@
   "schema_version": 1,
   "description": "Evolving population for the Varitea founding-loop search system. Each domain keeps survivors night-over-night; the cron mutates them and injects fresh candidates. Scores are 1-5 weighted; stop at >=4.0 or time box. Hard gate: caffeine-free fit required. All candidates must be grounded in sourced signal (no fabrication, no PII).",
   "canonical_actor": "trudax/reddit-scraper-lite",
-  "canonical_actor_note": "Single source of truth for ground-truth mining. This actor IS our emerging ICP — the population it surfaces becomes the segment we build for. Do not swap or fan out without an explicit documented change. X/web actors are supplementary color only.",
-  "cascade_order": ["icp", "positioning", "gtm"],
-  "stopping": { "score_threshold": 4.0, "scale_max": 5, "time_box": "per-night cap" },
+  "canonical_actor_note": "Single source of truth for ground-truth mining. This actor IS our emerging ICP \u2014 the population it surfaces becomes the segment we build for. Do not swap or fan out without an explicit documented change. X/web actors are supplementary color only.",
+  "cascade_order": [
+    "icp",
+    "positioning",
+    "gtm"
+  ],
+  "stopping": {
+    "score_threshold": 4.0,
+    "scale_max": 5,
+    "time_box": "per-night cap"
+  },
   "hard_gate": "caffeine_free_fit == true",
-  "last_run": null,
+  "last_run": "2026-05-29",
   "domains": {
     "icp": {
       "weights": {
-        "sustain_provenance_wtp": 0.30,
+        "sustain_provenance_wtp": 0.3,
         "ritual_intensity": 0.25,
-        "taste_gap_pain": 0.20,
+        "taste_gap_pain": 0.2,
         "self_articulation": 0.15,
-        "reachability": 0.10
+        "reachability": 0.1
       },
-      "winner": null,
-      "population": []
+      "winner": {
+        "name": "Nightly wind-down ritual drinkers (caffeine-sensitive), tired of meh chamomile/rooibos",
+        "score": 3.9
+      },
+      "population": [
+        {
+          "name": "Nightly wind-down ritual drinkers (caffeine-sensitive), tired of meh chamomile/rooibos",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "dessert replacer variant",
+            "screen-off variant"
+          ],
+          "seed_signal": [
+            "complaints.jsonl taste + caffeine items"
+          ],
+          "last_score": 3.9
+        },
+        {
+          "name": "Plastic-averse loose-leaf buyers who can\u2019t find non-plastic packaging",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "bulk-buyers",
+            "refill-station shoppers"
+          ],
+          "seed_signal": [
+            "complaints.jsonl packaging plastic item"
+          ],
+          "last_score": 3.6
+        },
+        {
+          "name": "Caffeine-free parents with a late-night kitchen reset ritual",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "parents of toddlers",
+            "parents of teens"
+          ],
+          "seed_signal": [
+            "no new signal tonight"
+          ],
+          "last_score": null
+        }
+      ]
     },
     "positioning": {
       "weights": {
         "icp_resonance": 0.35,
-        "whitespace": 0.30,
-        "mission_truth": 0.20,
+        "whitespace": 0.3,
+        "mission_truth": 0.2,
         "regulatory_safety": 0.15
       },
-      "winner": null,
-      "population": []
+      "winner": {
+        "name": "Taste that earns the habit (ritual-first, no wellness claims)",
+        "score": 4.7
+      },
+      "population": [
+        {
+          "name": "Taste that earns the habit (ritual-first, no wellness claims)",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "small-batch freshness that stays vivid"
+          ],
+          "seed_signal": [
+            "research ledger taste-first"
+          ],
+          "last_score": 4.7
+        },
+        {
+          "name": "Freshness is part of flavor (packaging-as-taste infrastructure)",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "opaque barrier pack story"
+          ],
+          "seed_signal": [
+            "complaints.jsonl stale/hay items"
+          ],
+          "last_score": 4.35
+        },
+        {
+          "name": "Honest ingredient cards + citations (blend transparency)",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "QR code to sources"
+          ],
+          "seed_signal": [
+            "no new signal tonight"
+          ],
+          "last_score": null
+        }
+      ]
     },
     "gtm": {
       "weights": {
-        "reachability_channel_fit": 0.30,
-        "ritual_retention_moat": 0.30,
+        "reachability_channel_fit": 0.3,
+        "ritual_retention_moat": 0.3,
         "whitespace": 0.25,
         "mission_funding_margin": 0.15
       },
-      "winner": null,
-      "population": []
+      "winner": {
+        "name": "Bedtime tea routine mini-course + 14-night tracker \u2192 First Sip Box",
+        "score": 4.6
+      },
+      "population": [
+        {
+          "name": "Bedtime tea routine mini-course + 14-night tracker \u2192 First Sip Box",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "Afternoon reset tracker variant"
+          ],
+          "seed_signal": [
+            "routine anchoring theme"
+          ],
+          "last_score": 4.6
+        },
+        {
+          "name": "Packaging freshness engineering explainer series",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "materials scientist voice"
+          ],
+          "seed_signal": [
+            "packaging complaints"
+          ],
+          "last_score": 3.7
+        },
+        {
+          "name": "Community 14-night wind-down challenge",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "email-based challenge"
+          ],
+          "seed_signal": [
+            "no new signal tonight"
+          ],
+          "last_score": null
+        }
+      ]
     }
   }
 }
