@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "description": "Evolving population for the Varitea founding-loop search system. Each domain keeps survivors night-over-night; the cron mutates them and injects fresh candidates. Scores are 1-5 weighted; stop at >=4.0 or time box. Hard gate: caffeine-free fit required. All candidates must be grounded in sourced signal (no fabrication, no PII).",
+  "canonical_actor": "trudax/reddit-scraper-lite",
+  "canonical_actor_note": "Single source of truth for ground-truth mining. This actor IS our emerging ICP — the population it surfaces becomes the segment we build for. Do not swap or fan out without an explicit documented change. X/web actors are supplementary color only.",
+  "cascade_order": ["icp", "positioning", "gtm"],
+  "stopping": { "score_threshold": 4.0, "scale_max": 5, "time_box": "per-night cap" },
+  "hard_gate": "caffeine_free_fit == true",
+  "last_run": null,
+  "domains": {
+    "icp": {
+      "weights": {
+        "sustain_provenance_wtp": 0.30,
+        "ritual_intensity": 0.25,
+        "taste_gap_pain": 0.20,
+        "self_articulation": 0.15,
+        "reachability": 0.10
+      },
+      "winner": null,
+      "population": []
+    },
+    "positioning": {
+      "weights": {
+        "icp_resonance": 0.35,
+        "whitespace": 0.30,
+        "mission_truth": 0.20,
+        "regulatory_safety": 0.15
+      },
+      "winner": null,
+      "population": []
+    },
+    "gtm": {
+      "weights": {
+        "reachability_channel_fit": 0.30,
+        "ritual_retention_moat": 0.30,
+        "whitespace": 0.25,
+        "mission_funding_margin": 0.15
+      },
+      "winner": null,
+      "population": []
+    }
+  }
+}

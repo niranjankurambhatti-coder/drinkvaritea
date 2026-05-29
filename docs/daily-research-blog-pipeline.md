@@ -1,64 +1,92 @@
-# Daily Research → Blog Pipeline
+# Daily Pipeline — Research → Blog → Founding Loop (one 6:00 AM run)
 
-Two automated morning stages that turn real customer evidence into one canonical research artifact and one customer-facing blog post per day. Both open PRs; nothing auto-merges or touches production.
+One automated morning run (≈6:00 AM CDT) that turns real customer evidence into: one canonical research artifact, one customer-facing blog post, and one nightly advance of the **founding-loop search system** — then opens a single PR with a **founder letter** attached. Everything is PR-only; nothing auto-merges or touches production.
+
+> **Why one run:** the former Stage A (≈6 AM) and Stage B (≈8 AM) crons were merged into a single 6:00 AM CDT task that runs the stages sequentially and attaches the founder letter to the PR.
 
 ## The loop
 
 ```
 Apify (Reddit/X/web)  +  Complaint Box (first-party)  +  next-topic.md  +  last few blogs
-            │                                                    │
-            ▼ Stage A ~6:00 AM CDT                               │
-   research/varitea-deep-research.md  (canonical, updated)       │
-   research/versions/YYYY-MM-DD.md     (immutable snapshot)      │
-            │                                                    │
-            ▼ Stage B ~8:00 AM CDT  ◀──────────────────────────-┘
-   site/blog/<slug>/index.html  (2–3 min customer-facing post)
             │
-            └──▶ overwrites research/next-topic.md  (topic for tomorrow's Stage A)
+            ▼  Stage A — Evidence + Research
+   research/varitea-deep-research.md  (canonical, updated)
+   research/versions/YYYY-MM-DD.md     (immutable snapshot)
+            │
+            ▼  Stage B — Blog
+   site/blog/<slug>/index.html  (2–3 min customer-facing post)
+   overwrites research/next-topic.md
+            │
+            ▼  Stage C — Founding Loop (search system)
+   founding/state.json            (population: survivors + mutations + fresh)
+   founding/runs/YYYY-MM-DD.md     (search declaration + per-domain loop log + winners)
+            │
+            ▼  ONE PR  +  Founder Letter attached (ikigai + fitness formulas + tonight's findings)
 ```
 
-## Stage A — Evidence + Research (≈6:00 AM CDT)
+## Stage A — Evidence + Research
 
-1. Collect fresh evidence via Apify (broad daily scope): tea subreddits, X queries, general web complaints → `data/evidence/raw/YYYY-MM-DD/`.
+> **Canonical actor (one source of truth):** `trudax/reddit-scraper-lite`. This is the single Apify actor that mines ground truth — and it *is* our emerging ICP (the segment it surfaces is the one we build for). Any X/web mining is supplementary color only and never overrides the canonical Reddit signal or the first-party complaint box. Do not swap or fan out the canonical actor without an explicit, documented change.
+
+1. Collect fresh evidence via the canonical Apify actor (tea subreddits) → `data/evidence/raw/YYYY-MM-DD/`. Optionally add supplementary X/web color, clearly labeled as secondary.
 2. Load first-party `data/customer-complaints/complaints.jsonl` (weighted highest).
-3. Synthesize: *what does the world need?* + *gaps vs. prior research*. Read `research/next-topic.md` (the topic the last blog requested) and prioritize it unless stronger evidence emerges.
-4. Update `research/varitea-deep-research.md` (the one canonical artifact) and append a dated block to its evidence ledger.
-5. Write an immutable snapshot to `research/versions/YYYY-MM-DD.md` (version history via files + git).
-6. Open a PR titled: `chore(research): [Val / Material Scientist] daily deep-research refresh YYYY-MM-DD`.
+3. Synthesize gaps vs. prior research; read `research/next-topic.md` and prioritize it unless stronger evidence emerges.
+4. Update `research/varitea-deep-research.md` and append a dated block to its evidence ledger.
+5. Write an immutable snapshot to `research/versions/YYYY-MM-DD.md`.
 
-## Stage B — Blog (≈8:00 AM CDT)
+## Stage B — Blog
 
-1. Read `research/varitea-deep-research.md`, `data/customer-complaints/`, and the last few posts under `site/blog/`.
-2. If no fresh research is available, fall back to the **Perfect Blog Outline** (see below) using existing Space research.
-3. Write ONE customer-facing post that PROMOTES the deep research — friendly, plain-language, 2–3 minute read (~500–700 words). It is the customer-facing translation of the canonical artifact.
-4. Light build with a small Three.js accent; full SEO head + BlogPosting/BreadcrumbList JSON-LD; CTA → First Sip Box Stripe checkout; internal links to /blog and prior posts.
-5. Add a card to `site/blog/index.html` and the URL to `site/sitemap.xml`.
-6. End the post with a short "Coming next" note AND overwrite `research/next-topic.md` with the single suggested topic for tomorrow's Stage A.
-7. Open a PR titled: `feat(blog): [SEO Agent / Val] <post title>`.
+1. Read the canonical research, the complaint box, and the last few posts under `site/blog/`.
+2. Write ONE customer-facing post (~500–700 words, 2–3 min) that promotes the deep research; follow the Perfect Blog Outline.
+3. Light build: small Three.js accent; full SEO head + BlogPosting/BreadcrumbList/FAQPage JSON-LD; CTA → First Sip Box Stripe checkout; internal links.
+4. Add a card to `site/blog/index.html` and the URL to `site/sitemap.xml`.
+5. Overwrite `research/next-topic.md` with tomorrow's single topic.
+
+## Stage C — Founding Loop (the search system)
+
+Runs the overnight founding decisions as a sequential cascade of fitness-scored search loops. Full criteria/weights/gates in `docs/founding-loop-fitness-functions.md`.
+
+**Active domains, in cascade order:** ICP → Positioning & Story → Acquisition + Retention/Moat + Whitespace. (Pricing & Format is parked for now.)
+
+### 1. Search Declaration (write at top of `founding/runs/YYYY-MM-DD.md`)
+- **Decision:** which founding question this domain resolves.
+- **Fitness function:** the weighted criteria (see formula block / fitness doc).
+- **Stopping condition:** top weighted score **≥ 4.0/5** OR time box / max iterations — whichever first.
+
+### 2. Loop Spec (per domain, logged in the same run file)
+- **Input sources:** complaint mining (Reddit / public reviews) as ground truth + first-party complaint box + prior survivors.
+- **Generation step:** produce candidate segments / narratives / GTM moves.
+- **Scoring rubric:** `Score = Σ (weightᵢ × criterion_scoreᵢ)`, 1–5 scale, grounded in mined signal.
+- **Hard gate:** caffeine-free fit = false → disqualify (any domain).
+- **Selection rule:** keep the top candidate as the domain winner; it feeds the next domain.
+- **Mutation rule:** keep survivors, mutate sub-attributes, inject 1–2 fresh candidates next night (evolve the population in `founding/state.json`).
+
+### 3. Cascade
+ICP winner → Positioning input; Positioning winner → GTM input. No gate *between* domains; the cascade always runs in order.
+
+## Founder Letter (attach to every PR)
+
+After the stages, fill `docs/founder-letter-template.md` for the night and append it to the PR description: ikigai (four rings, Varitea at center), the fitness-function formula block (verbatim), and the "what we learned tonight" winners + one findings line grounded in the run. Never fabricate findings.
+
+## PR
+
+Open ONE PR per run. Title must include the persona (Space rule). Suggested title:
+`chore(founding): [Val / Founder] daily research + blog + founding loop YYYY-MM-DD`
+(or keep the dual `chore(research)` / `feat(blog)` framing in the body). The founder letter is part of the PR description.
 
 ## Perfect Blog Outline (fallback + house structure)
 
 Source: Connor Gillivan "Perfect Blog Outline". Every post should follow this:
-
-- **Title** — base it on what's already winning; clickable + descriptive.
-- **Meta title + description** — engaging, ≤60 char title, ~155 char description.
-- **Primary keyword** — one per post. **Secondary keywords** — a small cluster.
-- **Search intent label** — informational/commercial, so the writer knows the angle.
-- **Intro paragraph** — hook the reader fast.
-- **H1** — one only, includes the keyword.
-- **Hero image** — break up text (reuse `/assets/blog/` OG art or quick nano-banana hero).
-- **H2 sections** — the main 5–10 topics (here: 3–5, since it's a 2–3 min read).
-- **H3s** — as needed under H2s.
-- **CTA** — pitch the First Sip Box where natural.
-- **FAQ (H2)** — address common questions (also strong for GEO/AI answers).
-- **Conclusion** — wrap up + the "Coming next" research teaser.
-- **Internal + external links** — to /blog, prior posts; reputable outside refs where useful.
-- **Expert insights** — fold in research findings as the "expert" voice.
+- **Title** — clickable + descriptive, based on what's winning.
+- **Meta title + description** — ≤60 char title, ~155 char description.
+- **Primary keyword** (one) + **secondary cluster**. **Search intent label.**
+- **Intro** hook · **H1** (one, includes keyword) · **Hero image** · **H2 sections** (3–5) · **H3s** as needed.
+- **CTA** to First Sip Box · **FAQ (H2)** · **Conclusion** with "Coming next" teaser · **Internal + external links** · **Expert insights** from research.
 
 ## Guardrails
 
 - PR-only. Never merge, never push to main, never touch the domain/production.
 - **Every PR title must include the persona** (Space rule).
-- No fabricated claims, reviews, customers, health benefits, certifications, sourcing claims, shipping promises, or legal conclusions. Keep all language regulatory-safe.
-- No PII in the complaint box.
-- North star in every artifact: best tisanes curated for daily routines + sustainable high-barrier packaging.
+- No fabricated complaints, reviews, customers, health benefits, certifications, sourcing claims, shipping promises, or legal conclusions. Regulatory-safe taste/ritual language only.
+- No PII anywhere. Every founding candidate grounded in at least one real sourced signal.
+- North star in every artifact: the innovation layer over the famous tea brands — sustainable plastic-free packaging + deeply-researched cited blends, funded by customers, caffeine-free only.

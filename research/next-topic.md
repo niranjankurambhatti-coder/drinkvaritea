@@ -2,11 +2,13 @@
 
 > Written by the most recent blog's "suggested next topic" section. Read by the next morning's research stage. One topic only.
 
-**Status:** SEED (no blog has run yet)
+**Status:** ACTIVE (set by blog 2026-05-28: "Caffeine-free evening tea that tastes like a treat")
 
-**Suggested topic:** Why caffeine-free evening tisanes win the wind-down routine — and what packaging keeps them fresh enough to taste like a treat at 9 PM.
+**Suggested topic:** How to anchor a caffeine-free evening cup to an existing bedtime routine so the habit actually sticks — the behavioral / ritual side of the wind-down occasion.
 
-**Why:** Ties the north star (daypart curation + high-barrier packaging) to the strongest standing demand signal (caffeine-free evening drinking). Safe, on-brand starting point if no fresher topic emerges from evidence.
+**Why:** Today's evidence proved demand and named the taste + freshness barriers; the open gap is retention. Drinkers "cycle through" rooibos/chamomile without settling, so the next leverage point is routine-anchoring (attaching the cup to an existing nightly cue) — directly serving the north-star daypart thesis. Look for first-person evidence on what makes an evening drink stick vs. get abandoned.
+
+**Seed keyword:** bedtime tea routine
 
 ---
 
