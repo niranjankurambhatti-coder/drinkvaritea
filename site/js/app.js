@@ -382,24 +382,49 @@
   }
 
   /* -----------------------------------------------------------
-     s2_tea_selected — bridge from the Screen-2 iframe.
-     The /preview/s2-v2/?embed=1 iframe postMessages each tea
-     selection up to this parent window; we re-emit it through
-     the standard tracker so it carries the full utm/context and
-     fans out to GA4 + PostHog like every other event.
+     S2 (Screen-2) iframe bridge.
+     The /preview/s2-v2/?embed=1 iframe sends `varitea:s2_*` messages
+     directly via window.parent.postMessage (no envelope). The S2 page
+     now models a daypart routine builder (Morning/Afternoon/Evening/Night),
+     so `tea_name` carries the daypart blend name (Dark Morning, Tart
+     Cooler, Mint Reset, Moon Bloom) read from `data-role`.
      ----------------------------------------------------------- */
   function wireS2Bridge() {
+    var variant = function () {
+      return document.body.getAttribute('data-page-variant') || null;
+    };
     window.addEventListener('message', function (e) {
-      var data = e && e.data;
-      if (!data || data.source !== 'varitea-s2') return;
-      if (data.type !== 's2_tea_selected') return;
-      var p = data.payload || {};
-      track('s2_tea_selected', {
-        tea_name: p.tea_name || null,
-        lane_index: (typeof p.lane_index === 'number') ? p.lane_index : null,
-        interaction: p.interaction || null,
-        page_variant: document.body.getAttribute('data-page-variant') || null
-      });
+      var d = e && e.data;
+      if (!d || typeof d.type !== 'string') return;
+      if (d.type.indexOf('varitea:s2_') !== 0) return;
+
+      if (d.type === 'varitea:s2_tea_selected') {
+        track('s2_tea_selected', {
+          tea_name: d.tea_name || null,
+          daypart: d.daypart || null,
+          lane_index: (typeof d.lane_index === 'number') ? d.lane_index : null,
+          interaction: d.interaction || null,
+          page_variant: variant()
+        });
+      } else if (d.type === 'varitea:s2_routine_changed') {
+        track('s2_routine_changed', {
+          action: d.action || null,
+          frequency: d.frequency || null,
+          cups: (typeof d.cups === 'number') ? d.cups : null,
+          tea_name: d.tea_name || null,
+          daypart: d.daypart || null,
+          routine: d.routine || null,
+          page_variant: variant()
+        });
+      } else if (d.type === 'varitea:s2_research_opened') {
+        track('s2_research_opened', {
+          tea_name: d.tea_name || null,
+          daypart: d.daypart || null,
+          page_variant: variant()
+        });
+      } else if (d.type === 'varitea:s2_routine_checkout') {
+        track('s2_routine_checkout', Object.assign({}, d, { page_variant: variant() }));
+      }
     }, false);
   }
 
