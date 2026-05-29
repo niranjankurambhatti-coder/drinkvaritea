@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick your ritual — Drink Varitea</title>
+<meta name="description" content="Two hero bundles, sized to the ritual you already drink. Once a day, or twice a day.">
+<meta name="robots" content="noindex"><!-- preview only -->
+<link rel="canonical" href="https://drinkvaritea.com/preview/s2-v2/bundles/">
+
+<!--
+  EXP-002 Phase 2 — Bundle picker
+  -------------------------------------------------------------
+  Anchors Andrew's offer system on the customer's own words:
+  "I drink my tea once a day in the morning — or twice a day,
+  morning and evening." Two-button ritual gate → frequency-
+  scoped bundles → hero card pinned (A3 for once, B1 for twice).
+  Pricing is margin-locked from /preview/shared/bundles.js.
+-->
+
+<style>
+  :root{
+    --ink:#2d241e; --cream:#f5efe6; --paper:#fbf7f0;
+    --plum:#5b3a4a; --rose:#c46a78; --moss:#5a6f4f;
+    --line:rgba(45,36,30,.16);
+    --shadow-card:0 18px 50px -28px rgba(45,36,30,.45);
+    --r-lg:22px; --r-md:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter','SF Pro Text',system-ui,sans-serif;
+    color:var(--ink); background:var(--paper);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:36px 22px 80px}
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:28px}
+  .brand{font-family:'Instrument Serif',Georgia,serif; font-size:24px; letter-spacing:.01em}
+  .brand a{color:inherit; text-decoration:none}
+  .back{font-size:13px; color:rgba(45,36,30,.6); text-decoration:none}
+  .back:hover{color:var(--ink)}
+
+  h1{
+    font-family:'Instrument Serif',Georgia,serif;
+    font-weight:400; font-size:clamp(34px,5.4vw,52px);
+    line-height:1.05; margin:0 0 10px;
+  }
+  .lede{font-size:16px; color:rgba(45,36,30,.72); max-width:62ch; margin:0 0 28px}
+
+  /* Ritual gate ---------------------------------------------- */
+  .gate{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    margin:0 0 36px; max-width:640px;
+  }
+  .gate__btn{
+    appearance:none; border:1.5px solid var(--line);
+    background:#fff; padding:18px 20px; border-radius:var(--r-md);
+    text-align:left; cursor:pointer;
+    transition:border-color .2s, transform .15s, box-shadow .25s;
+    font:inherit; color:inherit;
+  }
+  .gate__btn:hover{transform:translateY(-1px); box-shadow:var(--shadow-card)}
+  .gate__btn[aria-pressed="true"]{
+    border-color:var(--ink); background:var(--ink); color:var(--cream);
+  }
+  .gate__btn .k{
+    display:block; font-family:'Instrument Serif',Georgia,serif;
+    font-size:22px; line-height:1.1; margin-bottom:4px;
+  }
+  .gate__btn .v{display:block; font-size:13px; opacity:.7}
+
+  /* Bundle grid ---------------------------------------------- */
+  .grid{display:grid; gap:18px}
+  @media (min-width:780px){ .grid{grid-template-columns:repeat(2,1fr)} .grid .hero{grid-column:1/-1} }
+
+  .card{
+    position:relative; background:#fff; border:1px solid var(--line);
+    border-radius:var(--r-lg); padding:24px 22px;
+    display:flex; flex-direction:column; gap:14px;
+    transition:transform .2s, box-shadow .25s, border-color .2s;
+  }
+  .card:hover{transform:translateY(-2px); box-shadow:var(--shadow-card)}
+  .card.hero{ border-color:var(--ink); box-shadow:var(--shadow-card) }
+  .card.hero::before{
+    content:'Recommended'; position:absolute; top:-11px; left:22px;
+    background:var(--ink); color:var(--cream);
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    padding:4px 10px; border-radius:99px;
+  }
+
+  .card__head{display:flex; justify-content:space-between; align-items:baseline; gap:14px}
+  .card__title{font-family:'Instrument Serif',Georgia,serif; font-size:26px; line-height:1.1; margin:0}
+  .card__price{font-size:22px; font-weight:600; white-space:nowrap}
+  .card__tag{font-size:14px; color:rgba(45,36,30,.72); margin:0}
+  .card__contents{margin:0; padding:0 0 0 18px; font-size:14px; color:rgba(45,36,30,.78)}
+  .card__contents li{margin:4px 0}
+
+  .card__meta{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:rgba(45,36,30,.55)}
+  .card__meta b{color:var(--ink); font-weight:600}
+
+  .pick{
+    appearance:none; border:0; background:var(--ink); color:var(--cream);
+    padding:12px 18px; border-radius:99px; font:600 14px/1 'Inter',sans-serif;
+    cursor:pointer; align-self:flex-start;
+    transition:transform .15s, box-shadow .2s;
+  }
+  .pick:hover{transform:translateY(-1px); box-shadow:0 12px 28px -12px rgba(45,36,30,.5)}
+  .card:not(.hero) .pick{background:transparent; color:var(--ink); border:1.5px solid var(--ink)}
+
+  .save{
+    font-size:12px; color:var(--moss); margin-top:4px;
+  }
+
+  /* Footnotes */
+  .foot{margin-top:36px; padding-top:20px; border-top:1px solid var(--line);
+    font-size:12px; color:rgba(45,36,30,.55); display:flex; gap:18px; flex-wrap:wrap}
+  .foot a{color:inherit}
+  .freeship{color:var(--moss); font-weight:600}
+
+  /* Tiny pill below CTA explaining why this card */
+  .why{font-size:12px; color:rgba(45,36,30,.55); margin-top:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand"><a href="/preview/s2-v2/">Varitea</a></div>
+    <a class="back" href="/preview/s2-v2/">← back to your routine</a>
+  </header>
+
+  <h1>Pick the pack that fits your ritual.</h1>
+  <p class="lede" id="lede">
+    You told us how you drink it. We sized the pack to match — no guesswork, no waste.
+  </p>
+
+  <!-- Ritual gate (literal copy from the founder's words) -->
+  <div class="gate" role="tablist" aria-label="How often do you drink tea?">
+    <button class="gate__btn" role="tab" aria-pressed="false" data-ritual="once" id="gateOnce">
+      <span class="k">Once a day</span>
+      <span class="v">Morning ritual · ~30 cups/month</span>
+    </button>
+    <button class="gate__btn" role="tab" aria-pressed="false" data-ritual="twice" id="gateTwice">
+      <span class="k">Twice a day</span>
+      <span class="v">Morning + evening · ~60 cups/month</span>
+    </button>
+  </div>
+
+  <section class="grid" id="grid" aria-live="polite"></section>
+
+  <p class="foot">
+    <span class="freeship">Free shipping on orders over $25.</span>
+    <span>Subscribe &amp; Save 15% available at checkout.</span>
+    <a href="/preview/research/daypart-ritual/">Read the research</a>
+  </p>
+</div>
+
+<script src="/preview/shared/bundles.js"></script>
+<script src="/preview/shared/shopify.js"></script>
+<script>
+/* ============================================================
+   Bundle picker controller
+   ============================================================ */
+const { BUNDLES, bundlesForRitual, fmt, SUBSCRIPTION, effectiveSubPrice } = window.VariteaBundles;
+
+const grid     = document.getElementById('grid');
+const gateOnce = document.getElementById('gateOnce');
+const gateTwice= document.getElementById('gateTwice');
+const lede     = document.getElementById('lede');
+
+/* Pull ritual + routine payload forwarded from s2-v2 via query string
+   (so a user who builds a routine upstream lands here pre-selected).  */
+const qs = new URLSearchParams(location.search);
+let ritual = qs.get('ritual');                     // 'once' | 'twice' | null
+const routine = qs.get('routine') || '';
+
+function emit(name, detail){
+  try{
+    window.dispatchEvent(new CustomEvent(name, {detail}));
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({type:name, ...detail}, location.origin);
+    }
+  }catch(e){}
+}
+
+function lineFor(ritual){
+  if(ritual === 'once')  return 'Sized for the morning drinker — one cup, every day.';
+  if(ritual === 'twice') return 'Sized for the AM/PM ritual — two cups, every day.';
+  return 'Tell us how you drink it and we will size the pack to fit.';
+}
+
+function cardHTML(b){
+  const sub = effectiveSubPrice(b);
+  const heroClass = b.isHero ? ' hero' : '';
+  const contents = b.contents.map(c => `<li>${c}</li>`).join('');
+  const saveLine = sub
+    ? `<div class="save">or ${fmt(sub)} with Subscribe &amp; Save 15%</div>`
+    : '';
+  const why = b.isHero
+    ? `<div class="why">Picked for you — fits a ${b.ritual === 'once' ? 'once-a-day' : 'twice-a-day'} ritual.</div>`
+    : `<div class="why">${b.role === 'entry' ? 'Lowest-friction start.' : b.role === 'max' ? 'Best value per serving.' : ''}</div>`;
+  return `
+    <article class="card${heroClass}" data-bundle="${b.id}">
+      <header class="card__head">
+        <h2 class="card__title">${b.title}</h2>
+        <div class="card__price">${fmt(b.price)}</div>
+      </header>
+      <p class="card__tag">${b.tagline}</p>
+      <ul class="card__contents">${contents}</ul>
+      ${saveLine}
+      <div class="card__meta">
+        <span><b>${b.id}</b> · ${b.sku}</span>
+        <span>Contribution: <b>${fmt(b.contribution)}</b></span>
+        <span>CM: <b>${b.cm}%</b></span>
+      </div>
+      ${why}
+      <button class="pick" data-bundle="${b.id}" aria-label="Pick ${b.title}">
+        Pick this pack →
+      </button>
+    </article>
+  `;
+}
+
+function render(){
+  gateOnce .setAttribute('aria-pressed', String(ritual === 'once'));
+  gateTwice.setAttribute('aria-pressed', String(ritual === 'twice'));
+  lede.textContent = lineFor(ritual);
+
+  /* Sort: hero first (if a ritual is chosen), then entry/duo/max */
+  const list = bundlesForRitual(ritual).slice().sort((a,b)=>{
+    if(a.isHero && !b.isHero) return -1;
+    if(b.isHero && !a.isHero) return  1;
+    const order = {entry:1, duo:2, hero:0, max:3};
+    return (order[a.role]||9) - (order[b.role]||9);
+  });
+  grid.innerHTML = list.map(cardHTML).join('');
+}
+
+/* Gate clicks */
+function pickRitual(r){
+  ritual = r;
+  const u = new URL(location.href);
+  u.searchParams.set('ritual', r);
+  history.replaceState({}, '', u);
+  emit('varitea:bundles_ritual_selected', {ritual:r});
+  render();
+}
+gateOnce .addEventListener('click', ()=>pickRitual('once'));
+gateTwice.addEventListener('click', ()=>pickRitual('twice'));
+
+/* Bundle pick → forward to /preview/cart/ */
+grid.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button.pick');
+  if(!btn) return;
+  const id = btn.dataset.bundle;
+  emit('varitea:bundle_selected', {bundleId:id, ritual:ritual||'unknown'});
+  const u = new URL('/preview/cart/', location.origin);
+  u.searchParams.set('bundle', id);
+  if(ritual) u.searchParams.set('ritual', ritual);
+  if(routine) u.searchParams.set('routine', routine);
+  location.href = u.toString();
+});
+
+/* Initial paint */
+render();
+emit('varitea:bundles_view', {ritual: ritual || 'unknown', routine});
+</script>
+</body>
+</html>

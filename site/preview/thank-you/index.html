@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank you — Drink Varitea</title>
+<meta name="description" content="Your ritual starts now. Order confirmed.">
+<meta name="robots" content="noindex">
+
+<!--
+  EXP-002 Phase 2 — Thank-you page
+  -------------------------------------------------------------
+  Shopify's order-status page is the primary confirmation
+  surface. This page exists for the post-checkout return_to
+  fallback and for direct deep-links. It fires a single purchase
+  signal for Ronny.
+-->
+
+<style>
+  :root{
+    --ink:#2d241e; --cream:#f5efe6; --paper:#fbf7f0;
+    --line:rgba(45,36,30,.14); --moss:#5a6f4f;
+    --shadow:0 18px 50px -28px rgba(45,36,30,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter','SF Pro Text',system-ui,sans-serif;
+    color:var(--ink); background:var(--paper);
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:60px 22px;text-align:center}
+  .badge{
+    width:64px;height:64px;border-radius:99px;background:var(--moss);color:var(--cream);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:32px;margin:0 auto 20px;box-shadow:var(--shadow);
+  }
+  h1{
+    font-family:'Instrument Serif',Georgia,serif;font-weight:400;
+    font-size:clamp(36px,6vw,56px);line-height:1.05;margin:0 0 12px
+  }
+  p.lede{font-size:17px;color:rgba(45,36,30,.74);margin:0 0 28px}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:22px;
+    padding:24px 22px;box-shadow:var(--shadow);text-align:left;
+    margin:0 auto 18px;
+  }
+  .card h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:22px;margin:0 0 8px}
+  .card p{font-size:14px;color:rgba(45,36,30,.72);margin:6px 0}
+  .ritual{font-size:14px;color:var(--moss);font-weight:600}
+  .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+  .btn{
+    appearance:none;border:1.5px solid var(--ink);background:transparent;
+    color:var(--ink);padding:12px 18px;border-radius:99px;
+    font:600 14px/1 'Inter',sans-serif;cursor:pointer;text-decoration:none;
+  }
+  .btn.primary{background:var(--ink);color:var(--cream)}
+  .fine{margin-top:24px;font-size:12px;color:rgba(45,36,30,.55)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge" aria-hidden="true">✓</div>
+  <h1>Your ritual starts now.</h1>
+  <p class="lede" id="lede">Order confirmed. Watch your inbox for tracking — pouches ship within 2 business days.</p>
+
+  <div class="card" id="orderCard" hidden>
+    <h2>What you ordered</h2>
+    <p id="orderLine"></p>
+    <p class="ritual" id="ritualLine"></p>
+    <p id="subLine"></p>
+  </div>
+
+  <div class="card">
+    <h2>While you wait</h2>
+    <p>Read the research behind your blends — what each one does, when to drink it, why it works.</p>
+    <div class="ctas">
+      <a class="btn primary" href="/preview/research/daypart-ritual/">Read the research</a>
+      <a class="btn" href="/preview/s2-v2/">Adjust my routine</a>
+    </div>
+  </div>
+
+  <p class="fine">Questions? hello@drinkvaritea.com · We reply within one business day.</p>
+</div>
+
+<script src="/preview/shared/bundles.js"></script>
+<script>
+/* Shopify forwards order params via the redirect; we also read
+   any cart-attribute hints the buyer carried in (ritual/routine/bundle). */
+const qs = new URLSearchParams(location.search);
+const orderId  = qs.get('order_id') || qs.get('order') || '';
+const bundleId = qs.get('bundle_id') || qs.get('bundle') || '';
+const ritual   = qs.get('ritual') || '';
+const routine  = qs.get('routine') || '';
+const subPlan  = qs.get('sub_plan') || '';
+
+const { bundleById, fmt } = window.VariteaBundles;
+const bundle = bundleId ? bundleById(bundleId) : null;
+
+if(bundle){
+  document.getElementById('orderCard').hidden = false;
+  document.getElementById('orderLine').textContent =
+    `${bundle.title} (${bundle.id}) — ${fmt(bundle.price)}`;
+}
+if(ritual){
+  document.getElementById('orderCard').hidden = false;
+  document.getElementById('ritualLine').textContent =
+    `Ritual: ${ritual === 'once' ? 'Once a day' : ritual === 'twice' ? 'Twice a day' : ritual}${routine ? ' · ' + routine : ''}`;
+}
+if(subPlan === 'ss-15'){
+  document.getElementById('orderCard').hidden = false;
+  document.getElementById('subLine').textContent = 'Subscribe & Save 15% active — ships every 30 days.';
+}
+
+/* Fire a single purchase event (Ronny: attach to GA4/Klaviyo). */
+try{
+  window.dispatchEvent(new CustomEvent('varitea:purchase_confirmed', {
+    detail: { orderId, bundleId, ritual, routine, subPlan }
+  }));
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({type:'varitea:purchase_confirmed', orderId, bundleId, ritual, routine, subPlan}, location.origin);
+  }
+}catch(e){}
+</script>
+</body>
+</html>
