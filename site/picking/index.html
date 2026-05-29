@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick your ritual — Drink Varitea</title>
+<meta name="description" content="Build your daily tea ritual. Customize your pack. One scroll to checkout — no quiz, no maze.">
+<meta name="robots" content="noindex"><!-- toggle to index once promoted -->
+<link rel="canonical" href="https://drinkvaritea.com/picking">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!--
+  /picking — EXP-002 Phase 3
+  -------------------------------------------------------------
+  One long page replaces the multi-step preview funnel:
+
+     Section 1  Ritual gate           "Once a day / Twice a day"
+     Section 2  Daypart picker        Pick AM (and PM if twice)
+     Section 3  Customizable cart     Hero bundle pre-selected by
+                                      ritual; swap blends, add
+                                      extra pouches, S&S toggle
+     Section 4  Offer + checkout      Totals, free-ship line,
+                                      Continue to Shopify
+
+  Pricing source of truth: /preview/shared/bundles.js (margin
+  locked to Andrew's table). Checkout wiring: /preview/shared/
+  shopify.js (cart permalink — no SDK).
+
+  This page lives at /picking (production path) and is the new
+  primary destination for the main landing hero CTA.
+-->
+
+<style>
+  :root{
+    --ink:#2d241e; --cream:#f5efe6; --paper:#fbf7f0;
+    --plum:#5b3a4a; --rose:#c46a78; --moss:#5a6f4f;
+    --line:rgba(45,36,30,.14);
+    --line-strong:rgba(45,36,30,.28);
+    --shadow:0 18px 50px -28px rgba(45,36,30,.42);
+    --r-lg:22px; --r-md:14px;
+    /* daypart tints (synced with s2-v2) */
+    --t-morning-a:#3b2418; --t-morning-b:#7a4a2c;
+    --t-afternoon-a:#7a2230; --t-afternoon-b:#c25268;
+    --t-evening-a:#2f5a44;  --t-evening-b:#7fae8a;
+    --t-night-a:#3b2f5e;    --t-night-b:#7a6cae;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter','SF Pro Text',system-ui,sans-serif;
+    color:var(--ink); background:var(--paper);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+
+  /* --- Top bar ----------------------------------------------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(251,247,240,.92);backdrop-filter:saturate(140%) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar__in{
+    max-width:1080px;margin:0 auto;padding:14px 22px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .brand{font-family:'Instrument Serif',Georgia,serif;font-size:22px}
+  .brand a{text-decoration:none}
+  .back{font-size:13px;color:rgba(45,36,30,.65);text-decoration:none}
+  .back:hover{color:var(--ink)}
+
+  /* --- Section scaffolding ---------------------------------- */
+  section{padding:80px 22px;scroll-margin-top:64px}
+  section .in{max-width:1080px;margin:0 auto}
+  .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:rgba(45,36,30,.55);
+    margin:0 0 12px;
+  }
+  h1.hero{font-size:clamp(38px,6.2vw,68px);line-height:1.02;margin:0 0 14px}
+  h2.sec{font-size:clamp(28px,4.2vw,40px);line-height:1.08;margin:0 0 10px}
+  .lede{font-size:17px;color:rgba(45,36,30,.74);max-width:62ch;margin:0 0 28px}
+  .step-n{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:99px;background:var(--ink);color:var(--cream);
+    font-size:13px;font-weight:600;margin-right:10px;vertical-align:middle;
+  }
+
+  /* --- Hero/ritual gate ------------------------------------- */
+  #ritual{padding-top:56px;background:linear-gradient(180deg,#fbf7f0 0%, #f5efe6 100%)}
+  .gate{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px;margin-top:8px}
+  .gate__btn{
+    appearance:none;border:1.5px solid var(--line);background:#fff;
+    padding:20px;border-radius:var(--r-md);text-align:left;cursor:pointer;
+    font:inherit;color:inherit;
+    transition:border-color .2s,transform .15s,box-shadow .25s;
+  }
+  .gate__btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  .gate__btn[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+  .gate__btn .k{display:block;font-family:'Instrument Serif',Georgia,serif;font-size:24px;line-height:1.1;margin-bottom:4px}
+  .gate__btn .v{display:block;font-size:13px;opacity:.75}
+
+  .gate__hint{font-size:13px;color:rgba(45,36,30,.55);margin:10px 0 0}
+
+  /* --- Daypart picker (Section 2) --------------------------- */
+  #daypart{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  #daypart[hidden]{display:none}
+  .slots{display:grid;gap:18px;grid-template-columns:1fr}
+  @media(min-width:760px){.slots{grid-template-columns:1fr 1fr}}
+  .slot{
+    border:1px solid var(--line);border-radius:var(--r-lg);
+    padding:20px;background:#fffdf7;position:relative;
+    transition:border-color .2s,box-shadow .25s;
+  }
+  .slot.active{border-color:var(--ink);box-shadow:var(--shadow)}
+  .slot h3{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:22px;margin:0 0 4px}
+  .slot__time{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(45,36,30,.55);margin:0 0 14px}
+  .blends{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .blend-btn{
+    appearance:none;border:1.5px solid var(--line);background:#fff;
+    padding:12px 10px;border-radius:var(--r-md);cursor:pointer;
+    font:inherit;color:inherit;text-align:left;
+    display:flex;flex-direction:column;gap:4px;
+    transition:transform .15s,box-shadow .2s,border-color .2s;
+    position:relative;
+  }
+  .blend-btn:hover{transform:translateY(-1px)}
+  .blend-btn[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+  .blend-btn .name{font-family:'Instrument Serif',Georgia,serif;font-size:18px;line-height:1.05}
+  .blend-btn .moment{font-size:11px;opacity:.7;letter-spacing:.06em;text-transform:uppercase}
+  .blend-btn .swatch{
+    position:absolute;top:10px;right:10px;width:14px;height:14px;border-radius:99px;
+    background:linear-gradient(135deg, var(--a), var(--b));border:1px solid rgba(255,255,255,.4);
+  }
+
+  /* --- Customizable cart (Section 3) ------------------------ */
+  #cart-sec{background:linear-gradient(180deg,#f5efe6 0%, #fbf7f0 100%)}
+  #cart-sec[hidden]{display:none}
+  .cart-grid{display:grid;gap:18px;grid-template-columns:1fr}
+  @media(min-width:920px){.cart-grid{grid-template-columns:1.4fr 1fr;align-items:start}}
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);padding:24px 22px;
+  }
+  .card h3{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:22px;margin:0 0 4px}
+  .card p.sub{margin:0 0 14px;color:rgba(45,36,30,.7);font-size:14px}
+
+  /* Bundle suggestion strip */
+  .suggest{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 18px}
+  .pill{
+    border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    padding:8px 14px;border-radius:99px;cursor:pointer;font:600 13px/1 'Inter',sans-serif;
+    transition:border-color .2s,background .2s,color .2s;
+  }
+  .pill:hover{border-color:var(--ink)}
+  .pill[aria-pressed="true"]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .pill .small{font-weight:400;opacity:.7;margin-left:6px}
+
+  /* Line items */
+  .lines{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  .line{
+    display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;
+    padding:12px;border:1px solid var(--line);border-radius:var(--r-md);background:#fffdf7;
+  }
+  .line .sw{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--a),var(--b))}
+  .line .ttl{font-family:'Instrument Serif',Georgia,serif;font-size:20px;line-height:1.05}
+  .line .meta{font-size:12px;color:rgba(45,36,30,.6);margin-top:2px}
+  .qty{display:inline-flex;align-items:center;gap:6px;margin-right:10px}
+  .qty button{
+    appearance:none;border:1.5px solid var(--line);background:#fff;
+    width:26px;height:26px;border-radius:99px;cursor:pointer;font:600 14px/1 'Inter';
+  }
+  .qty button:hover{border-color:var(--ink)}
+  .qty .n{min-width:14px;text-align:center;font-weight:600}
+  .line .price{font-weight:600;white-space:nowrap}
+  .line .rm{
+    background:transparent;border:0;color:rgba(45,36,30,.55);cursor:pointer;
+    font-size:18px;line-height:1;padding:4px 6px;
+  }
+  .line .rm:hover{color:var(--rose)}
+
+  .add-extra{
+    appearance:none;border:1.5px dashed var(--line);background:transparent;
+    width:100%;padding:14px;border-radius:var(--r-md);cursor:pointer;
+    font:600 13px/1 'Inter';color:rgba(45,36,30,.7);margin-top:10px;
+  }
+  .add-extra:hover{border-color:var(--ink);color:var(--ink)}
+
+  /* Extra-blend selector (modal-ish) */
+  .extra-pop{
+    margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:var(--r-md);
+    background:#fbf7f0;
+  }
+  .extra-pop h4{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:18px;margin:0 0 8px}
+  .extra-pop[hidden]{display:none}
+
+  /* Subscribe toggle */
+  .sub-toggle{
+    margin-top:14px;border:1px dashed var(--line);border-radius:var(--r-md);
+    padding:14px 16px;display:flex;justify-content:space-between;gap:14px;align-items:center;
+    background:rgba(90,111,79,.04);
+  }
+  .sub-toggle b{color:var(--moss)}
+  .sub-toggle.disabled{opacity:.5}
+  .switch{position:relative;width:46px;height:26px;flex:0 0 auto}
+  .switch input{opacity:0;width:0;height:0}
+  .switch span{position:absolute;inset:0;background:#ddd;border-radius:99px;cursor:pointer;transition:background .2s}
+  .switch span::before{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:99px;transition:left .2s;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .switch input:checked + span{background:var(--moss)}
+  .switch input:checked + span::before{left:23px}
+
+  /* Summary card (right column) */
+  .sum-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0}
+  .sum-row.total{font-size:20px;font-weight:600;border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
+  .sum-row.discount{color:var(--moss)}
+  .ship{margin:12px 0;font-size:13px;color:rgba(45,36,30,.7)}
+  .ship .bar{height:8px;background:#ece5d8;border-radius:99px;overflow:hidden;margin-top:6px}
+  .ship .bar i{display:block;height:100%;background:var(--moss);width:0;transition:width .3s}
+  .ship.ok{color:var(--moss)}
+
+  .cta{
+    appearance:none;border:0;background:var(--ink);color:var(--cream);
+    width:100%;padding:16px 18px;border-radius:99px;
+    font:600 16px/1 'Inter';cursor:pointer;margin-top:10px;
+    transition:transform .15s,box-shadow .2s,opacity .2s;
+  }
+  .cta:hover{transform:translateY(-1px);box-shadow:0 16px 36px -16px rgba(45,36,30,.55)}
+  .cta[disabled]{opacity:.55;cursor:not-allowed}
+  .cta__sub{display:block;font-weight:400;font-size:12px;opacity:.8;margin-top:6px}
+
+  .trust{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px;font-size:12px;color:rgba(45,36,30,.55)}
+  .trust b{color:var(--ink)}
+
+  .notice{
+    margin-top:10px;padding:12px 14px;border-radius:12px;
+    background:rgba(196,106,120,.08);border:1px solid rgba(196,106,120,.25);
+    color:#7a3340;font-size:13px;display:none;
+  }
+  .notice.show{display:block}
+
+  /* --- Reassurance + footer -------------------------------- */
+  .reassure{padding:40px 22px 80px;text-align:center;color:rgba(45,36,30,.65);font-size:13px}
+  .reassure a{color:inherit}
+  .reassure .row{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:6px}
+
+  /* Empty state for cart when ritual not picked yet */
+  .gate-prompt{font-size:13px;color:rgba(45,36,30,.55);margin-top:6px}
+
+  /* Section divider eyebrow that sits over a sticky scroll point */
+  .anchor{position:relative;top:-60px;visibility:hidden;height:0}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__in">
+    <div class="brand"><a href="/">Varitea</a></div>
+    <a class="back" href="/">← back home</a>
+  </div>
+</header>
+
+<!-- =========================================================
+     SECTION 1 — Ritual gate
+     ========================================================= -->
+<section id="ritual" aria-labelledby="ritual-h">
+  <div class="in">
+    <span class="eyebrow"><span class="step-n">1</span> your ritual</span>
+    <h1 class="hero serif" id="ritual-h">Build the pack you’ll actually drink.</h1>
+    <p class="lede">
+      You told us how often you reach for tea. We size the pack to match.
+      Pick a ritual to start — the rest of this page configures itself.
+    </p>
+
+    <div class="gate" role="tablist" aria-label="How often do you drink tea?">
+      <button class="gate__btn" role="tab" aria-pressed="false" data-ritual="once" id="gateOnce">
+        <span class="k">Once a day</span>
+        <span class="v">Morning ritual · ~30 cups/month</span>
+      </button>
+      <button class="gate__btn" role="tab" aria-pressed="false" data-ritual="twice" id="gateTwice">
+        <span class="k">Twice a day</span>
+        <span class="v">Morning + evening · ~60 cups/month</span>
+      </button>
+    </div>
+    <p class="gate__hint">You can change this anytime. Scroll continues automatically.</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 2 — Daypart picker (1 or 2 slots based on ritual)
+     ========================================================= -->
+<span class="anchor" id="step-2"></span>
+<section id="daypart" hidden aria-labelledby="daypart-h">
+  <div class="in">
+    <span class="eyebrow"><span class="step-n">2</span> your blends</span>
+    <h2 class="sec serif" id="daypart-h">Pick the blend for each moment.</h2>
+    <p class="lede" id="daypart-lede">Each blend is built for a daypart — when you drink it changes what it does.</p>
+
+    <div class="slots" id="slots"></div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 3 — Customizable cart
+     ========================================================= -->
+<span class="anchor" id="step-3"></span>
+<section id="cart-sec" hidden aria-labelledby="cart-h">
+  <div class="in">
+    <span class="eyebrow"><span class="step-n">3</span> your pack</span>
+    <h2 class="sec serif" id="cart-h">Customize your pack.</h2>
+    <p class="lede" id="cart-lede">We pre-loaded the bundle that matches your ritual. Swap blends, add extras, or change the size — totals update live.</p>
+
+    <div class="cart-grid">
+      <div>
+        <div class="card">
+          <h3>Suggested bundles</h3>
+          <p class="sub">Built around your ritual. Pick one to set the base — you can still customize the contents below.</p>
+          <div class="suggest" id="suggest"></div>
+
+          <h3 style="margin-top:18px">Your line items</h3>
+          <p class="sub">Tweak quantities, swap blends, or add a fourth pouch.</p>
+          <div class="lines" id="lines"></div>
+
+          <button class="add-extra" id="addExtraBtn" type="button">+ Add another pouch</button>
+          <div class="extra-pop" id="extraPop" hidden>
+            <h4>Pick a blend to add ($14.99 · 28 servings)</h4>
+            <div class="blends" id="extraBlends"></div>
+          </div>
+
+          <div class="sub-toggle" id="subWrap">
+            <div>
+              <b>Subscribe &amp; Save 15%</b><br>
+              <span style="font-size:13px;color:rgba(45,36,30,.7)" id="subCopy">
+                Ships every 30 days. Skip or cancel anytime.
+              </span>
+            </div>
+            <label class="switch" aria-label="Subscribe and save 15%">
+              <input id="subToggle" type="checkbox">
+              <span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: summary + checkout -->
+      <aside>
+        <div class="card" style="position:sticky;top:78px">
+          <h3>Order summary</h3>
+          <div id="summary"></div>
+          <div class="ship" id="ship" aria-live="polite">
+            <div id="shipMsg">Add items to unlock free shipping at $25.</div>
+            <div class="bar"><i id="shipBar" style="width:0%"></i></div>
+          </div>
+          <button class="cta" id="goCheckout" disabled>
+            Continue to secure checkout →
+            <span class="cta__sub" id="ctaSub">You will be redirected to Shopify to complete your order.</span>
+          </button>
+          <div class="notice" id="notice"></div>
+          <div class="trust">
+            <span>🔒 Secure checkout on <b>Shopify</b></span>
+            <span>↩ 30-day satisfaction</span>
+            <span>🍵 Caffeine-free options</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="reassure">
+  <div>Questions? <a href="mailto:hello@drinkvaritea.com">hello@drinkvaritea.com</a> · We reply within one business day.</div>
+  <div class="row">
+    <a href="/preview/research/daypart-ritual/">Read the research</a>
+    <a href="/blog">Varitea Journal</a>
+    <a href="/">Home</a>
+  </div>
+</div>
+
+<script src="/preview/shared/bundles.js"></script>
+<script src="/preview/shared/shopify.js"></script>
+<script>
+/* ============================================================
+   /picking controller — single long page
+   ============================================================ */
+const { BLENDS, BUNDLES, bundleById, fmt, SUBSCRIPTION, effectiveSubPrice,
+        FREE_SHIP_THRESHOLD, heroForRitual } = window.VariteaBundles;
+const Shopify = window.VariteaShopify;
+
+/* ----- Daypart wiring (mirrors s2-v2 semantics) ------------- */
+const DAYPARTS = [
+  { key:'morning',   label:'Morning',   time:'6 AM – 11 AM',  blend:'dark-morning' },
+  { key:'afternoon', label:'Afternoon', time:'11 AM – 4 PM',  blend:'tart-cooler'  },
+  { key:'evening',   label:'Evening',   time:'4 PM – 8 PM',   blend:'mint-reset'   },
+  { key:'night',     label:'Night',     time:'8 PM – bed',    blend:'moon-bloom'   }
+];
+function blendDef(key){ return { key, ...BLENDS[key] }; }
+
+/* ----- App state ------------------------------------------- */
+const state = {
+  ritual: null,               // 'once' | 'twice'
+  slots: [],                  // array of blendKeys, length 1 (once) or 2 (twice)
+  baseBundleId: null,         // selected suggested bundle (drives pricing)
+  extras: [],                 // [{blendKey, qty, unitPrice}]
+  subscribe: false
+};
+
+const EXTRA_PRICE = 14.99;    // single-pouch refill price for add-ons
+
+function emit(name, detail){
+  try{
+    window.dispatchEvent(new CustomEvent(name, {detail}));
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({type:name, ...detail}, location.origin);
+    }
+  }catch(e){}
+}
+
+/* ============================================================
+   STEP 1 — Ritual gate
+   ============================================================ */
+const gateOnce  = document.getElementById('gateOnce');
+const gateTwice = document.getElementById('gateTwice');
+
+function pickRitual(r){
+  state.ritual = r;
+  gateOnce .setAttribute('aria-pressed', String(r === 'once'));
+  gateTwice.setAttribute('aria-pressed', String(r === 'twice'));
+
+  // Size slots & default to the bundle's expected blends
+  if(r === 'once'){
+    state.slots = state.slots[0] ? [state.slots[0]] : ['dark-morning'];
+    state.baseBundleId = 'A3';   // hero for once-a-day
+  } else {
+    state.slots = [
+      state.slots[0] || 'dark-morning',
+      state.slots[1] || 'moon-bloom'
+    ];
+    state.baseBundleId = 'B1';   // hero for twice-a-day
+  }
+  state.extras = [];
+  state.subscribe = false;
+
+  // Reveal sections 2 + 3
+  document.getElementById('daypart').hidden = false;
+  document.getElementById('cart-sec').hidden = false;
+
+  emit('varitea:picking_ritual_selected', { ritual:r });
+
+  renderDaypart();
+  renderCart();
+
+  // Gentle scroll to step 2 so the layout feels guided
+  requestAnimationFrame(()=>{
+    document.getElementById('step-2').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+}
+gateOnce .addEventListener('click', ()=>pickRitual('once'));
+gateTwice.addEventListener('click', ()=>pickRitual('twice'));
+
+/* ============================================================
+   STEP 2 — Daypart picker
+   ============================================================ */
+const slotsEl = document.getElementById('slots');
+
+function slotConfig(){
+  if(state.ritual === 'once')  return [{ slot:0, label:'Your morning', time:'6 AM – 11 AM', allowed: DAYPARTS }];
+  if(state.ritual === 'twice') return [
+    { slot:0, label:'Your morning', time:'6 AM – 11 AM', allowed: DAYPARTS },
+    { slot:1, label:'Your evening', time:'4 PM – bed',   allowed: DAYPARTS }
+  ];
+  return [];
+}
+
+function renderDaypart(){
+  const cfg = slotConfig();
+  slotsEl.innerHTML = cfg.map(s => {
+    const choices = s.allowed.map(d => {
+      const b = blendDef(d.blend);
+      const active = state.slots[s.slot] === d.blend;
+      return `
+        <button class="blend-btn" data-slot="${s.slot}" data-blend="${d.blend}"
+                aria-pressed="${active}"
+                style="--a:${b.tintA};--b:${b.tintB}">
+          <span class="swatch" aria-hidden="true"></span>
+          <span class="moment">${d.label}</span>
+          <span class="name">${b.name}</span>
+        </button>`;
+    }).join('');
+    return `
+      <article class="slot active" data-slot="${s.slot}">
+        <h3>${s.label}</h3>
+        <div class="slot__time">${s.time}</div>
+        <div class="blends">${choices}</div>
+      </article>`;
+  }).join('');
+
+  slotsEl.querySelectorAll('button.blend-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const slot = Number(btn.dataset.slot);
+      const blend = btn.dataset.blend;
+      state.slots[slot] = blend;
+      emit('varitea:picking_blend_selected', { slot, blend, ritual: state.ritual });
+      renderDaypart();
+      renderCart();   // line items reflect slot choices for hero bundles
+    });
+  });
+}
+
+/* ============================================================
+   STEP 3 — Customizable cart
+   ============================================================ */
+const suggestEl   = document.getElementById('suggest');
+const linesEl     = document.getElementById('lines');
+const summaryEl   = document.getElementById('summary');
+const subToggle   = document.getElementById('subToggle');
+const subWrap     = document.getElementById('subWrap');
+const subCopy     = document.getElementById('subCopy');
+const addExtraBtn = document.getElementById('addExtraBtn');
+const extraPop    = document.getElementById('extraPop');
+const extraBlends = document.getElementById('extraBlends');
+const goCheckout  = document.getElementById('goCheckout');
+const ctaSub      = document.getElementById('ctaSub');
+const notice      = document.getElementById('notice');
+const shipMsg     = document.getElementById('shipMsg');
+const shipBar     = document.getElementById('shipBar');
+const shipWrap    = document.getElementById('ship');
+
+/* Bundle line items — derived from base bundle + slot choices.
+   This lets the customer "customize" the AM/PM bundle by changing
+   which blend goes in which pouch, without breaking the SKU.    */
+function bundleLines(){
+  const b = bundleById(state.baseBundleId);
+  if(!b) return [];
+
+  // For A3 (sampler + 1 pouch): pouch is slot 0
+  // For B1 (AM/PM): pouch 1 = slot 0, pouch 2 = slot 1
+  // For A1/A2: pouch = slot 0 (and second pouch defaults to same)
+  // For B2 (all 4): fixed blends, slots ignored
+  if(b.id === 'A3'){
+    const k = state.slots[0] || 'dark-morning';
+    return [
+      { kind:'sampler', label:'Sampler — all 4 blends · 8 sachets', blendKey:null },
+      { kind:'pouch',   label:`Full pouch — ${BLENDS[k].name} (28 srv)`, blendKey:k }
+    ];
+  }
+  if(b.id === 'B1'){
+    const am = state.slots[0] || 'dark-morning';
+    const pm = state.slots[1] || 'moon-bloom';
+    return [
+      { kind:'pouch', label:`AM pouch — ${BLENDS[am].name} (28 srv)`, blendKey:am, moment:'AM' },
+      { kind:'pouch', label:`PM pouch — ${BLENDS[pm].name} (28 srv)`, blendKey:pm, moment:'PM' }
+    ];
+  }
+  if(b.id === 'A1'){
+    const k = state.slots[0] || 'dark-morning';
+    return [{ kind:'pouch', label:`Pouch — ${BLENDS[k].name} (28 srv)`, blendKey:k }];
+  }
+  if(b.id === 'A2'){
+    const k = state.slots[0] || 'dark-morning';
+    return [
+      { kind:'pouch', label:`Pouch 1 — ${BLENDS[k].name} (28 srv)`, blendKey:k },
+      { kind:'pouch', label:`Pouch 2 — ${BLENDS[k].name} (28 srv)`, blendKey:k }
+    ];
+  }
+  if(b.id === 'B2'){
+    return DAYPARTS.map(d => ({
+      kind:'pouch', label:`${BLENDS[d.blend].name} (28 srv)`, blendKey:d.blend
+    }));
+  }
+  return [];
+}
+
+function renderSuggest(){
+  const list = BUNDLES
+    .filter(b => !state.ritual || b.ritual === state.ritual)
+    .sort((a,b) => (a.isHero?-1:0) - (b.isHero?-1:0));
+
+  suggestEl.innerHTML = list.map(b => `
+    <button class="pill" data-bundle="${b.id}" aria-pressed="${state.baseBundleId === b.id}">
+      ${b.title} <span class="small">${fmt(b.price)}</span>${b.isHero ? ' ⭐' : ''}
+    </button>
+  `).join('');
+
+  suggestEl.querySelectorAll('button').forEach(p => {
+    p.addEventListener('click', () => {
+      state.baseBundleId = p.dataset.bundle;
+      emit('varitea:picking_bundle_swapped', { bundleId: state.baseBundleId });
+      // Recompute S&S eligibility — if not eligible, force subscribe off
+      if(!SUBSCRIPTION.eligible[state.baseBundleId]) state.subscribe = false;
+      renderCart();
+    });
+  });
+}
+
+function renderLines(){
+  const bLines = bundleLines();
+  const items = [];
+
+  bLines.forEach((ln, i) => {
+    const blendKey = ln.blendKey;
+    const tintA = blendKey ? BLENDS[blendKey].tintA : '#998';
+    const tintB = blendKey ? BLENDS[blendKey].tintB : '#665';
+    items.push(`
+      <div class="line" data-kind="bundle" data-idx="${i}">
+        <div class="sw" style="--a:${tintA};--b:${tintB};background:linear-gradient(135deg,${tintA},${tintB})"></div>
+        <div>
+          <div class="ttl">${ln.label}</div>
+          <div class="meta">From your ${bundleById(state.baseBundleId).title}${ln.moment ? ' · '+ln.moment : ''}</div>
+        </div>
+        <div class="price">included</div>
+      </div>
+    `);
+  });
+
+  state.extras.forEach((ex, i) => {
+    const b = BLENDS[ex.blendKey];
+    items.push(`
+      <div class="line" data-kind="extra" data-idx="${i}">
+        <div class="sw" style="background:linear-gradient(135deg,${b.tintA},${b.tintB})"></div>
+        <div>
+          <div class="ttl">${b.name} — extra pouch</div>
+          <div class="meta">28 servings · ${fmt(EXTRA_PRICE)} each</div>
+        </div>
+        <div style="display:flex;align-items:center">
+          <div class="qty">
+            <button data-act="dec" data-idx="${i}" aria-label="Decrease">−</button>
+            <span class="n">${ex.qty}</span>
+            <button data-act="inc" data-idx="${i}" aria-label="Increase">+</button>
+          </div>
+          <span class="price">${fmt(EXTRA_PRICE * ex.qty)}</span>
+          <button class="rm" data-act="rm" data-idx="${i}" aria-label="Remove">×</button>
+        </div>
+      </div>
+    `);
+  });
+
+  linesEl.innerHTML = items.join('');
+
+  linesEl.querySelectorAll('button[data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.idx);
+      const act = btn.dataset.act;
+      if(act === 'inc') state.extras[idx].qty += 1;
+      if(act === 'dec') state.extras[idx].qty = Math.max(1, state.extras[idx].qty - 1);
+      if(act === 'rm')  state.extras.splice(idx,1);
+      emit('varitea:picking_extra_changed', { act, idx });
+      renderCart();
+    });
+  });
+}
+
+function renderSubToggle(){
+  const eligible = !!SUBSCRIPTION.eligible[state.baseBundleId];
+  subWrap.classList.toggle('disabled', !eligible);
+  subToggle.disabled = !eligible;
+  subToggle.checked  = state.subscribe && eligible;
+  const b = bundleById(state.baseBundleId);
+  const subPrice = effectiveSubPrice(b);
+  subCopy.textContent = eligible
+    ? `Ships every 30 days. Skip or cancel anytime — saves ${fmt(b.price - (subPrice||b.price))} on this bundle every order.`
+    : 'Not available on this bundle.';
+}
+
+function totals(){
+  const b = bundleById(state.baseBundleId);
+  const bundleBase = state.subscribe && SUBSCRIPTION.eligible[b.id]
+    ? effectiveSubPrice(b)
+    : b.price;
+  const bundleSavings = state.subscribe && SUBSCRIPTION.eligible[b.id]
+    ? (b.price - bundleBase) : 0;
+  const extrasTotal = state.extras.reduce((s,e)=> s + e.qty * EXTRA_PRICE, 0);
+  const subtotal    = bundleBase + extrasTotal;
+  return { bundleBase, bundleSavings, extrasTotal, subtotal, bundleListed:b.price };
+}
+
+function renderSummary(){
+  const t = totals();
+  summaryEl.innerHTML = `
+    <div class="sum-row"><span>${bundleById(state.baseBundleId).title}</span><span>${fmt(t.bundleListed)}</span></div>
+    ${state.subscribe && t.bundleSavings>0
+      ? `<div class="sum-row discount"><span>Subscribe &amp; Save (15%)</span><span>−${fmt(t.bundleSavings)}</span></div>`
+      : ''}
+    ${t.extrasTotal>0
+      ? `<div class="sum-row"><span>Extra pouches × ${state.extras.reduce((s,e)=>s+e.qty,0)}</span><span>${fmt(t.extrasTotal)}</span></div>`
+      : ''}
+    <div class="sum-row"><span>Shipping</span><span>${t.subtotal >= FREE_SHIP_THRESHOLD ? 'Free' : 'Calculated at Shopify'}</span></div>
+    <div class="sum-row total"><span>Today</span><span>${fmt(t.subtotal)}</span></div>
+  `;
+}
+
+function renderShip(){
+  const t = totals();
+  const pct = Math.min(100, Math.round(t.subtotal / FREE_SHIP_THRESHOLD * 100));
+  shipBar.style.width = pct + '%';
+  if(t.subtotal >= FREE_SHIP_THRESHOLD){
+    shipWrap.classList.add('ok');
+    shipMsg.textContent = 'Free shipping unlocked ✓';
+  } else {
+    shipWrap.classList.remove('ok');
+    const remaining = FREE_SHIP_THRESHOLD - t.subtotal;
+    shipMsg.textContent = `Add ${fmt(remaining)} for free shipping`;
+  }
+}
+
+function renderCheckoutCTA(){
+  const wired = Shopify.isWired();
+  goCheckout.disabled = !wired;
+  if(wired){
+    goCheckout.firstChild.nodeValue = 'Continue to secure checkout →';
+    ctaSub.textContent = 'You will be redirected to Shopify to complete your order.';
+    notice.classList.remove('show');
+  } else {
+    goCheckout.firstChild.nodeValue = 'Checkout wiring pending';
+    ctaSub.textContent = 'Shopify variant IDs not yet configured — see docs/shopify-setup.md.';
+    notice.textContent = 'Ops: paste your shop domain and variant IDs into site/preview/shared/shopify.js, then redeploy.';
+    notice.classList.add('show');
+  }
+}
+
+function renderCart(){
+  if(!state.ritual) return;
+  renderSuggest();
+  renderLines();
+  renderSubToggle();
+  renderSummary();
+  renderShip();
+  renderCheckoutCTA();
+}
+
+/* ----- Subscribe toggle ------------------------------------ */
+subToggle.addEventListener('change', (e) => {
+  state.subscribe = !!e.target.checked;
+  emit('varitea:picking_subscribe_toggled', { subscribe: state.subscribe });
+  renderCart();
+});
+
+/* ----- Add-extra blend picker ------------------------------ */
+addExtraBtn.addEventListener('click', () => {
+  extraPop.hidden = !extraPop.hidden;
+  if(!extraPop.hidden){
+    extraBlends.innerHTML = DAYPARTS.map(d => {
+      const b = blendDef(d.blend);
+      return `
+        <button class="blend-btn" data-add="${d.blend}" style="--a:${b.tintA};--b:${b.tintB}">
+          <span class="swatch" aria-hidden="true"></span>
+          <span class="moment">${d.label}</span>
+          <span class="name">${b.name}</span>
+        </button>`;
+    }).join('');
+    extraBlends.querySelectorAll('button[data-add]').forEach(b => {
+      b.addEventListener('click', () => {
+        const key = b.dataset.add;
+        const existing = state.extras.find(e => e.blendKey === key);
+        if(existing) existing.qty += 1;
+        else state.extras.push({ blendKey:key, qty:1, unitPrice:EXTRA_PRICE });
+        emit('varitea:picking_extra_added', { blendKey:key });
+        extraPop.hidden = true;
+        renderCart();
+      });
+    });
+  }
+});
+
+/* ----- Checkout — build Shopify cart permalink ------------- */
+goCheckout.addEventListener('click', () => {
+  const items = [];
+  items.push({ bundleId: state.baseBundleId, qty: 1, subscribe: state.subscribe });
+  // Extras aren't separate Shopify variants in this MVP — they ride as
+  // cart attributes so Ops can either map them to single-pouch variants
+  // later or fulfill them manually. Keeps Shopify wiring simple.
+  const routine = state.slots.map(k => k && BLENDS[k] ? BLENDS[k].name : null).filter(Boolean).join(' + ');
+  const attrs = {
+    ritual: state.ritual,
+    routine: routine,
+    bundle_id: state.baseBundleId,
+    sub_plan: state.subscribe ? 'ss-15' : 'one-time',
+    extras: state.extras.map(e => `${e.blendKey}:${e.qty}`).join(','),
+    source: 'picking'
+  };
+  const url = Shopify.buildCheckoutUrl(items, attrs);
+  emit('varitea:picking_checkout_click', { bundleId: state.baseBundleId, ritual: state.ritual, subscribe: state.subscribe, extras: state.extras.length });
+  if(!url){
+    notice.classList.add('show');
+    return;
+  }
+  location.href = url;
+});
+
+/* ----- Deep-link support ----------------------------------- */
+/* Allow main landing CTAs to land directly with a ritual chosen:
+   /picking?ritual=twice                                            */
+const qs = new URLSearchParams(location.search);
+const r0 = qs.get('ritual');
+if(r0 === 'once' || r0 === 'twice') pickRitual(r0);
+
+emit('varitea:picking_view', { ritualDeepLink: r0 || null });
+</script>
+</body>
+</html>
