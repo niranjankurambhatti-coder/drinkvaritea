@@ -62,7 +62,13 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;background:var(--off-white)}
+  /* --app-vh is set by JS once on load + on orientationchange. We avoid 100dvh
+     here on purpose: dvh recomputes as the URL bar collapses, and when this
+     page is embedded as an iframe inside the parent landing's scroll-snap
+     container, that recompute manifests as the "stretches and moves oddly"
+     glitch the user reported on page 2. */
+  :root{--app-vh:100vh}
+  html,body{height:var(--app-vh);background:var(--off-white)}
   body{
     font-family:var(--sans);
     color:var(--charcoal);
@@ -76,8 +82,8 @@
   .stage{
     position:relative;
     width:100%;
-    height:100dvh;
-    min-height:100svh;
+    /* Single, stable height source. No min-height fight between dvh and svh. */
+    height:var(--app-vh);
     overflow:hidden;
     isolation:isolate;
     background:var(--off-white);
@@ -447,6 +453,15 @@
           if (m) m.style.display = 'none';
         }
       } catch (e) {}
+
+      // Stable viewport height — see CSS note above. We snapshot on load and
+      // only refresh on orientationchange so the URL-bar collapse on mobile
+      // doesn't mid-scroll stretch the stage.
+      function lockVH(){
+        document.documentElement.style.setProperty('--app-vh', window.innerHeight + 'px');
+      }
+      lockVH();
+      window.addEventListener('orientationchange', function(){ setTimeout(lockVH, 120); });
     })();
   </script>
 
