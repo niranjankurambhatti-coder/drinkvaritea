@@ -4,20 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#F8F2EA">
-<title>Three teas — Varitea (s2 v2 preview)</title>
+<title>Build your routine — Varitea (s2 routine builder)</title>
 
 <!--
-  Screen 2 v2 — three teas
-  Designer: Jared (UX) · Built by: Computer (Web App Agent)
-  Variation of landing screen 2 only. Not wired into main landing yet.
+  Screen 2 — Research-backed daily routine builder (EXP-002, Phase 1)
+  Designer: Jared (Brand/Design/Conversion) · Built by: Computer
 
-  Principles enforced:
-  - Less text, more sensory (soul doc)
-  - One pouch at a time, user-controlled (no auto-rotate trap)
-  - Glossy reserved for tea liquid (the pour video) — pouches stay matte
-  - Three.js leaf burst on tap = satisfying interaction, ends in a settle
-  - Respects prefers-reduced-motion: video pauses, burst becomes a CSS fade
-  - All copy stays inside Jared's per-screen budget
+  The research IS the product. Varitea is an aesthetic, branding-first tea
+  company; the moat is the evidence-based daypart routine (now) + Val's
+  packaging-science track (later).
+
+  What changed from the 3-tea carousel:
+  - Selection is now a research-backed DAYPART routine builder.
+  - Four dayparts (Morning · Afternoon · Evening · Night), one blend each.
+    Naming: Dark Morning · Tart Cooler · Mint Reset · Moon Bloom.
+  - User toggles dayparts ON to assemble a routine; a natural-language line
+    describes it live ("a roasted morning, a tart afternoon, a soft night").
+  - A small TM research icon opens the research blog — the moat content.
+  - Same aesthetic preserved: ambient pour, lane tint, leaf burst, meta line,
+    matte pouches, Instrument Serif names, prefers-reduced-motion fallbacks.
+
+  Boundaries enforced: no health claims, no shipping promises, no invented
+  reviews. Copy stays ritual/taste/timing/caffeine-free only.
+
+  Analytics: event NAMES stay stable for Ronny. The parent bridge still
+  postMessages selections; tea_name comes straight from data-role (now the
+  daypart blend names). New routine-level signal: varitea:s2_routine_changed.
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,7 +83,7 @@
     background:var(--off-white);
   }
 
-  /* Lane-tinted radial that shifts as the active pouch changes */
+  /* Lane-tinted radial that shifts as the active daypart changes */
   .stage::before{
     content:"";
     position:absolute;inset:0;
@@ -96,8 +108,9 @@
     transition:opacity 900ms var(--ease);
   }
   .stage[data-active="0"] .ambient{opacity:.18}
-  .stage[data-active="1"] .ambient{opacity:.10}
-  .stage[data-active="2"] .ambient{opacity:.13}
+  .stage[data-active="1"] .ambient{opacity:.13}
+  .stage[data-active="2"] .ambient{opacity:.11}
+  .stage[data-active="3"] .ambient{opacity:.09}
 
   /* Three.js canvas for leaf burst — sits between video and pouch */
   #leaves{
@@ -117,20 +130,23 @@
     width:6px;height:6px;border-radius:50%;
     background:rgba(45,36,30,.22);
     transition:width 400ms var(--ease),background 400ms var(--ease);
+    cursor:pointer;
   }
   .dot.is-active{width:22px;border-radius:6px;background:var(--ink)}
+  .dot.in-routine{background:var(--ink)}
 
   /* ===== Pouch card stack ===== */
   .pouches{
-    position:absolute;inset:0;
+    position:absolute;left:0;right:0;top:0;
+    height:48dvh;min-height:300px;
     z-index:4;
     display:flex;align-items:center;justify-content:center;
-    padding:60px 24px 200px;
+    padding:72px 24px 8px;
   }
   .pouch{
     position:absolute;
-    width:min(72vw,340px);
-    aspect-ratio:3/4;
+    width:min(52vw,264px);
+    aspect-ratio:1/1;
     border-radius:var(--r-lg);
     overflow:hidden;
     box-shadow:var(--shadow-soft);
@@ -154,30 +170,48 @@
     pointer-events:auto;
     transform:translateY(0) scale(1);
   }
-  /* Subtle press response */
+  /* "In routine" gets a soft ring so the visual reflects the toggle state */
+  .pouch.is-active.picked{
+    box-shadow:0 0 0 3px var(--cream), 0 0 0 5px rgba(45,36,30,.45), var(--shadow-soft);
+  }
   .pouch.is-active:active{
     transform:translateY(0) scale(.985);
     box-shadow:0 14px 40px -22px rgba(45,36,30,.45);
     transition:transform 120ms var(--ease),box-shadow 120ms var(--ease);
   }
-  /* Soft "settled" pulse on activation — invitation to tap */
   @keyframes settled{
     0%,100%{box-shadow:var(--shadow-soft)}
     50%   {box-shadow:0 28px 70px -28px rgba(45,36,30,.42)}
   }
-  .pouch.is-active{animation:settled 4.2s var(--ease) infinite}
+  .pouch.is-active:not(.picked){animation:settled 4.2s var(--ease) infinite}
 
-  /* ===== Lower text block ===== */
-  .meta{
-    position:absolute;
-    left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom));
-    z-index:5;
-    text-align:center;
-    padding:0 24px;
-    transition:bottom 600ms var(--ease);
+  /* "Added" stamp that flicks on when a daypart joins the routine */
+  .added-stamp{
+    position:absolute;z-index:5;
+    top:18dvh;left:50%;transform:translate(-50%,-12px);
+    font-family:var(--serif);font-style:italic;font-size:15px;
+    color:var(--ink);background:rgba(252,248,242,.9);
+    border:1px solid rgba(45,36,30,.12);
+    border-radius:999px;padding:5px 14px;
+    opacity:0;pointer-events:none;
+    transition:opacity 300ms var(--ease),transform 300ms var(--ease);
   }
-  /* When CTA appears, push meta up so they don't collide */
-  .stage.has-cta .meta{bottom:calc(max(28px,env(safe-area-inset-bottom)) + 96px)}
+  .added-stamp.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ===== Bottom control deck — single flex column, no overlap ===== */
+  .deck{
+    position:absolute;left:0;right:0;
+    bottom:max(16px,env(safe-area-inset-bottom));
+    z-index:5;
+    display:flex;flex-direction:column;align-items:center;
+    gap:16px;
+    padding:0 18px;
+  }
+
+  /* ===== Lower text block (the blend name + research moat line) ===== */
+  .meta{
+    text-align:center;
+  }
   .meta__role{
     font-family:var(--serif);
     font-style:italic;
@@ -188,6 +222,24 @@
     opacity:0;transform:translateY(8px);
     transition:opacity 600ms var(--ease) 80ms,transform 600ms var(--ease) 80ms;
   }
+  /* TM research mark — opens the research blog (the moat) */
+  .tm{
+    display:inline-flex;align-items:center;justify-content:center;
+    vertical-align:super;
+    margin-left:4px;
+    width:20px;height:20px;
+    border-radius:50%;
+    border:1px solid rgba(45,36,30,.28);
+    background:rgba(252,248,242,.7);
+    font-family:var(--sans);font-style:normal;font-weight:500;
+    font-size:9px;letter-spacing:.02em;line-height:1;
+    color:var(--ink);
+    text-decoration:none;
+    cursor:pointer;
+    transition:background 220ms var(--ease),transform 220ms var(--ease),border-color 220ms var(--ease);
+  }
+  .tm:hover{background:var(--cream);border-color:rgba(45,36,30,.5);transform:translateY(-1px)}
+  .tm:active{transform:scale(.92)}
   .meta__sub{
     margin-top:8px;
     font-family:var(--sans);
@@ -196,70 +248,110 @@
     opacity:0;transform:translateY(8px);
     transition:opacity 600ms var(--ease) 160ms,transform 600ms var(--ease) 160ms;
   }
-  .meta.is-in .meta__role,
-  .meta.is-in .meta__sub{opacity:1;transform:none}
-
-  /* ===== Quiet controls (arrows + caption) ===== */
-  .controls{
-    position:absolute;
-    left:0;right:0;
-    bottom:calc(max(28px,env(safe-area-inset-bottom)) + 96px);
-    display:flex;align-items:center;justify-content:center;gap:18px;
-    z-index:5;
-    pointer-events:none;
-    transition:opacity 500ms var(--ease),transform 500ms var(--ease);
-  }
-  /* When CTA appears, controls fade up & out — their job is done */
-  .stage.has-cta .controls{opacity:0;transform:translateY(-12px);pointer-events:none}
-  .stage.has-cta .arrow{pointer-events:none}
-  .arrow{
-    pointer-events:auto;
-    width:42px;height:42px;border-radius:50%;
-    border:1px solid rgba(45,36,30,.14);
-    background:rgba(252,248,242,.6);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    display:grid;place-items:center;
-    cursor:pointer;
-    transition:background 220ms var(--ease),transform 220ms var(--ease);
-  }
-  .arrow:hover{background:rgba(252,248,242,.95)}
-  .arrow:active{transform:scale(.94)}
-  .arrow svg{width:14px;height:14px;stroke:var(--ink);fill:none;stroke-width:1.6}
-  .arrow[disabled]{opacity:.35;cursor:not-allowed}
-
-  .tap-hint{
-    pointer-events:none;
+  .meta__research{
+    margin-top:6px;
     font-family:var(--sans);
-    font-size:11px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;
     color:rgba(45,36,30,.5);
+    opacity:0;transform:translateY(8px);
+    transition:opacity 600ms var(--ease) 220ms,transform 600ms var(--ease) 220ms;
   }
+  .meta.is-in .meta__role,
+  .meta.is-in .meta__sub,
+  .meta.is-in .meta__research{opacity:1;transform:none}
 
-  /* ===== Bottom CTA — sticks to safe area ===== */
-  .cta-row{
-    position:absolute;
-    left:0;right:0;bottom:0;
-    padding:0 20px max(20px,env(safe-area-inset-bottom)) 20px;
-    z-index:6;
-    display:none; /* hidden by default; appears once user has seen all 3 */
-    justify-content:center;
+  /* ===== Natural-language routine sentence ===== */
+  .sentence{
+    position:relative;
+    text-align:center;
+    max-width:560px;
+    font-family:var(--serif);
+    font-size:clamp(19px,5.2vw,24px);
+    line-height:1.55;
+    color:var(--ink);
+    letter-spacing:-.005em;
+    word-spacing:.02em;
   }
-  .cta-row.is-in{display:flex;animation:fadeup 700ms var(--ease) both}
-  @keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .sentence .s-static{opacity:.9}
+  .s-clause{}
+  .s-clause .s-joiner{opacity:.9}
+
+  /* Inline tappable "stepper" tokens inside the sentence */
+  .token{
+    display:inline-flex;align-items:center;gap:4px;
+    margin:0 1px;padding:2px 10px 3px;
+    border:0;cursor:pointer;
+    font-family:var(--serif);
+    font-size:inherit;line-height:1.1;
+    color:var(--ink);
+    background:rgba(252,248,242,.66);
+    border-radius:999px;
+    box-shadow:inset 0 0 0 1px rgba(45,36,30,.16);
+    transition:box-shadow 200ms var(--ease),background 200ms var(--ease),color 200ms var(--ease),transform 140ms var(--ease);
+    -webkit-tap-highlight-color:transparent;
+    white-space:nowrap;
+  }
+  .token:hover{background:var(--cream);box-shadow:inset 0 0 0 1px rgba(45,36,30,.34)}
+  .token:active{transform:translateY(1px) scale(.98)}
+  .token[aria-expanded="true"]{background:var(--ink);color:var(--off-white);box-shadow:inset 0 0 0 1px var(--ink)}
+  .token[aria-expanded="true"] .caret{stroke:var(--off-white)}
+  /* assigned moment token gets a swatch dot + a quiet underline-style fill */
+  .token--moment{padding-left:8px}
+  .token--moment .tk-sw{width:9px;height:9px;border-radius:50%;background:var(--swatch,rgba(45,36,30,.32));flex:0 0 auto;box-shadow:0 0 0 1px rgba(252,248,242,.7)}
+  .token--moment.is-set{background:rgba(252,248,242,.9);box-shadow:inset 0 0 0 1px rgba(45,36,30,.32)}
+  .caret{width:13px;height:13px;stroke:var(--ink);fill:none;stroke-width:2;transition:transform 220ms var(--ease),stroke 200ms var(--ease)}
+  .token[aria-expanded="true"] .caret{transform:rotate(180deg)}
+
+  /* Option sheets (frequency + moment) — pop up above the deck */
+  .opts{
+    position:absolute;
+    left:50%;transform:translateX(-50%);
+    bottom:calc(100% + 12px);
+    z-index:9;
+    display:flex;flex-direction:column;gap:2px;
+    width:min(86vw,300px);
+    padding:8px;
+    background:var(--cream);
+    border-radius:var(--r-md);
+    box-shadow:var(--shadow-soft),0 0 0 1px rgba(45,36,30,.08);
+    animation:optsIn 240ms var(--ease);
+  }
+  .opts[hidden]{display:none}
+  /* little pointer at the bottom of the sheet */
+  .opts::after{
+    content:"";position:absolute;bottom:-6px;left:50%;
+    width:12px;height:12px;background:var(--cream);
+    transform:translateX(-50%) rotate(45deg);
+    box-shadow:2px 2px 4px -2px rgba(45,36,30,.25);
+  }
+  @keyframes optsIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .opt{
+    display:flex;align-items:center;gap:10px;
+    width:100%;height:42px;padding:0 14px;
+    border:0;border-radius:12px;background:transparent;cursor:pointer;
+    font-family:var(--sans);font-size:14px;font-weight:500;color:var(--ink);
+    text-align:left;
+    transition:background 160ms var(--ease);
+  }
+  .opt:hover{background:rgba(45,36,30,.06)}
+  .opt[aria-checked="true"]{background:var(--ink);color:var(--off-white)}
+  .opt-sw{width:11px;height:11px;border-radius:50%;background:var(--swatch);flex:0 0 auto;box-shadow:0 0 0 1px rgba(45,36,30,.18)}
+  .opt[aria-checked="true"] .opt-sw{box-shadow:0 0 0 1px rgba(252,248,242,.6)}
+
+  /* ===== Bottom CTA ===== */
   .cta{
     display:inline-flex;align-items:center;justify-content:center;
-    height:54px;padding:0 28px;
+    height:54px;padding:0 28px;min-width:min(92vw,320px);
     background:var(--ink);color:var(--off-white);
-    border-radius:999px;
-    text-decoration:none;
+    border-radius:999px;border:0;
+    text-decoration:none;cursor:pointer;
     font-family:var(--sans);font-weight:500;font-size:15px;letter-spacing:.01em;
     box-shadow:0 18px 40px -18px rgba(45,36,30,.55);
-    transition:transform 220ms var(--ease),box-shadow 220ms var(--ease);
+    transition:transform 220ms var(--ease),box-shadow 220ms var(--ease),opacity 220ms var(--ease);
   }
   .cta:hover{transform:translateY(-2px);box-shadow:0 22px 50px -18px rgba(45,36,30,.6)}
   .cta:active{transform:translateY(0) scale(.985)}
+  .cta[disabled]{opacity:.45;pointer-events:none;box-shadow:none}
 
   /* Top-left brand mark */
   .mark{
@@ -270,6 +362,44 @@
     opacity:.92;
   }
 
+  /* ===== Research drawer (TM blog peek, fast in-page) ===== */
+  .drawer-scrim{
+    position:fixed;inset:0;z-index:20;
+    background:rgba(45,36,30,.32);
+    opacity:0;pointer-events:none;
+    transition:opacity 320ms var(--ease);
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  }
+  .drawer-scrim.open{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;left:0;right:0;bottom:0;z-index:21;
+    max-height:82dvh;overflow-y:auto;
+    background:var(--cream);
+    border-radius:var(--r-lg) var(--r-lg) 0 0;
+    box-shadow:0 -24px 60px -28px rgba(45,36,30,.45);
+    transform:translateY(102%);
+    transition:transform 380ms var(--ease);
+    padding:14px 22px max(26px,env(safe-area-inset-bottom)) 22px;
+  }
+  .drawer.open{transform:translateY(0)}
+  .drawer__grip{width:42px;height:4px;border-radius:999px;background:rgba(45,36,30,.22);margin:2px auto 14px}
+  .drawer__eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(45,36,30,.55);margin-bottom:6px}
+  .drawer__title{font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.1;color:var(--ink);margin-bottom:10px}
+  .drawer__body{font-family:var(--sans);font-size:14px;line-height:1.6;color:var(--charcoal)}
+  .drawer__body p{margin-bottom:10px}
+  .drawer__body strong{font-weight:500;color:var(--ink)}
+  .drawer__more{
+    display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+    font-family:var(--sans);font-weight:500;font-size:13px;color:var(--ink);
+    text-decoration:none;border-bottom:1px solid rgba(45,36,30,.3);padding-bottom:1px;
+  }
+  .drawer__close{
+    position:absolute;top:12px;right:16px;
+    width:34px;height:34px;border-radius:50%;border:1px solid rgba(45,36,30,.14);
+    background:rgba(252,248,242,.8);display:grid;place-items:center;cursor:pointer;
+  }
+  .drawer__close svg{width:14px;height:14px;stroke:var(--ink);stroke-width:1.6;fill:none}
+
   /* prefers-reduced-motion fallbacks */
   @media (prefers-reduced-motion: reduce){
     .ambient{display:none}
@@ -277,11 +407,14 @@
     .pouch.is-active{animation:none}
     .stage::before{transition:none}
     #leaves{display:none}
+    .drawer{transition:none}
   }
 
   /* Wider screens: keep mobile-first frame but center comfortably */
   @media (min-width: 720px){
-    .pouch{width:min(420px,40vw)}
+    .pouch{width:min(360px,34vw)}
+    .drawer{left:50%;right:auto;transform:translate(-50%,102%);width:min(560px,94vw);border-radius:var(--r-lg)}
+    .drawer.open{transform:translate(-50%,0)}
   }
 </style>
 </head>
@@ -289,7 +422,7 @@
 
 <main class="stage" id="stage" data-active="0"
       style="--lane-tint-a:#EFE3D6;--lane-tint-b:#F8F2EA;"
-      aria-label="Three teas, choose one">
+      aria-label="Build your daily tea routine — four research-backed dayparts">
 
   <!-- Ambient pour video backdrop -->
   <video class="ambient" id="ambient"
@@ -301,11 +434,9 @@
   <!-- Three.js leaf burst layer -->
   <canvas id="leaves" aria-hidden="true"></canvas>
 
-  <!-- Brand mark (hidden when embedded in the landing page, which has its own header) -->
+  <!-- Brand mark (hidden when embedded in the landing page) -->
   <span class="mark" data-brandmark>varitea</span>
   <script>
-    /* When embedded (?embed=1) inside the landing page, hide the duplicate
-       brand mark so it doesn't overlap the parent header. */
     (function () {
       try {
         var embedded = new URLSearchParams(location.search).get('embed') === '1'
@@ -319,59 +450,111 @@
     })();
   </script>
 
-  <!-- Progress dots -->
-  <nav class="nav" aria-label="Pouch position">
+  <!-- Progress dots (one per daypart) -->
+  <nav class="nav" id="nav" aria-label="Daypart position">
     <span class="dot is-active" data-i="0"></span>
     <span class="dot" data-i="1"></span>
     <span class="dot" data-i="2"></span>
+    <span class="dot" data-i="3"></span>
   </nav>
 
-  <!-- Pouch stack -->
+  <!-- Pouch stack: one per daypart blend -->
   <div class="pouches" id="pouches">
-    <button class="pouch is-active" data-i="0" data-role="Bold Black"
-            data-sub="rich · warm · morning-ready"
+    <button class="pouch is-active" data-i="0"
+            data-daypart="Morning" data-role="Dark Morning"
+            data-sub="roasted · grounding · caffeine-free"
+            data-research="A roasted morning ritual — without the caffeine"
             data-tint-a="#EFE3D6" data-tint-b="#F8F2EA"
-            data-leaf="#5A3E2A"
-            aria-label="Bold Black — tap for a leaf burst">
-      <img src="/preview/s2-v2/assets/pouch-bold.jpg" alt="Bold Black tea pouch in matte deep brown with a cream label">
+            data-leaf="#5A3E2A" data-swatch="#5A3E2A"
+            aria-label="Dark Morning — a roasted morning ritual, tap to add to your routine">
+      <img src="/preview/s2-v2/assets/daypart-morning.png" alt="Dark Morning tea canister in matte roasted brown with a cream label">
     </button>
-    <button class="pouch" data-i="1" data-role="Floral Herbal"
-            data-sub="floral · soothing · evening-calm"
-            data-tint-a="#E9D9EE" data-tint-b="#F4E7E9"
-            data-leaf="#B07AB0"
-            aria-label="Floral Herbal — tap for a leaf burst">
-      <img src="/preview/s2-v2/assets/pouch-floral.jpg" alt="Floral Herbal tea pouch with a powder lavender to blush gradient">
+    <button class="pouch" data-i="1"
+            data-daypart="Afternoon" data-role="Tart Cooler"
+            data-sub="tart · bright · hot or iced"
+            data-research="A tart afternoon refresher, hot or iced"
+            data-tint-a="#F3DDD3" data-tint-b="#F8EDE6"
+            data-leaf="#B4503C" data-swatch="#B4503C"
+            aria-label="Tart Cooler — a bright afternoon refresher, tap to add to your routine">
+      <img src="/preview/s2-v2/assets/daypart-afternoon.png" alt="Tart Cooler tea canister in warm hibiscus terracotta with a cream label">
     </button>
-    <button class="pouch" data-i="2" data-role="Smooth Green"
-            data-sub="smooth · fresh · gentle-lift"
-            data-tint-a="#D8DEC5" data-tint-b="#EBE6D2"
-            data-leaf="#6A7A52"
-            aria-label="Smooth Green — tap for a leaf burst">
-      <img src="/preview/s2-v2/assets/pouch-smooth.jpg" alt="Smooth Green tea pouch in sage with a cream label">
+    <button class="pouch" data-i="2"
+            data-daypart="Evening" data-role="Mint Reset"
+            data-sub="soft mint · after-dinner · winding down"
+            data-research="A soft after-dinner reset to wind the day down"
+            data-tint-a="#DEE3CF" data-tint-b="#EDEADC"
+            data-leaf="#6A7A52" data-swatch="#6A7A52"
+            aria-label="Mint Reset — a soft after-dinner wind-down, tap to add to your routine">
+      <img src="/preview/s2-v2/assets/daypart-evening.png" alt="Mint Reset tea canister in soft sage green with a cream label">
+    </button>
+    <button class="pouch" data-i="3"
+            data-daypart="Night" data-role="Moon Bloom"
+            data-sub="floral · calm · bedtime"
+            data-research="A floral bedtime garden for the last cup of the day"
+            data-tint-a="#E4DCEC" data-tint-b="#F1ECF4"
+            data-leaf="#8E78A6" data-swatch="#8E78A6"
+            aria-label="Moon Bloom — a floral bedtime blend, tap to add to your routine">
+      <img src="/preview/s2-v2/assets/daypart-night.png" alt="Moon Bloom tea canister in dusk lavender violet with a cream label">
     </button>
   </div>
 
-  <!-- Quiet controls + tap hint -->
-  <div class="controls">
-    <button class="arrow" id="prev" aria-label="Previous tea" disabled>
-      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
-    </button>
-    <span class="tap-hint" id="hint">tap the pouch</span>
-    <button class="arrow" id="next" aria-label="Next tea">
-      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-    </button>
+  <!-- "Added to routine" stamp -->
+  <div class="added-stamp" id="addedStamp">added to your routine</div>
+
+  <!-- Bottom control deck: meta → natural-language routine sentence → CTA -->
+  <div class="deck">
+    <!-- Blend name + research moat line + TM icon (reflects the focused moment) -->
+    <div class="meta is-in" id="meta">
+      <div class="meta__role" id="role">Dark Morning<a class="tm" id="tm" href="/preview/research/daypart-ritual/" aria-label="Read the research behind this blend">™</a></div>
+      <div class="meta__sub" id="sub">roasted · grounding · caffeine-free</div>
+      <div class="meta__research" id="research">A roasted morning ritual — without the caffeine</div>
+    </div>
+
+    <!-- Natural-language routine sentence with inline steppers -->
+    <p class="sentence" id="sentence" aria-label="Build your routine in a sentence">
+      <span class="s-static">I like to drink my tea</span>
+      <!-- frequency token: any time · once a day · twice a day -->
+      <button class="token token--freq" id="freqToken" type="button"
+              aria-haspopup="true" aria-expanded="false">
+        <span id="freqLabel">any time of the day</span>
+        <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <!-- moment clause appears once a frequency with cups is chosen -->
+      <span class="s-clause" id="clause" hidden></span>
+    </p>
+
+    <!-- Frequency option sheet -->
+    <div class="opts" id="freqOpts" role="menu" aria-label="How often do you drink tea" hidden>
+      <button class="opt" type="button" data-freq="0" role="menuitemradio" aria-checked="true">any time of the day</button>
+      <button class="opt" type="button" data-freq="1" role="menuitemradio" aria-checked="false">once a day</button>
+      <button class="opt" type="button" data-freq="2" role="menuitemradio" aria-checked="false">twice a day</button>
+    </div>
+
+    <!-- Moment option sheet (shared; re-targeted to whichever cup token is open) -->
+    <div class="opts" id="momentOpts" role="menu" aria-label="Pick a moment for this cup" hidden>
+      <button class="opt" type="button" data-moment="-1" role="menuitemradio"><span class="opt-sw" style="--swatch:rgba(45,36,30,.32)"></span>any time</button>
+      <button class="opt" type="button" data-moment="0" role="menuitemradio"><span class="opt-sw" style="--swatch:#5A3E2A"></span>the morning</button>
+      <button class="opt" type="button" data-moment="1" role="menuitemradio"><span class="opt-sw" style="--swatch:#B4503C"></span>the afternoon</button>
+      <button class="opt" type="button" data-moment="2" role="menuitemradio"><span class="opt-sw" style="--swatch:#6A7A52"></span>the evening</button>
+      <button class="opt" type="button" data-moment="3" role="menuitemradio"><span class="opt-sw" style="--swatch:#8E78A6"></span>the night</button>
+    </div>
+
+    <!-- CTA -->
+    <button class="cta" id="cta" type="button"
+            data-analytics-event="checkout_cta_click"
+            data-cta-label="Curate my pack">Curate my pack</button>
   </div>
 
-  <!-- Meta -->
-  <div class="meta is-in" id="meta">
-    <div class="meta__role" id="role">Bold Black</div>
-    <div class="meta__sub" id="sub">rich · warm · morning-ready</div>
-  </div>
-
-  <!-- CTA appears once the user has seen all three -->
-  <div class="cta-row" id="ctaRow">
-    <a class="cta" href="#quiz" id="cta">Start with three teas — $19</a>
-  </div>
+  <!-- Research drawer (TM peek) -->
+  <div class="drawer-scrim" id="drawerScrim"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <button class="drawer__close" id="drawerClose" aria-label="Close research"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="drawer__grip"></div>
+    <div class="drawer__eyebrow" id="drawerEyebrow">The research behind it</div>
+    <h2 class="drawer__title" id="drawerTitle">Why a tea for every part of the day</h2>
+    <div class="drawer__body" id="drawerBody"></div>
+    <a class="drawer__more" id="drawerMore" href="/preview/research/daypart-ritual/">Read the full research →</a>
+  </aside>
 
 </main>
 
@@ -387,54 +570,248 @@
 import * as THREE from 'three';
 
 /* ============================================================
+   DATA — research-backed daypart drawer copy (the moat).
+   Sourced from the deep-research report. Ritual/taste/timing
+   framing only — no health/medical claims.
+   ============================================================ */
+const RESEARCH = {
+  0: {
+    eyebrow: 'Morning · the research',
+    title: 'A roasted morning, minus the caffeine',
+    body: `<p>Our research points to a simple truth: most people don't want another stimulant in the morning — they want the <strong>ritual</strong> of one. Dark Morning is built on a roasted, coffee-adjacent base (chicory and rooibos) so the cup feels grounding and familiar.</p>
+           <p>The deeper finding is about <strong>choice</strong>. When shoppers face a wall of options, they stall. So we organize the line around four moments of the day instead — you choose <strong>when</strong>, and the blend follows.</p>`
+  },
+  1: {
+    eyebrow: 'Afternoon · the research',
+    title: 'A bright reset for the mid-day dip',
+    body: `<p>Afternoon is where a hot-or-iced, high-contrast flavor earns its place. Tart Cooler leads with hibiscus for a juicy, refreshing cup that reads as a genuine break in the day.</p>
+           <p>Our work on assortment shows that a single, confident flavor story per moment beats a complicated one. One clear afternoon note, not five.</p>`
+  },
+  2: {
+    eyebrow: 'Evening · the research',
+    title: 'A soft landing after dinner',
+    body: `<p>Evening is a bridge between the day and rest. Mint Reset pairs soft peppermint with gentle herbal notes — a cup that signals the day is winding down.</p>
+           <p>The research is clear that a <strong>routine</strong> matters more than any single ingredient. The same cup, at the same time, becomes the cue your evening recognizes.</p>`
+  },
+  3: {
+    eyebrow: 'Night · the research',
+    title: 'A floral garden for the last cup',
+    body: `<p>Night is the gateway to rest. Moon Bloom is a soft floral blend (chamomile and lavender) framed as a <strong>bedtime ritual</strong>, not a switch you flip.</p>
+           <p>This is the heart of why we exist: the research is what we sell. We're an aesthetic, caffeine-free tea brand, and the moat is a daily routine you can actually trust and enjoy.</p>`
+  }
+};
+
+/* ============================================================
    STATE
    ============================================================ */
 const stage   = document.getElementById('stage');
 const pouches = [...document.querySelectorAll('.pouch')];
 const dots    = [...document.querySelectorAll('.dot')];
-const prevBtn = document.getElementById('prev');
-const nextBtn = document.getElementById('next');
 const role    = document.getElementById('role');
 const sub     = document.getElementById('sub');
+const research= document.getElementById('research');
 const meta    = document.getElementById('meta');
-const hint    = document.getElementById('hint');
-const ctaRow  = document.getElementById('ctaRow');
-const ambient = document.getElementById('ambient');
+const tm       = document.getElementById('tm');
+const cta      = document.getElementById('cta');
+const ambient  = document.getElementById('ambient');
+const addedStamp = document.getElementById('addedStamp');
+
+// Sentence picker elements
+const sentence  = document.getElementById('sentence');
+const freqToken = document.getElementById('freqToken');
+const freqLabel = document.getElementById('freqLabel');
+const freqOpts  = document.getElementById('freqOpts');
+const momentOpts= document.getElementById('momentOpts');
+const clause    = document.getElementById('clause');
+
+const drawer = document.getElementById('drawer');
+const drawerScrim = document.getElementById('drawerScrim');
+const drawerClose = document.getElementById('drawerClose');
+const drawerEyebrow = document.getElementById('drawerEyebrow');
+const drawerTitle = document.getElementById('drawerTitle');
+const drawerBody = document.getElementById('drawerBody');
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let active = 0;
-const seen = new Set([0]);
+const N = pouches.length;
+
+/* ---- Routine state ----
+   frequency: 0 = any time of the day (undecided), 1 = once a day, 2 = twice a day
+   cups: one entry per cup the user drinks. Each cup holds a moment index
+         (0..3 for morning/afternoon/evening/night) or -1 for "any time".
+         Cups default to -1 (any time) so nothing is forced.                       */
+let frequency = 0;
+let cups = [];            // e.g. [0, 2] means morning cup + evening cup
+let openCup = null;       // which cup token's moment sheet is open (index into cups)
+
+/* Display labels */
+const FREQ_LABEL = ['any time of the day','once a day','twice a day'];
+const MOMENT_NAME = ['the morning','the afternoon','the evening','the night'];
+const MOMENT_SWATCH = ['#5A3E2A','#B4503C','#6A7A52','#8E78A6'];
+/* the moment a cup represents, in research-friendly natural language (for analytics + drawer sync) */
+const DAYPART = ['Morning','Afternoon','Evening','Night'];
 
 /* ============================================================
-   PARENT BRIDGE — s2_tea_selected
-   When embedded in the landing page (?embed=1), postMessage the
-   selected tea up to the parent so it can fire the canonical
-   `s2_tea_selected` event. `tea_name` MUST equal Jared's final
-   flavor names (proper case) — they come straight from data-role.
-   Parent listener + window.varitea.track() is owned by Ronny.
+   ANALYTICS PARENT BRIDGE
+   Event NAMES stay stable for Ronny. tea_name comes from
+   data-role (now the daypart blend names). We also emit a
+   routine-level signal so Ronny can learn which dayparts win.
    ============================================================ */
-function reportSelection(i, interaction){
-  try {
-    const p = pouches[i];
-    if (!p) return;
-    const msg = {
-      type: 'varitea:s2_tea_selected',
-      tea_name: p.dataset.role,        // 'Bold Black' | 'Floral Herbal' | 'Smooth Green'
-      lane_index: i,                   // 0 | 1 | 2
-      interaction: interaction || 'tap' // 'tap' | 'swipe' | 'arrow' | 'dot'
-    };
-    if (window.parent && window.parent !== window) {
+function postParent(msg){
+  try{
+    if (window.parent && window.parent !== window){
       window.parent.postMessage(msg, window.location.origin);
     }
-  } catch (e) {}
+  }catch(e){}
+}
+function reportSelection(i, interaction){
+  const p = pouches[i]; if(!p) return;
+  postParent({
+    type:'varitea:s2_tea_selected',
+    tea_name: p.dataset.role,
+    daypart: p.dataset.daypart,
+    lane_index: i,
+    interaction: interaction || 'tap'
+  });
+}
+/* Snapshot of the routine for analytics + checkout. Each cup maps to a moment
+   (or 'Any time'), and — where assigned — to the research-backed blend. */
+function routineSnapshot(){
+  return cups.map(m => ({
+    moment: m >= 0 ? DAYPART[m] : 'Any time',
+    tea_name: m >= 0 ? pouches[m].dataset.role : null
+  }));
+}
+function reportRoutineChange(action, momentIdx){
+  postParent({
+    type:'varitea:s2_routine_changed',
+    action: action,                 // 'frequency' | 'assign'
+    frequency: FREQ_LABEL[frequency],
+    cups: frequency === 0 ? 0 : cups.length,
+    tea_name: (momentIdx != null && momentIdx >= 0) ? pouches[momentIdx].dataset.role : null,
+    daypart:  (momentIdx != null && momentIdx >= 0) ? DAYPART[momentIdx] : (momentIdx === -1 ? 'Any time' : null),
+    routine: routineSnapshot()
+  });
 }
 
 /* ============================================================
-   THREE.JS LEAF BURST
-   - Instanced quads, transparent leaf texture drawn to canvas
-   - On tap: burst N leaves from tap origin (in normalized device coords)
-   - Leaves rise, drift sideways, rotate, settle, fade
+   SENTENCE RENDERING (the routine builder)
+   "I like to drink my tea [freq], in [moment] and [moment]."
+   ============================================================ */
+function flashAdded(text){
+  addedStamp.textContent = text;
+  addedStamp.classList.add('show');
+  clearTimeout(flashAdded._t);
+  flashAdded._t = setTimeout(()=>addedStamp.classList.remove('show'), 1100);
+}
+
+/* Build the moment clause: ", in [the morning] and [the afternoon]" */
+function renderClause(){
+  // Undecided frequency → no clause at all.
+  if(frequency === 0){ clause.hidden = true; clause.innerHTML = ''; return; }
+  clause.hidden = false;
+  let html = '<span class="s-joiner">, in </span>';
+  cups.forEach((m, ci) => {
+    if(ci > 0){
+      html += '<span class="s-joiner">' + (cups.length === 2 ? ' and ' : (ci === cups.length-1 ? ' and ' : ', ')) + '</span>';
+    }
+    const isSet = m >= 0;
+    const label = isSet ? MOMENT_NAME[m] : 'any time';
+    const sw = isSet ? MOMENT_SWATCH[m] : 'rgba(45,36,30,.32)';
+    html += '<button class="token token--moment' + (isSet ? ' is-set' : '') + '" '
+          + 'type="button" data-cup="' + ci + '" aria-haspopup="true" aria-expanded="false" '
+          + 'style="--swatch:' + sw + '">'
+          + '<span class="tk-sw"></span><span class="tk-label">' + label + '</span>'
+          + '<svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>'
+          + '</button>';
+  });
+  clause.innerHTML = html;
+  // wire up the freshly-rendered moment tokens
+  clause.querySelectorAll('.token--moment').forEach(t => {
+    t.addEventListener('click', (e) => { e.stopPropagation(); openMomentSheet(+t.dataset.cup, t); });
+  });
+}
+
+/* CTA copy reflects how curated the pack is */
+function syncCTA(){
+  if(frequency === 0){
+    cta.textContent = 'Curate my anytime pack';
+    return;
+  }
+  const assigned = cups.filter(m => m >= 0).length;
+  if(assigned === 0){
+    cta.textContent = cups.length === 1 ? 'Curate my 1-cup pack' : 'Curate my ' + cups.length + '-cup pack';
+  } else {
+    cta.textContent = assigned === 1 ? 'Curate my pack — 1 moment' : 'Curate my pack — ' + assigned + ' moments';
+  }
+}
+
+function renderSentence(){
+  freqLabel.textContent = FREQ_LABEL[frequency];
+  renderClause();
+  syncCTA();
+  dots.forEach((d,k)=> d.classList.toggle('in-routine', cups.includes(k)));
+}
+
+/* When the user picks a frequency, size the cups array (defaulting to "any time") */
+function setFrequency(f){
+  frequency = f;
+  if(f === 0){ cups = []; }
+  else {
+    const target = f; // 1 or 2 cups
+    const next = [];
+    for(let i=0;i<target;i++){ next.push(cups[i] != null ? cups[i] : -1); }
+    cups = next;
+  }
+  reportRoutineChange('frequency', null);
+  renderSentence();
+}
+
+/* Assign a moment to a specific cup */
+function assignMoment(cupIndex, momentIdx){
+  cups[cupIndex] = momentIdx;
+  if(momentIdx >= 0){
+    setActive(momentIdx, {interaction:'sentence', silent:false});
+    flashAdded('added · ' + pouches[momentIdx].dataset.role);
+  }
+  reportRoutineChange('assign', momentIdx);
+  renderSentence();
+}
+
+/* ============================================================
+   POUCH / DAYPART SWITCHING
+   ============================================================ */
+function setActive(i, opts = {}){
+  if(i < 0 || i > N-1 || i === active) return;
+  active = i;
+  pouches.forEach((p,k)=>p.classList.toggle('is-active', k===i));
+  const p = pouches[i];
+
+  meta.classList.remove('is-in');
+  setTimeout(()=>{
+    role.childNodes[0].nodeValue = p.dataset.role; // keep the TM anchor intact
+    sub.textContent  = p.dataset.sub;
+    research.textContent = p.dataset.research;
+    meta.classList.add('is-in');
+  }, 200);
+
+  stage.dataset.active = String(i);
+  stage.style.setProperty('--lane-tint-a', p.dataset.tintA);
+  stage.style.setProperty('--lane-tint-b', p.dataset.tintB);
+
+  dots.forEach((d,k)=>{
+    d.classList.toggle('is-active', k === i);
+    d.classList.toggle('in-routine', cups.includes(k));
+  });
+  pouches.forEach((pp,k)=> pp.classList.toggle('picked', cups.includes(k)));
+
+  if(!reduceMotion && !opts.silent) burstAt(i);
+  reportSelection(i, opts.interaction);
+}
+
+/* ============================================================
+   THREE.JS LEAF BURST (preserved from the original screen)
    ============================================================ */
 const canvas   = document.getElementById('leaves');
 const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
@@ -446,23 +823,19 @@ camera.position.z = 5;
 function resize(){
   const w = stage.clientWidth, h = stage.clientHeight;
   renderer.setSize(w, h, false);
-  // Orthographic camera matches pixel space, centered. We'll convert px → world manually.
   camera.left = -w/2; camera.right = w/2;
   camera.top = h/2;   camera.bottom = -h/2;
   camera.updateProjectionMatrix();
 }
 window.addEventListener('resize', resize); resize();
 
-/* Draw a small leaf shape onto an offscreen canvas → reuse as texture */
 function leafTexture(color){
   const c = document.createElement('canvas');
   c.width = 128; c.height = 128;
   const g = c.getContext('2d');
-  // soft drop shadow
   g.translate(64,64);
   g.shadowColor = 'rgba(45,36,30,.25)';
   g.shadowBlur = 8; g.shadowOffsetY = 2;
-  // leaf path — elongated ellipse with pointed ends
   g.beginPath();
   g.moveTo(0,-48);
   g.bezierCurveTo(28,-36, 28,36, 0,48);
@@ -470,7 +843,6 @@ function leafTexture(color){
   g.closePath();
   g.fillStyle = color;
   g.fill();
-  // tiny mid-vein
   g.shadowColor = 'transparent';
   g.strokeStyle = 'rgba(0,0,0,.18)';
   g.lineWidth = 1.2;
@@ -481,18 +853,17 @@ function leafTexture(color){
   return tex;
 }
 
-const textures = {
-  '#5A3E2A': leafTexture('#5A3E2A'),
-  '#B07AB0': leafTexture('#B07AB0'),
-  '#6A7A52': leafTexture('#6A7A52'),
-};
+const textures = {};
+pouches.forEach(p => {
+  const hex = p.dataset.leaf;
+  if(!textures[hex]) textures[hex] = leafTexture(hex);
+});
 
-/* Pool of leaf sprites — reuse instead of allocate */
 const POOL_SIZE = 80;
 const pool = [];
 for(let i=0;i<POOL_SIZE;i++){
   const mat = new THREE.MeshBasicMaterial({ transparent:true, depthWrite:false });
-  const geo = new THREE.PlaneGeometry(38, 38); // ~38px leaves
+  const geo = new THREE.PlaneGeometry(38, 38);
   const m = new THREE.Mesh(geo, mat);
   m.visible = false;
   scene.add(m);
@@ -500,31 +871,28 @@ for(let i=0;i<POOL_SIZE;i++){
 }
 
 function burst(originX, originY, colorHex){
-  const tex = textures[colorHex] || textures['#5A3E2A'];
+  const tex = textures[colorHex] || Object.values(textures)[0];
   const count = 22 + Math.floor(Math.random()*8);
   const t0 = performance.now();
   let spawned = 0;
-
   for(const slot of pool){
     if(spawned >= count) break;
     if(slot.alive) continue;
     slot.alive = true;
     spawned++;
-
     const m = slot.mesh;
     m.material.map = tex;
     m.material.opacity = 0;
     m.material.needsUpdate = true;
     m.visible = true;
     m.position.set(originX, originY, 0);
-    const angle = (-Math.PI/2) + (Math.random()-.5)*Math.PI*0.9; // mostly upward
+    const angle = (-Math.PI/2) + (Math.random()-.5)*Math.PI*0.9;
     const speed = 120 + Math.random()*220;
     const drift = (Math.random()-.5)*0.8;
     const spin  = (Math.random()-.5)*4;
     const life  = 1500 + Math.random()*1200;
     const scale = 0.5 + Math.random()*0.9;
     m.scale.set(scale, scale, 1);
-
     slot.start = t0;
     slot.vx = Math.cos(angle)*speed;
     slot.vy = Math.sin(angle)*speed;
@@ -537,152 +905,181 @@ function burst(originX, originY, colorHex){
   }
 }
 
+function burstAt(i){
+  const p = pouches[i]; if(!p) return;
+  const rect = p.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+  const cx = (rect.left - stageRect.left) + rect.width/2 - stageRect.width/2;
+  const cy = -((rect.top - stageRect.top) + rect.height/2) + stageRect.height/2;
+  burst(cx, cy, p.dataset.leaf);
+}
+
 let prevT = performance.now();
 function tick(now){
   const dt = Math.min(50, now - prevT) / 1000;
   prevT = now;
-
   for(const slot of pool){
     if(!slot.alive) continue;
     const elapsed = now - slot.start;
     const t = elapsed / slot.life;
-    if(t >= 1){
-      slot.alive = false;
-      slot.mesh.visible = false;
-      continue;
-    }
-    // ease-out velocity + gravity-down feel
+    if(t >= 1){ slot.alive = false; slot.mesh.visible = false; continue; }
     const decay = 1 - t;
     slot.x += slot.vx * dt * decay;
-    slot.y += (slot.vy * decay + 80 * t) * dt * -1; // gravity pulls down (negative y in our coords = up)
-    // actually our camera y+ is up, so gravity reduces y over time:
-    // (rewriting): use proper gravity below instead
-    slot.vy += 280 * dt;  // gravity in screen-space px/s²
+    slot.vy += 280 * dt;
     slot.x += slot.drift * 40 * dt;
     slot.rot += slot.spin * dt;
     slot.mesh.position.set(slot.x, slot.y - slot.vy*dt, 0);
     slot.mesh.rotation.z = slot.rot;
-
-    // fade in (first 12%), hold, fade out (last 35%)
     let a = 1;
     if(t < .12) a = t / .12;
     else if(t > .65) a = 1 - (t - .65) / .35;
     slot.mesh.material.opacity = Math.max(0, a) * 0.95;
   }
-
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
 if(!reduceMotion) requestAnimationFrame(tick);
 
 /* ============================================================
-   POUCH SWITCHING
+   RESEARCH DRAWER (TM peek)
    ============================================================ */
-function setActive(i, opts = {}){
-  if(i < 0 || i > 2 || i === active) return;
-  active = i;
-  seen.add(i);
-
-  // Pouches
-  pouches.forEach((p,k)=>p.classList.toggle('is-active', k===i));
-
-  // Dots
-  dots.forEach((d,k)=>d.classList.toggle('is-active', k===i));
-
-  // Meta text fade
-  meta.classList.remove('is-in');
-  const p = pouches[i];
-  // small timing so the text re-enters with the new card
-  setTimeout(()=>{
-    role.textContent = p.dataset.role;
-    sub.textContent  = p.dataset.sub;
-    meta.classList.add('is-in');
-  }, 220);
-
-  // Lane tint
-  stage.dataset.active = String(i);
-  stage.style.setProperty('--lane-tint-a', p.dataset.tintA);
-  stage.style.setProperty('--lane-tint-b', p.dataset.tintB);
-
-  // Arrows
-  prevBtn.disabled = i === 0;
-  nextBtn.disabled = i === 2;
-
-  // CTA appears once all three seen
-  if(seen.size === 3){
-    ctaRow.classList.add('is-in');
-    stage.classList.add('has-cta');
-    hint.textContent = 'pick your start';
-  }
-
-  // Light burst on switch (gentle)
-  if(!reduceMotion && !opts.silent){
-    const rect = p.getBoundingClientRect();
-    const stageRect = stage.getBoundingClientRect();
-    const cx = (rect.left - stageRect.left) + rect.width/2 - stageRect.width/2;
-    const cy = -((rect.top - stageRect.top) + rect.height/2) + stageRect.height/2;
-    burst(cx, cy, p.dataset.leaf);
-  }
-
-  // Report the new selection to the parent landing tracker
-  reportSelection(i, opts.interaction);
+function openDrawer(i){
+  const r = RESEARCH[i] || RESEARCH[0];
+  drawerEyebrow.textContent = r.eyebrow;
+  drawerTitle.textContent = r.title;
+  drawerBody.innerHTML = r.body;
+  drawerScrim.classList.add('open');
+  drawer.classList.add('open');
+  postParent({ type:'varitea:s2_research_opened', tea_name: pouches[i].dataset.role, daypart: pouches[i].dataset.daypart });
 }
+function closeDrawer(){
+  drawerScrim.classList.remove('open');
+  drawer.classList.remove('open');
+}
+tm.addEventListener('click', (e)=>{ e.preventDefault(); openDrawer(active); });
+drawerClose.addEventListener('click', closeDrawer);
+drawerScrim.addEventListener('click', closeDrawer);
+window.addEventListener('keydown', e => { if(e.key === 'Escape') closeDrawer(); });
 
 /* ============================================================
-   INPUT
+   OPTION SHEETS (frequency + moment pop-ups)
    ============================================================ */
+let openSheet = null;     // 'freq' | 'moment' | null
+let openMomentToken = null;
 
-// Tap a pouch → burst from tap point
-pouches.forEach(p => {
+function closeSheets(){
+  freqOpts.hidden = true;
+  momentOpts.hidden = true;
+  freqToken.setAttribute('aria-expanded','false');
+  if(openMomentToken){ openMomentToken.setAttribute('aria-expanded','false'); openMomentToken = null; }
+  openSheet = null; openCup = null;
+}
+
+function openFreqSheet(){
+  if(openSheet === 'freq'){ closeSheets(); return; }
+  closeSheets();
+  // reflect current selection
+  freqOpts.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-checked', String(+o.dataset.freq === frequency)));
+  freqOpts.hidden = false;
+  freqToken.setAttribute('aria-expanded','true');
+  openSheet = 'freq';
+}
+
+function openMomentSheet(cupIndex, tokenEl){
+  if(openSheet === 'moment' && openCup === cupIndex){ closeSheets(); return; }
+  closeSheets();
+  openCup = cupIndex;
+  openMomentToken = tokenEl;
+  const current = cups[cupIndex];
+  momentOpts.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-checked', String(+o.dataset.moment === current)));
+  // anchor the shared sheet to this token
+  const deckRect = tokenEl.closest('.deck').getBoundingClientRect();
+  const tRect = tokenEl.getBoundingClientRect();
+  momentOpts.style.left = (tRect.left - deckRect.left + tRect.width/2) + 'px';
+  momentOpts.hidden = false;
+  tokenEl.setAttribute('aria-expanded','true');
+  openSheet = 'moment';
+  // preview that moment if already assigned
+  if(current >= 0) setActive(current, {interaction:'sentence', silent:true});
+}
+
+freqToken.addEventListener('click', (e)=>{ e.stopPropagation(); openFreqSheet(); });
+freqOpts.querySelectorAll('.opt').forEach(o => {
+  o.addEventListener('click', (e)=>{ e.stopPropagation(); setFrequency(+o.dataset.freq); closeSheets(); });
+});
+momentOpts.querySelectorAll('.opt').forEach(o => {
+  o.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(openCup != null) assignMoment(openCup, +o.dataset.moment);
+    closeSheets();
+  });
+});
+// tap-away + Esc close the sheets
+document.addEventListener('click', ()=> closeSheets());
+window.addEventListener('keydown', e => { if(e.key === 'Escape') closeSheets(); });
+
+/* ============================================================
+   INPUT — pouch / dots / swipe just PREVIEW a daypart;
+   assignment happens through the sentence tokens.
+   ============================================================ */
+// Tap a pouch → preview it; if a moment sheet is open, assign it to that cup
+pouches.forEach((p,idx) => {
   p.addEventListener('pointerdown', (e) => {
-    if(reduceMotion) return;
     if(!p.classList.contains('is-active')) return;
-    const stageRect = stage.getBoundingClientRect();
-    const x = e.clientX - stageRect.left - stageRect.width/2;
-    const y = -(e.clientY - stageRect.top - stageRect.height/2);
-    burst(x, y, p.dataset.leaf);
-    // a tap on the already-active pouch is still an explicit selection
-    reportSelection(active, 'tap');
-    // tiny brand-mark wink
-    p.animate(
-      [{transform:'translateY(0) scale(1)'},{transform:'translateY(-4px) scale(1.015)'},{transform:'translateY(0) scale(1)'}],
-      {duration:520, easing:'cubic-bezier(.22,.61,.36,1)'}
-    );
+    if(!reduceMotion){
+      const stageRect = stage.getBoundingClientRect();
+      const x = e.clientX - stageRect.left - stageRect.width/2;
+      const y = -(e.clientY - stageRect.top - stageRect.height/2);
+      burst(x, y, p.dataset.leaf);
+      p.animate(
+        [{transform:'translateY(0) scale(1)'},{transform:'translateY(-4px) scale(1.015)'},{transform:'translateY(0) scale(1)'}],
+        {duration:520, easing:'cubic-bezier(.22,.61,.36,1)'}
+      );
+    }
+    if(openSheet === 'moment' && openCup != null){
+      assignMoment(openCup, idx);
+      closeSheets();
+    }
   });
 });
 
-// Arrows
-prevBtn.addEventListener('click', ()=>setActive(active-1, {interaction:'arrow'}));
-nextBtn.addEventListener('click', ()=>setActive(active+1, {interaction:'arrow'}));
+// Dots preview dayparts
+dots.forEach(d => d.addEventListener('click', (e)=>{ e.stopPropagation(); setActive(+d.dataset.i, {interaction:'dot'}); }));
 
-// Dots
-dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i, {interaction:'dot'})));
-
-// Swipe
+// Swipe between dayparts (preview only)
 let touchX = null;
 stage.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
 stage.addEventListener('touchend', e => {
   if(touchX == null) return;
   const dx = (e.changedTouches[0].clientX) - touchX;
-  if(Math.abs(dx) > 50){
-    setActive(active + (dx < 0 ? 1 : -1), {interaction:'swipe'});
-  }
+  if(Math.abs(dx) > 50){ setActive(active + (dx < 0 ? 1 : -1), {interaction:'swipe'}); }
   touchX = null;
 }, {passive:true});
 
-// Keyboard
+// Keyboard arrows preview dayparts
 window.addEventListener('keydown', e => {
   if(e.key === 'ArrowRight') setActive(active+1, {interaction:'arrow'});
   if(e.key === 'ArrowLeft')  setActive(active-1, {interaction:'arrow'});
+});
+
+// CTA → bubble the curated routine up to the parent landing page (owns checkout)
+cta.addEventListener('click', ()=>{
+  postParent({
+    type:'varitea:s2_routine_checkout',
+    frequency: FREQ_LABEL[frequency],
+    cups: frequency === 0 ? 0 : cups.length,
+    routine: routineSnapshot()
+  });
 });
 
 // Pause ambient video when tab is hidden (battery)
 document.addEventListener('visibilitychange', () => {
   if(document.hidden) ambient.pause(); else ambient.play().catch(()=>{});
 });
-
-/* Quiet first-load: ambient video can fail to autoplay on some mobile browsers — that's fine, poster fills the gap. */
 ambient.play().catch(()=>{});
+
+/* Initial paint */
+renderSentence();
 </script>
 </body>
 </html>
