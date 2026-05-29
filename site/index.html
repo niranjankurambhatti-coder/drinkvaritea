@@ -147,16 +147,21 @@
   }
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+  /* --app-vh is set by JS once on load + on orientationchange so the snap
+     viewport doesn't shrink/grow when the mobile URL bar collapses mid-scroll
+     (that was causing the page-2 stretch + scroll jitter). */
+  :root{--app-vh:100vh}
   body{
     scroll-snap-type:y mandatory;
     overflow-x:hidden;
     overflow-y:scroll;
-    height:100vh;
-    height:100dvh;
+    height:var(--app-vh);
+    /* iOS momentum + GPU promotion = noticeably smoother snap. */
+    -webkit-overflow-scrolling:touch;
   }
   /* leaf canvas — fixed full-viewport overlay */
   #leaf-canvas{
-    position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;
+    position:fixed;inset:0;width:100vw;height:var(--app-vh);
     pointer-events:none;z-index:50;
   }
   /* progress rail */
@@ -198,12 +203,19 @@
   .skip:hover{opacity:1}
   /* each screen */
   section{
-    position:relative;width:100vw;height:100vh;height:100dvh;
-    scroll-snap-align:start;scroll-snap-stop:always;
+    position:relative;width:100vw;height:var(--app-vh);
+    scroll-snap-align:start;
+    /* `stop:always` forces the browser to halt at every snap point even on a
+       fast flick — that produced visible jolts between s1→s2 and s2→s3.
+       `normal` still snaps, just lets momentum carry through cleanly. */
+    scroll-snap-stop:normal;
     display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
     overflow:hidden;
     padding:0 24px 56px;
     isolation:isolate;
+    /* keep paint + layout work inside the section so scroll doesn't invalidate
+       neighbours (kills a big chunk of the stretch feel on s2). */
+    contain:layout paint;
   }
   /* full-bleed media */
   .bg{
@@ -237,7 +249,15 @@
   /* s2 v2 — embedded three-teas experience (papercraft + Three.js leaf burst) */
   .s2--v2{position:relative;overflow:hidden;background:var(--cream)}
   .s2--v2::after{display:none}
-  .s2__frame{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:var(--cream)}
+  .s2__frame{
+    position:absolute;inset:0;width:100%;height:100%;border:0;display:block;
+    background:var(--cream);
+    /* promote to its own compositor layer so the iframe's internal repaint
+       doesn't bleed into the parent's scroll layer (was the main cause of the
+       "stretches and moves oddly" feel reported on page 2). */
+    will-change:transform;transform:translateZ(0);
+    backface-visibility:hidden;
+  }
   .s2::after{
     content:"";position:absolute;inset:0;z-index:-1;
     background:
@@ -308,7 +328,10 @@
   }
   .dots span.is-active{background:var(--plum);width:22px}
   /* screen 3 — Ritual: looping video */
-  .s3 video.bg{filter:saturate(1.05) contrast(1.02)}
+  .s3 video.bg{filter:saturate(1.05) contrast(1.02);z-index:-1}
+  /* poster fallback sits one layer below the video so blank-video frames
+     still show the still image instead of cream background. */
+  .s3 .s3__fallback{z-index:-2;filter:saturate(1.05) contrast(1.02)}
   .s3 .copy{text-align:center;color:#FCF8F2;max-width:300px;padding-bottom:24px}
   .s3 h2{
     font-family:var(--serif);font-weight:400;font-style:italic;
@@ -386,7 +409,7 @@
   @media (min-width:900px){
     body{
       background:#221c1a;display:flex;align-items:center;justify-content:center;
-      height:100vh;height:100dvh;overflow:hidden;scroll-snap-type:none;
+      height:var(--app-vh);overflow:hidden;scroll-snap-type:none;
     }
     #stage{
       width:390px;height:844px;border-radius:48px;overflow:hidden;
@@ -443,15 +466,32 @@
   </section>
 
   <!-- ============ SCREEN 2 — THREE TEAS (s2 v2: papercraft + Three.js) ============ -->
+  <!-- IMPORTANT: do NOT add loading="lazy" to this iframe. Lazy-loaded iframes
+       paint on first intersection — which on this scroll-snap layout means the
+       iframe was rendering its own height/layout AT scroll time, producing the
+       reported "page 2 stretches and moves oddly" feel. Eager load means it's
+       already painted by the time the user snaps to it. -->
   <section class="s2 s2--v2" id="s2" data-i="1" aria-label="Three teas">
     <iframe class="s2__frame" src="/preview/s2-v2/?embed=1"
-            title="Choose your tea" loading="lazy"
+            title="Choose your tea"
             allow="autoplay" scrolling="no"></iframe>
   </section>
 
   <!-- ============ SCREEN 3 — RITUAL ============ -->
+  <!-- Fallback image sits *behind* the video so the section is never blank,
+       even if the video element is still buffering or autoplay was blocked.
+       `poster` covers the same gap for the video itself before its first frame
+       decodes. preload="auto" so iOS Safari has the first frame ready by the
+       time the user snaps onto this section. -->
   <section class="s3" id="s3" data-i="2" aria-label="Ritual">
-    <video class="bg" id="ritual-video" src="assets/amber-pour.mp4" playsinline muted loop preload="metadata" aria-hidden="true"></video>
+    <img class="bg s3__fallback" src="assets/amber-pour-poster.jpg"
+         alt="" aria-hidden="true" decoding="async" fetchpriority="low">
+    <video class="bg" id="ritual-video"
+           src="assets/amber-pour.mp4"
+           poster="assets/amber-pour-poster.jpg"
+           playsinline webkit-playsinline="true"
+           muted loop preload="auto" disableremoteplayback
+           aria-hidden="true"></video>
     <div class="bg-tint" aria-hidden="true"></div>
     <div class="copy">
       <h2 data-reveal data-d="1">Three honest cups.<br>No guesswork.</h2>
@@ -548,15 +588,35 @@ function spawnLeaf(initial=false){
 
 for(let i=0;i<LEAF_COUNT;i++) leaves.push(spawnLeaf(true));
 
+/* ============ VIEWPORT HEIGHT LOCK ============
+   Mobile browsers shrink/grow the viewport as the URL bar collapses, and the
+   old `height:100dvh` per-section was being recomputed mid-scroll on iOS
+   Safari + Chrome Android — which is what made the snap feel jittery and the
+   embedded s2 iframe "stretch". We snapshot the height once and only update it
+   on orientation change (not on resize/scroll). */
+function lockViewportHeight(){
+  // Use innerHeight rather than 100dvh so we get the *current* visible viewport
+  // without subscribing to its mid-scroll mutations.
+  const h = window.innerHeight;
+  document.documentElement.style.setProperty('--app-vh', h + 'px');
+}
+lockViewportHeight();
+window.addEventListener('orientationchange', () => {
+  // Wait a tick for the new viewport to settle before re-locking.
+  setTimeout(lockViewportHeight, 120);
+});
+
 /* ============ SCROLL → MOTION COUPLING ============ */
 let scrollProgress = 0;     // 0..1 over the whole 4-screen scroll
 let velocityBoost  = 0;     // momentary boost when user scrolls
 let lastScroll = 0;
 let lastTs = performance.now();
+let scrollRafId = 0;        // rAF coalescing so we only do scroll work once per frame
 
 function getScroller(){ return isDesktop() ? stage : (document.scrollingElement || document.documentElement); }
 
-function onScroll(){
+function readScroll(){
+  scrollRafId = 0;
   const sc  = getScroller();
   const max = Math.max(1, sc.scrollHeight - sc.clientHeight);
   const p   = Math.min(1, Math.max(0, sc.scrollTop / max));
@@ -570,6 +630,15 @@ function onScroll(){
   syncPouches();
 }
 
+function onScroll(){
+  // Coalesce: multiple `scroll` events per frame collapse into a single
+  // readScroll() call on the next animation frame. This was the biggest source
+  // of jitter — every scroll tick was writing to `rail.style.width` and
+  // toggling section classes, which trampled paint inside the scroll layer.
+  if (scrollRafId) return;
+  scrollRafId = requestAnimationFrame(readScroll);
+}
+
 const sections = [...document.querySelectorAll('section')];
 function syncSections(p){
   // 4 sections → index = p * 3
@@ -579,13 +648,62 @@ function syncSections(p){
 
 const video = document.getElementById('ritual-video');
 let videoPlaying = false;
-function syncVideo(p){
-  // s3 is index 2 of 4 → centered around p≈0.66
-  const inRitual = p > 0.45 && p < 0.85;
-  if(inRitual && !videoPlaying){
-    video.play().catch(()=>{});
+let videoPlayPending = false;
+
+// Kick a load() as soon as the page is interactive so the first frame is
+// decoded before the user ever scrolls to s3. preload="auto" alone isn't
+// always honored on mobile data-saver modes; calling load() forces it.
+try { video.load(); } catch(e){}
+
+// If autoplay/decode fails the section would have gone blank — the fallback
+// <img> sits underneath, but we also retry once on the next user interaction
+// (mobile autoplay policy will allow play() then).
+video.addEventListener('error', () => {
+  // Hide the broken video so the fallback image is the only thing painted.
+  video.style.display = 'none';
+});
+
+function attemptVideoPlay(){
+  if (videoPlaying || videoPlayPending) return;
+  videoPlayPending = true;
+  const playP = video.play();
+  if (playP && typeof playP.then === 'function') {
+    playP.then(() => {
+      videoPlaying = true;
+      videoPlayPending = false;
+    }).catch(() => {
+      // Autoplay was blocked or the video wasn't ready. Leave videoPlaying
+      // false so the next scroll tick (or the one-shot user-gesture listener
+      // below) can retry. The fallback <img> keeps the section non-blank.
+      videoPlayPending = false;
+    });
+  } else {
     videoPlaying = true;
-  } else if(!inRitual && videoPlaying){
+    videoPlayPending = false;
+  }
+}
+
+// One-shot user-gesture retry: if mobile autoplay blocked the first play()
+// call, the very next tap/touch will unlock it. Cheaper than polling.
+function unlockOnGesture(){
+  if (!videoPlaying) attemptVideoPlay();
+  window.removeEventListener('touchstart', unlockOnGesture);
+  window.removeEventListener('pointerdown', unlockOnGesture);
+}
+window.addEventListener('touchstart', unlockOnGesture, { passive:true, once:false });
+window.addEventListener('pointerdown', unlockOnGesture, { passive:true, once:false });
+
+function syncVideo(p){
+  // s3 is index 2 of 4 → centered around p≈0.66.
+  // Widened lower bound from 0.45 → 0.40 so that a fast flick from s1 that
+  // momentarily samples p≈0.42 (between s2 and s3) still kicks playback off
+  // before the user lands. Otherwise the rAF-coalesced scroll handler could
+  // skip the (0.45, 0.85) window entirely on a hard flick and the video
+  // would never start — the exact "blank on phone" symptom.
+  const inRitual = p > 0.40 && p < 0.90;
+  if (inRitual) {
+    attemptVideoPlay();
+  } else if (videoPlaying) {
     video.pause();
     videoPlaying = false;
   }
@@ -597,9 +715,11 @@ function syncVideo(p){
    carousel logic is needed here. */
 function syncPouches(){ /* no-op: s2 handled inside the embedded experience */ }
 
+// Only the active scroller fires — we used to subscribe to BOTH `getScroller()`
+// and `window`, which on mobile (where they're the same element) made every
+// scroll event run our handler twice per tick.
 getScroller().addEventListener('scroll', onScroll, { passive:true });
-window.addEventListener('scroll', onScroll, { passive:true });
-onScroll();
+readScroll();
 
 /* ============ ANIMATION LOOP ============ */
 // leaves settle and pile up at the bottom of the viewport.
