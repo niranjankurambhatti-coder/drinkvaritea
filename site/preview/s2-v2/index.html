@@ -204,7 +204,7 @@
     bottom:max(16px,env(safe-area-inset-bottom));
     z-index:5;
     display:flex;flex-direction:column;align-items:center;
-    gap:14px;
+    gap:16px;
     padding:0 18px;
   }
 
@@ -260,58 +260,85 @@
   .meta.is-in .meta__sub,
   .meta.is-in .meta__research{opacity:1;transform:none}
 
-  /* ===== Add / remove this daypart ===== */
-  .pick{
-    display:inline-flex;align-items:center;gap:8px;
-    height:40px;padding:0 18px;
-    border-radius:999px;
-    border:1px solid rgba(45,36,30,.18);
-    background:rgba(252,248,242,.72);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    font-family:var(--sans);font-weight:500;font-size:13px;letter-spacing:.01em;
-    color:var(--ink);cursor:pointer;
-    transition:background 220ms var(--ease),border-color 220ms var(--ease),transform 160ms var(--ease);
+  /* ===== Natural-language routine sentence ===== */
+  .sentence{
+    position:relative;
+    text-align:center;
+    max-width:560px;
+    font-family:var(--serif);
+    font-size:clamp(19px,5.2vw,24px);
+    line-height:1.55;
+    color:var(--ink);
+    letter-spacing:-.005em;
+    word-spacing:.02em;
   }
-  .pick:hover{background:var(--cream)}
-  .pick:active{transform:scale(.97)}
-  .pick .tick{width:14px;height:14px;stroke:var(--ink);fill:none;stroke-width:1.8;opacity:0;transition:opacity 200ms var(--ease)}
-  .pick.on{background:var(--ink);color:var(--off-white);border-color:var(--ink)}
-  .pick.on .tick{stroke:var(--off-white);opacity:1}
+  .sentence .s-static{opacity:.9}
+  .s-clause{}
+  .s-clause .s-joiner{opacity:.9}
 
-  /* ===== Daypart toggle chips (the routine builder) ===== */
-  .chips{
-    display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
-    max-width:520px;
-  }
-  .chip{
-    display:inline-flex;align-items:center;gap:6px;
-    height:34px;padding:0 13px;
+  /* Inline tappable "stepper" tokens inside the sentence */
+  .token{
+    display:inline-flex;align-items:center;gap:4px;
+    margin:0 1px;padding:2px 10px 3px;
+    border:0;cursor:pointer;
+    font-family:var(--serif);
+    font-size:inherit;line-height:1.1;
+    color:var(--ink);
+    background:rgba(252,248,242,.66);
     border-radius:999px;
-    border:1px solid rgba(45,36,30,.16);
-    background:rgba(252,248,242,.55);
-    font-family:var(--sans);font-weight:500;font-size:12px;letter-spacing:.01em;
-    color:rgba(45,36,30,.7);cursor:pointer;
-    transition:background 220ms var(--ease),color 220ms var(--ease),border-color 220ms var(--ease),transform 140ms var(--ease);
+    box-shadow:inset 0 0 0 1px rgba(45,36,30,.16);
+    transition:box-shadow 200ms var(--ease),background 200ms var(--ease),color 200ms var(--ease),transform 140ms var(--ease);
+    -webkit-tap-highlight-color:transparent;
+    white-space:nowrap;
   }
-  .chip .swatch{width:9px;height:9px;border-radius:50%;background:var(--swatch,#5A3E2A);flex:0 0 auto}
-  .chip:active{transform:scale(.96)}
-  .chip[aria-current="true"]{border-color:rgba(45,36,30,.42);color:var(--ink)}
-  .chip.on{background:var(--ink);color:var(--off-white);border-color:var(--ink)}
-  .chip.on .swatch{box-shadow:0 0 0 1.5px rgba(252,248,242,.8)}
+  .token:hover{background:var(--cream);box-shadow:inset 0 0 0 1px rgba(45,36,30,.34)}
+  .token:active{transform:translateY(1px) scale(.98)}
+  .token[aria-expanded="true"]{background:var(--ink);color:var(--off-white);box-shadow:inset 0 0 0 1px var(--ink)}
+  .token[aria-expanded="true"] .caret{stroke:var(--off-white)}
+  /* assigned moment token gets a swatch dot + a quiet underline-style fill */
+  .token--moment{padding-left:8px}
+  .token--moment .tk-sw{width:9px;height:9px;border-radius:50%;background:var(--swatch,rgba(45,36,30,.32));flex:0 0 auto;box-shadow:0 0 0 1px rgba(252,248,242,.7)}
+  .token--moment.is-set{background:rgba(252,248,242,.9);box-shadow:inset 0 0 0 1px rgba(45,36,30,.32)}
+  .caret{width:13px;height:13px;stroke:var(--ink);fill:none;stroke-width:2;transition:transform 220ms var(--ease),stroke 200ms var(--ease)}
+  .token[aria-expanded="true"] .caret{transform:rotate(180deg)}
 
-  /* ===== Bottom CTA — routine summary + checkout ===== */
-  .cta-row{
-    display:flex;flex-direction:column;align-items:center;gap:8px;
-    width:100%;
+  /* Option sheets (frequency + moment) — pop up above the deck */
+  .opts{
+    position:absolute;
+    left:50%;transform:translateX(-50%);
+    bottom:calc(100% + 12px);
+    z-index:9;
+    display:flex;flex-direction:column;gap:2px;
+    width:min(86vw,300px);
+    padding:8px;
+    background:var(--cream);
+    border-radius:var(--r-md);
+    box-shadow:var(--shadow-soft),0 0 0 1px rgba(45,36,30,.08);
+    animation:optsIn 240ms var(--ease);
   }
-  .routine-line{
-    font-family:var(--serif);font-style:italic;
-    font-size:14px;line-height:1.3;color:var(--ink);
-    text-align:center;max-width:520px;
-    min-height:18px;
-    opacity:.92;
-    transition:opacity 300ms var(--ease);
+  .opts[hidden]{display:none}
+  /* little pointer at the bottom of the sheet */
+  .opts::after{
+    content:"";position:absolute;bottom:-6px;left:50%;
+    width:12px;height:12px;background:var(--cream);
+    transform:translateX(-50%) rotate(45deg);
+    box-shadow:2px 2px 4px -2px rgba(45,36,30,.25);
   }
+  @keyframes optsIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .opt{
+    display:flex;align-items:center;gap:10px;
+    width:100%;height:42px;padding:0 14px;
+    border:0;border-radius:12px;background:transparent;cursor:pointer;
+    font-family:var(--sans);font-size:14px;font-weight:500;color:var(--ink);
+    text-align:left;
+    transition:background 160ms var(--ease);
+  }
+  .opt:hover{background:rgba(45,36,30,.06)}
+  .opt[aria-checked="true"]{background:var(--ink);color:var(--off-white)}
+  .opt-sw{width:11px;height:11px;border-radius:50%;background:var(--swatch);flex:0 0 auto;box-shadow:0 0 0 1px rgba(45,36,30,.18)}
+  .opt[aria-checked="true"] .opt-sw{box-shadow:0 0 0 1px rgba(252,248,242,.6)}
+
+  /* ===== Bottom CTA ===== */
   .cta{
     display:inline-flex;align-items:center;justify-content:center;
     height:54px;padding:0 28px;min-width:min(92vw,320px);
@@ -474,36 +501,48 @@
   <!-- "Added to routine" stamp -->
   <div class="added-stamp" id="addedStamp">added to your routine</div>
 
-  <!-- Bottom control deck: meta → pick → chips → routine line + CTA -->
+  <!-- Bottom control deck: meta → natural-language routine sentence → CTA -->
   <div class="deck">
-    <!-- Blend name + research moat line + TM icon -->
+    <!-- Blend name + research moat line + TM icon (reflects the focused moment) -->
     <div class="meta is-in" id="meta">
       <div class="meta__role" id="role">Dark Morning<a class="tm" id="tm" href="/preview/research/daypart-ritual/" aria-label="Read the research behind this blend">™</a></div>
       <div class="meta__sub" id="sub">roasted · grounding · caffeine-free</div>
       <div class="meta__research" id="research">A roasted morning ritual — without the caffeine</div>
     </div>
 
-    <!-- Add / remove this daypart from the routine -->
-    <button class="pick" id="pick" type="button" aria-pressed="false">
-      <svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
-      <span id="pickLabel">Add Dark Morning</span>
-    </button>
+    <!-- Natural-language routine sentence with inline steppers -->
+    <p class="sentence" id="sentence" aria-label="Build your routine in a sentence">
+      <span class="s-static">I like to drink my tea</span>
+      <!-- frequency token: any time · once a day · twice a day -->
+      <button class="token token--freq" id="freqToken" type="button"
+              aria-haspopup="true" aria-expanded="false">
+        <span id="freqLabel">any time of the day</span>
+        <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <!-- moment clause appears once a frequency with cups is chosen -->
+      <span class="s-clause" id="clause" hidden></span>
+    </p>
 
-    <!-- Daypart toggle chips -->
-    <div class="chips" id="chips" role="group" aria-label="Your daily routine — toggle dayparts">
-      <button class="chip" data-i="0" type="button" aria-current="true" style="--swatch:#5A3E2A"><span class="swatch"></span>Morning</button>
-      <button class="chip" data-i="1" type="button" style="--swatch:#B4503C"><span class="swatch"></span>Afternoon</button>
-      <button class="chip" data-i="2" type="button" style="--swatch:#6A7A52"><span class="swatch"></span>Evening</button>
-      <button class="chip" data-i="3" type="button" style="--swatch:#8E78A6"><span class="swatch"></span>Night</button>
+    <!-- Frequency option sheet -->
+    <div class="opts" id="freqOpts" role="menu" aria-label="How often do you drink tea" hidden>
+      <button class="opt" type="button" data-freq="0" role="menuitemradio" aria-checked="true">any time of the day</button>
+      <button class="opt" type="button" data-freq="1" role="menuitemradio" aria-checked="false">once a day</button>
+      <button class="opt" type="button" data-freq="2" role="menuitemradio" aria-checked="false">twice a day</button>
     </div>
 
-    <!-- Routine summary + CTA -->
-    <div class="cta-row">
-      <div class="routine-line" id="routineLine">Tap a daypart to start your routine.</div>
-      <button class="cta" id="cta" type="button" disabled
-              data-analytics-event="checkout_cta_click"
-              data-cta-label="Build my routine">Pick a daypart to begin</button>
+    <!-- Moment option sheet (shared; re-targeted to whichever cup token is open) -->
+    <div class="opts" id="momentOpts" role="menu" aria-label="Pick a moment for this cup" hidden>
+      <button class="opt" type="button" data-moment="-1" role="menuitemradio"><span class="opt-sw" style="--swatch:rgba(45,36,30,.32)"></span>any time</button>
+      <button class="opt" type="button" data-moment="0" role="menuitemradio"><span class="opt-sw" style="--swatch:#5A3E2A"></span>the morning</button>
+      <button class="opt" type="button" data-moment="1" role="menuitemradio"><span class="opt-sw" style="--swatch:#B4503C"></span>the afternoon</button>
+      <button class="opt" type="button" data-moment="2" role="menuitemradio"><span class="opt-sw" style="--swatch:#6A7A52"></span>the evening</button>
+      <button class="opt" type="button" data-moment="3" role="menuitemradio"><span class="opt-sw" style="--swatch:#8E78A6"></span>the night</button>
     </div>
+
+    <!-- CTA -->
+    <button class="cta" id="cta" type="button"
+            data-analytics-event="checkout_cta_click"
+            data-cta-label="Curate my pack">Curate my pack</button>
   </div>
 
   <!-- Research drawer (TM peek) -->
@@ -568,18 +607,22 @@ const RESEARCH = {
 const stage   = document.getElementById('stage');
 const pouches = [...document.querySelectorAll('.pouch')];
 const dots    = [...document.querySelectorAll('.dot')];
-const chips   = [...document.querySelectorAll('.chip')];
 const role    = document.getElementById('role');
 const sub     = document.getElementById('sub');
 const research= document.getElementById('research');
 const meta    = document.getElementById('meta');
 const tm       = document.getElementById('tm');
-const pick     = document.getElementById('pick');
-const pickLabel= document.getElementById('pickLabel');
-const routineLine = document.getElementById('routineLine');
 const cta      = document.getElementById('cta');
 const ambient  = document.getElementById('ambient');
 const addedStamp = document.getElementById('addedStamp');
+
+// Sentence picker elements
+const sentence  = document.getElementById('sentence');
+const freqToken = document.getElementById('freqToken');
+const freqLabel = document.getElementById('freqLabel');
+const freqOpts  = document.getElementById('freqOpts');
+const momentOpts= document.getElementById('momentOpts');
+const clause    = document.getElementById('clause');
 
 const drawer = document.getElementById('drawer');
 const drawerScrim = document.getElementById('drawerScrim');
@@ -592,15 +635,22 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let active = 0;
 const N = pouches.length;
-const routine = new Set(); // indices the user has added
 
-/* Natural-language fragments for the routine summary line */
-const NL = {
-  0: 'a roasted morning',
-  1: 'a tart afternoon',
-  2: 'a soft evening',
-  3: 'a floral night'
-};
+/* ---- Routine state ----
+   frequency: 0 = any time of the day (undecided), 1 = once a day, 2 = twice a day
+   cups: one entry per cup the user drinks. Each cup holds a moment index
+         (0..3 for morning/afternoon/evening/night) or -1 for "any time".
+         Cups default to -1 (any time) so nothing is forced.                       */
+let frequency = 0;
+let cups = [];            // e.g. [0, 2] means morning cup + evening cup
+let openCup = null;       // which cup token's moment sheet is open (index into cups)
+
+/* Display labels */
+const FREQ_LABEL = ['any time of the day','once a day','twice a day'];
+const MOMENT_NAME = ['the morning','the afternoon','the evening','the night'];
+const MOMENT_SWATCH = ['#5A3E2A','#B4503C','#6A7A52','#8E78A6'];
+/* the moment a cup represents, in research-friendly natural language (for analytics + drawer sync) */
+const DAYPART = ['Morning','Afternoon','Evening','Night'];
 
 /* ============================================================
    ANALYTICS PARENT BRIDGE
@@ -625,62 +675,30 @@ function reportSelection(i, interaction){
     interaction: interaction || 'tap'
   });
 }
-function reportRoutineChange(action, i){
-  const p = pouches[i];
+/* Snapshot of the routine for analytics + checkout. Each cup maps to a moment
+   (or 'Any time'), and — where assigned — to the research-backed blend. */
+function routineSnapshot(){
+  return cups.map(m => ({
+    moment: m >= 0 ? DAYPART[m] : 'Any time',
+    tea_name: m >= 0 ? pouches[m].dataset.role : null
+  }));
+}
+function reportRoutineChange(action, momentIdx){
   postParent({
     type:'varitea:s2_routine_changed',
-    action: action,                 // 'add' | 'remove'
-    tea_name: p ? p.dataset.role : null,
-    daypart: p ? p.dataset.daypart : null,
-    routine_size: routine.size,
-    routine: [...routine].map(k => pouches[k].dataset.role)
+    action: action,                 // 'frequency' | 'assign'
+    frequency: FREQ_LABEL[frequency],
+    cups: frequency === 0 ? 0 : cups.length,
+    tea_name: (momentIdx != null && momentIdx >= 0) ? pouches[momentIdx].dataset.role : null,
+    daypart:  (momentIdx != null && momentIdx >= 0) ? DAYPART[momentIdx] : (momentIdx === -1 ? 'Any time' : null),
+    routine: routineSnapshot()
   });
 }
 
 /* ============================================================
-   ROUTINE SUMMARY + CTA STATE
+   SENTENCE RENDERING (the routine builder)
+   "I like to drink my tea [freq], in [moment] and [moment]."
    ============================================================ */
-function buildRoutineLine(){
-  const idx = [...routine].sort((a,b)=>a-b);
-  if(idx.length === 0){
-    routineLine.textContent = 'Tap a daypart to start your routine.';
-    cta.disabled = true;
-    cta.textContent = 'Pick a daypart to begin';
-    return;
-  }
-  const parts = idx.map(k => NL[k]);
-  let phrase;
-  if(parts.length === 1) phrase = parts[0];
-  else if(parts.length === 2) phrase = parts[0] + ' and ' + parts[1];
-  else phrase = parts.slice(0,-1).join(', ') + ', and ' + parts[parts.length-1];
-  routineLine.textContent = 'Your routine: ' + phrase + '.';
-  cta.disabled = false;
-  const n = idx.length;
-  cta.textContent = n === 1
-    ? 'Build my routine — 1 blend'
-    : 'Build my routine — ' + n + ' blends';
-}
-
-function syncPickButton(){
-  const inRoutine = routine.has(active);
-  const name = pouches[active].dataset.role;
-  pick.classList.toggle('on', inRoutine);
-  pick.setAttribute('aria-pressed', String(inRoutine));
-  pickLabel.textContent = inRoutine ? ('Added · ' + name) : ('Add ' + name);
-  pouches[active].classList.toggle('picked', inRoutine);
-}
-
-function syncChips(){
-  chips.forEach((c,k)=>{
-    c.classList.toggle('on', routine.has(k));
-    c.setAttribute('aria-current', String(k === active));
-  });
-  dots.forEach((d,k)=>{
-    d.classList.toggle('is-active', k === active);
-    d.classList.toggle('in-routine', routine.has(k));
-  });
-}
-
 function flashAdded(text){
   addedStamp.textContent = text;
   addedStamp.classList.add('show');
@@ -688,18 +706,77 @@ function flashAdded(text){
   flashAdded._t = setTimeout(()=>addedStamp.classList.remove('show'), 1100);
 }
 
-function toggleRoutine(i, interaction){
-  const wasIn = routine.has(i);
-  if(wasIn){ routine.delete(i); }
-  else { routine.add(i); }
-  reportRoutineChange(wasIn ? 'remove' : 'add', i);
-  if(!wasIn){
-    flashAdded('added to your routine');
-    if(!reduceMotion) burstAt(i);
+/* Build the moment clause: ", in [the morning] and [the afternoon]" */
+function renderClause(){
+  // Undecided frequency → no clause at all.
+  if(frequency === 0){ clause.hidden = true; clause.innerHTML = ''; return; }
+  clause.hidden = false;
+  let html = '<span class="s-joiner">, in </span>';
+  cups.forEach((m, ci) => {
+    if(ci > 0){
+      html += '<span class="s-joiner">' + (cups.length === 2 ? ' and ' : (ci === cups.length-1 ? ' and ' : ', ')) + '</span>';
+    }
+    const isSet = m >= 0;
+    const label = isSet ? MOMENT_NAME[m] : 'any time';
+    const sw = isSet ? MOMENT_SWATCH[m] : 'rgba(45,36,30,.32)';
+    html += '<button class="token token--moment' + (isSet ? ' is-set' : '') + '" '
+          + 'type="button" data-cup="' + ci + '" aria-haspopup="true" aria-expanded="false" '
+          + 'style="--swatch:' + sw + '">'
+          + '<span class="tk-sw"></span><span class="tk-label">' + label + '</span>'
+          + '<svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>'
+          + '</button>';
+  });
+  clause.innerHTML = html;
+  // wire up the freshly-rendered moment tokens
+  clause.querySelectorAll('.token--moment').forEach(t => {
+    t.addEventListener('click', (e) => { e.stopPropagation(); openMomentSheet(+t.dataset.cup, t); });
+  });
+}
+
+/* CTA copy reflects how curated the pack is */
+function syncCTA(){
+  if(frequency === 0){
+    cta.textContent = 'Curate my anytime pack';
+    return;
   }
-  buildRoutineLine();
-  syncPickButton();
-  syncChips();
+  const assigned = cups.filter(m => m >= 0).length;
+  if(assigned === 0){
+    cta.textContent = cups.length === 1 ? 'Curate my 1-cup pack' : 'Curate my ' + cups.length + '-cup pack';
+  } else {
+    cta.textContent = assigned === 1 ? 'Curate my pack — 1 moment' : 'Curate my pack — ' + assigned + ' moments';
+  }
+}
+
+function renderSentence(){
+  freqLabel.textContent = FREQ_LABEL[frequency];
+  renderClause();
+  syncCTA();
+  dots.forEach((d,k)=> d.classList.toggle('in-routine', cups.includes(k)));
+}
+
+/* When the user picks a frequency, size the cups array (defaulting to "any time") */
+function setFrequency(f){
+  frequency = f;
+  if(f === 0){ cups = []; }
+  else {
+    const target = f; // 1 or 2 cups
+    const next = [];
+    for(let i=0;i<target;i++){ next.push(cups[i] != null ? cups[i] : -1); }
+    cups = next;
+  }
+  reportRoutineChange('frequency', null);
+  renderSentence();
+}
+
+/* Assign a moment to a specific cup */
+function assignMoment(cupIndex, momentIdx){
+  cups[cupIndex] = momentIdx;
+  if(momentIdx >= 0){
+    setActive(momentIdx, {interaction:'sentence', silent:false});
+    flashAdded('added · ' + pouches[momentIdx].dataset.role);
+  }
+  reportRoutineChange('assign', momentIdx);
+  renderSentence();
 }
 
 /* ============================================================
@@ -723,8 +800,11 @@ function setActive(i, opts = {}){
   stage.style.setProperty('--lane-tint-a', p.dataset.tintA);
   stage.style.setProperty('--lane-tint-b', p.dataset.tintB);
 
-  syncPickButton();
-  syncChips();
+  dots.forEach((d,k)=>{
+    d.classList.toggle('is-active', k === i);
+    d.classList.toggle('in-routine', cups.includes(k));
+  });
+  pouches.forEach((pp,k)=> pp.classList.toggle('picked', cups.includes(k)));
 
   if(!reduceMotion && !opts.silent) burstAt(i);
   reportSelection(i, opts.interaction);
@@ -882,9 +962,67 @@ drawerScrim.addEventListener('click', closeDrawer);
 window.addEventListener('keydown', e => { if(e.key === 'Escape') closeDrawer(); });
 
 /* ============================================================
-   INPUT
+   OPTION SHEETS (frequency + moment pop-ups)
    ============================================================ */
-// Tap a pouch → toggle that daypart into the routine
+let openSheet = null;     // 'freq' | 'moment' | null
+let openMomentToken = null;
+
+function closeSheets(){
+  freqOpts.hidden = true;
+  momentOpts.hidden = true;
+  freqToken.setAttribute('aria-expanded','false');
+  if(openMomentToken){ openMomentToken.setAttribute('aria-expanded','false'); openMomentToken = null; }
+  openSheet = null; openCup = null;
+}
+
+function openFreqSheet(){
+  if(openSheet === 'freq'){ closeSheets(); return; }
+  closeSheets();
+  // reflect current selection
+  freqOpts.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-checked', String(+o.dataset.freq === frequency)));
+  freqOpts.hidden = false;
+  freqToken.setAttribute('aria-expanded','true');
+  openSheet = 'freq';
+}
+
+function openMomentSheet(cupIndex, tokenEl){
+  if(openSheet === 'moment' && openCup === cupIndex){ closeSheets(); return; }
+  closeSheets();
+  openCup = cupIndex;
+  openMomentToken = tokenEl;
+  const current = cups[cupIndex];
+  momentOpts.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-checked', String(+o.dataset.moment === current)));
+  // anchor the shared sheet to this token
+  const deckRect = tokenEl.closest('.deck').getBoundingClientRect();
+  const tRect = tokenEl.getBoundingClientRect();
+  momentOpts.style.left = (tRect.left - deckRect.left + tRect.width/2) + 'px';
+  momentOpts.hidden = false;
+  tokenEl.setAttribute('aria-expanded','true');
+  openSheet = 'moment';
+  // preview that moment if already assigned
+  if(current >= 0) setActive(current, {interaction:'sentence', silent:true});
+}
+
+freqToken.addEventListener('click', (e)=>{ e.stopPropagation(); openFreqSheet(); });
+freqOpts.querySelectorAll('.opt').forEach(o => {
+  o.addEventListener('click', (e)=>{ e.stopPropagation(); setFrequency(+o.dataset.freq); closeSheets(); });
+});
+momentOpts.querySelectorAll('.opt').forEach(o => {
+  o.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(openCup != null) assignMoment(openCup, +o.dataset.moment);
+    closeSheets();
+  });
+});
+// tap-away + Esc close the sheets
+document.addEventListener('click', ()=> closeSheets());
+window.addEventListener('keydown', e => { if(e.key === 'Escape') closeSheets(); });
+
+/* ============================================================
+   INPUT — pouch / dots / swipe just PREVIEW a daypart;
+   assignment happens through the sentence tokens.
+   ============================================================ */
+// Tap a pouch → preview it; if a moment sheet is open, assign it to that cup
 pouches.forEach((p,idx) => {
   p.addEventListener('pointerdown', (e) => {
     if(!p.classList.contains('is-active')) return;
@@ -898,26 +1036,17 @@ pouches.forEach((p,idx) => {
         {duration:520, easing:'cubic-bezier(.22,.61,.36,1)'}
       );
     }
-    toggleRoutine(idx, 'tap');
+    if(openSheet === 'moment' && openCup != null){
+      assignMoment(openCup, idx);
+      closeSheets();
+    }
   });
 });
 
-// Explicit Add/Remove button
-pick.addEventListener('click', ()=> toggleRoutine(active, 'button'));
+// Dots preview dayparts
+dots.forEach(d => d.addEventListener('click', (e)=>{ e.stopPropagation(); setActive(+d.dataset.i, {interaction:'dot'}); }));
 
-// Chips: tap to focus a daypart; if already focused, toggle into routine
-chips.forEach(c => {
-  c.addEventListener('click', ()=>{
-    const i = +c.dataset.i;
-    if(i === active){ toggleRoutine(i, 'chip'); }
-    else { setActive(i, {interaction:'chip', silent:true}); }
-  });
-});
-
-// Dots
-dots.forEach(d => d.addEventListener('click', ()=>setActive(+d.dataset.i, {interaction:'dot'})));
-
-// Swipe between dayparts
+// Swipe between dayparts (preview only)
 let touchX = null;
 stage.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
 stage.addEventListener('touchend', e => {
@@ -927,19 +1056,19 @@ stage.addEventListener('touchend', e => {
   touchX = null;
 }, {passive:true});
 
-// Keyboard arrows move between dayparts
+// Keyboard arrows preview dayparts
 window.addEventListener('keydown', e => {
   if(e.key === 'ArrowRight') setActive(active+1, {interaction:'arrow'});
   if(e.key === 'ArrowLeft')  setActive(active-1, {interaction:'arrow'});
 });
 
-// CTA → bubble routine up to the parent landing page (which owns checkout)
+// CTA → bubble the curated routine up to the parent landing page (owns checkout)
 cta.addEventListener('click', ()=>{
-  if(cta.disabled) return;
   postParent({
     type:'varitea:s2_routine_checkout',
-    routine: [...routine].sort((a,b)=>a-b).map(k => pouches[k].dataset.role),
-    routine_size: routine.size
+    frequency: FREQ_LABEL[frequency],
+    cups: frequency === 0 ? 0 : cups.length,
+    routine: routineSnapshot()
   });
 });
 
@@ -950,9 +1079,7 @@ document.addEventListener('visibilitychange', () => {
 ambient.play().catch(()=>{});
 
 /* Initial paint */
-buildRoutineLine();
-syncPickButton();
-syncChips();
+renderSentence();
 </script>
 </body>
 </html>
