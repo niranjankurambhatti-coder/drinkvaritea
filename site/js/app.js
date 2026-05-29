@@ -275,6 +275,9 @@
   window.varitea.context = baseContext;
   window.varitea.anonymousId = ANON_ID;
   window.varitea.sessionId   = SESSION_ID;
+  // Exposed so the inline scroll module in index.html can fire
+  // scroll_depth thresholds through the bridge (full context attached).
+  window.varitea.reportScroll = reportScroll;
 
   /* -----------------------------------------------------------
      Stripe link decoration
@@ -379,6 +382,85 @@
   }
 
   /* -----------------------------------------------------------
+     S2 (Screen-2) iframe bridge.
+     The /preview/s2-v2/?embed=1 iframe sends `varitea:s2_*` messages
+     directly via window.parent.postMessage (no envelope). The S2 page
+     now models a daypart routine builder (Morning/Afternoon/Evening/Night),
+     so `tea_name` carries the daypart blend name (Dark Morning, Tart
+     Cooler, Mint Reset, Moon Bloom) read from `data-role`.
+     ----------------------------------------------------------- */
+  function wireS2Bridge() {
+    var variant = function () {
+      return document.body.getAttribute('data-page-variant') || null;
+    };
+    window.addEventListener('message', function (e) {
+      var d = e && e.data;
+      if (!d || typeof d.type !== 'string') return;
+      if (d.type.indexOf('varitea:s2_') !== 0) return;
+
+      if (d.type === 'varitea:s2_tea_selected') {
+        track('s2_tea_selected', {
+          tea_name: d.tea_name || null,
+          daypart: d.daypart || null,
+          lane_index: (typeof d.lane_index === 'number') ? d.lane_index : null,
+          interaction: d.interaction || null,
+          page_variant: variant()
+        });
+      } else if (d.type === 'varitea:s2_routine_changed') {
+        track('s2_routine_changed', {
+          action: d.action || null,
+          frequency: d.frequency || null,
+          cups: (typeof d.cups === 'number') ? d.cups : null,
+          tea_name: d.tea_name || null,
+          daypart: d.daypart || null,
+          routine: d.routine || null,
+          page_variant: variant()
+        });
+      } else if (d.type === 'varitea:s2_research_opened') {
+        track('s2_research_opened', {
+          tea_name: d.tea_name || null,
+          daypart: d.daypart || null,
+          page_variant: variant()
+        });
+      } else if (d.type === 'varitea:s2_routine_checkout') {
+        track('s2_routine_checkout', Object.assign({}, d, { page_variant: variant() }));
+      }
+    }, false);
+  }
+
+  /* -----------------------------------------------------------
+     scroll_depth — fired by the inline scroll module in
+     index.html, which owns the authoritative scroll progress
+     (it handles both the desktop #stage scroller and the mobile
+     window scroller). We expose a guarded helper so that module
+     can fire each 25/50/75/100% threshold exactly once per
+     session, with full utm/context attached.
+     ----------------------------------------------------------- */
+  var SCROLL_THRESHOLDS = [25, 50, 75, 100];
+  var scrollFired = {}; // depth_pct -> true (per page load / session)
+  var maxSectionReached = 0;
+
+  function reportScroll(progress01, sectionIndex) {
+    // progress01: 0..1 scroll progress across the 4 scroll-snap screens.
+    // sectionIndex: 0..3 (s1..s4) currently in view, if known.
+    if (typeof sectionIndex === 'number' && sectionIndex > maxSectionReached) {
+      maxSectionReached = sectionIndex;
+    }
+    var pct = Math.round(Math.max(0, Math.min(1, progress01)) * 100);
+    for (var i = 0; i < SCROLL_THRESHOLDS.length; i++) {
+      var th = SCROLL_THRESHOLDS[i];
+      if (pct >= th && !scrollFired[th]) {
+        scrollFired[th] = true;
+        track('scroll_depth', {
+          depth_pct: th,
+          max_section_reached: 's' + (maxSectionReached + 1), // s1..s4
+          page_variant: document.body.getAttribute('data-page-variant') || null
+        });
+      }
+    }
+  }
+
+  /* -----------------------------------------------------------
      page_view
      ----------------------------------------------------------- */
   function firePageView() {
@@ -446,6 +528,7 @@
     wireReveal();
     wireEmailCapture();
     wireBundleRadios();
+    wireS2Bridge();
     document.addEventListener('click', onDocClick, { passive: false });
     firePageView();
 

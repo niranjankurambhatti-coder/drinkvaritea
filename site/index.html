@@ -628,6 +628,30 @@ function readScroll(){
   syncSections(p);
   syncVideo(p);
   syncPouches();
+  reportScrollDepth(p);
+}
+
+/* EXP-001 scroll_depth — forward progress to the analytics bridge in app.js,
+   which fires once per 25/50/75/100% threshold per session. app.js is deferred,
+   so `window.varitea.reportScroll` may be undefined on the first tick — guarded. */
+function currentSectionIndex(p){
+  return Math.round(p * (sections.length - 1)); // 0..3 → s1..s4
+}
+function reportScrollDepth(p){
+  try {
+    if (window.varitea && typeof window.varitea.reportScroll === 'function') {
+      window.varitea.reportScroll(p, currentSectionIndex(p));
+    }
+  } catch (e) {}
+}
+
+function onScroll(){
+  // Coalesce: multiple `scroll` events per frame collapse into a single
+  // readScroll() call on the next animation frame. This was the biggest source
+  // of jitter — every scroll tick was writing to `rail.style.width` and
+  // toggling section classes, which trampled paint inside the scroll layer.
+  if (scrollRafId) return;
+  scrollRafId = requestAnimationFrame(readScroll);
 }
 
 function onScroll(){

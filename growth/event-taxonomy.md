@@ -73,6 +73,30 @@ Complete event schema for all Drink Varitea tracking. Every event must fire cons
 
 ---
 
+### `scroll_depth`
+
+| Field | Value |
+|---|---|
+| Trigger | Landing-page scroll progress crosses each of 25/50/75/100%. Fires each threshold **exactly once per session** (deduped). Owned by the inline scroll module in `site/index.html`, fired through `window.varitea.reportScroll()` so it carries full utm/context. |
+| Required properties | `depth_pct` (25/50/75/100), `max_section_reached` (`s1`-`s4`), `page_variant`, plus inherited `utm_*` context |
+| Destinations | GA4, GTM, PH |
+| Validation | GA4 DebugView shows up to 4 `scroll_depth` events per session, no duplicates. PostHog Live Events shows `depth_pct` ladder. Re-scrolling does not re-fire. |
+| Implementation note | EXP-001 micro-journey event. Thresholds `[25,50,75,100]`; `max_section_reached` is the furthest scroll-snap screen reached (`s1`-`s4`), monotonic within a session. |
+
+---
+
+### `s2_tea_selected`
+
+| Field | Value |
+|---|---|
+| Trigger | User selects a tea in the Screen-2 discovery experience (`/preview/s2-v2/?embed=1`, embedded as an iframe). Selection = navigation to a new lane (arrow / swipe / dot / keyboard) OR a deliberate tap on the already-active pouch. The iframe `postMessage`s up to the parent, which re-emits via `window.varitea.track()`. |
+| Required properties | `tea_name` (Jared's FINAL names: `Bold Black` / `Floral Herbal` / `Smooth Green`), `lane_index` (0-2), `interaction` (`arrow`/`swipe`/`dot`/`tap`), `page_variant`, plus inherited `utm_*` context |
+| Destinations | GA4, GTM, PH |
+| Validation | Select each lane; GA4/PostHog show `s2_tea_selected` with matching `tea_name`/`lane_index`. `tea_name` must match the ad creatives and box exactly (title case). Standalone preview (no `?embed=1`) does NOT fire. |
+| Implementation note | EXP-001 micro-journey event. `TEA_NAME_BY_INDEX` in the s2-v2 page is the single source of truth mapping `lane_index` → display name. Tap-on-active is debounced 600ms to avoid double-counting. |
+
+---
+
 ### `checkout_cta_click`
 
 | Field | Value |
@@ -164,4 +188,6 @@ Complete event schema for all Drink Varitea tracking. Every event must fire cons
 | P2 | `quiz_cta_click` | Intent signal |
 | P3 | `bundle_option_change` | Product preference signal |
 | P3 | `quiz_step_completed` | Funnel optimization |
+| P3 | `s2_tea_selected` | Discovery/customization engagement signal (EXP-001 micro-journey) |
+| P3 | `scroll_depth` | Landing-page engagement / drop-off depth (EXP-001 micro-journey) |
 | P4 | `review_submitted` | Social proof signal |
