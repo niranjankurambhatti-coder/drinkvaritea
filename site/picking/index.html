@@ -353,13 +353,13 @@
             <div id="shipMsg">Add items to unlock free shipping at $25.</div>
             <div class="bar"><i id="shipBar" style="width:0%"></i></div>
           </div>
-          <button class="cta" id="goCheckout" disabled>
+          <button class="cta" id="goCheckout">
             Continue to secure checkout →
-            <span class="cta__sub" id="ctaSub">You will be redirected to Shopify to complete your order.</span>
+            <span class="cta__sub" id="ctaSub">You will be redirected to our secure checkout to complete your order.</span>
           </button>
           <div class="notice" id="notice"></div>
           <div class="trust">
-            <span>🔒 Secure checkout on <b>Shopify</b></span>
+            <span>🔒 Secure checkout via <b>Stripe</b></span>
             <span>↩ 30-day satisfaction</span>
             <span>🍵 Caffeine-free options</span>
           </div>
@@ -705,18 +705,12 @@ function renderShip(){
 }
 
 function renderCheckoutCTA(){
-  const wired = Shopify.isWired();
-  goCheckout.disabled = !wired;
-  if(wired){
-    goCheckout.firstChild.nodeValue = 'Continue to secure checkout →';
-    ctaSub.textContent = 'You will be redirected to Shopify to complete your order.';
-    notice.classList.remove('show');
-  } else {
-    goCheckout.firstChild.nodeValue = 'Checkout wiring pending';
-    ctaSub.textContent = 'Shopify variant IDs not yet configured — see docs/shopify-setup.md.';
-    notice.textContent = 'Ops: paste your shop domain and variant IDs into site/preview/shared/shopify.js, then redeploy.';
-    notice.classList.add('show');
-  }
+  // Checkout goes to the live Stripe Payment Link (same as the landing
+  // page) → /thank-you. Always enabled once a ritual is picked.
+  goCheckout.disabled = false;
+  goCheckout.firstChild.nodeValue = 'Continue to secure checkout →';
+  ctaSub.textContent = 'You will be redirected to our secure checkout to complete your order.';
+  notice.classList.remove('show');
 }
 
 function renderCart(){
@@ -763,29 +757,31 @@ addExtraBtn.addEventListener('click', () => {
   }
 });
 
-/* ----- Checkout — build Shopify cart permalink ------------- */
+/* ----- Checkout — live Stripe Payment Link (matches landing) ----
+   Flow: /picking → Stripe → /thank-you.
+   The ritual / routine / bundle / sub-plan / extras context rides along
+   as query params so it lands in Stripe metadata (via the app.js link
+   decorator) and is available on the thank-you page. Pricing/fulfillment
+   of variants stays Ops' job; this MVP uses the single live link. */
+const STRIPE_CHECKOUT_URL = 'https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00';
 goCheckout.addEventListener('click', () => {
-  const items = [];
-  items.push({ bundleId: state.baseBundleId, qty: 1, subscribe: state.subscribe });
-  // Extras aren't separate Shopify variants in this MVP — they ride as
-  // cart attributes so Ops can either map them to single-pouch variants
-  // later or fulfill them manually. Keeps Shopify wiring simple.
   const routine = state.slots.map(k => k && BLENDS[k] ? BLENDS[k].name : null).filter(Boolean).join(' + ');
-  const attrs = {
-    ritual: state.ritual,
+  emit('varitea:picking_checkout_click', { bundleId: state.baseBundleId, ritual: state.ritual, subscribe: state.subscribe, extras: state.extras.length });
+
+  const u = new URL(STRIPE_CHECKOUT_URL);
+  u.searchParams.set('client_reference_id', 'picking_' + Date.now());
+  // Carry the curated context forward (Stripe ignores unknown params but
+  // app.js mirrors them into metadata; thank-you can read them too).
+  const ctx = {
+    ritual: state.ritual || '',
     routine: routine,
-    bundle_id: state.baseBundleId,
+    bundle_id: state.baseBundleId || '',
     sub_plan: state.subscribe ? 'ss-15' : 'one-time',
     extras: state.extras.map(e => `${e.blendKey}:${e.qty}`).join(','),
     source: 'picking'
   };
-  const url = Shopify.buildCheckoutUrl(items, attrs);
-  emit('varitea:picking_checkout_click', { bundleId: state.baseBundleId, ritual: state.ritual, subscribe: state.subscribe, extras: state.extras.length });
-  if(!url){
-    notice.classList.add('show');
-    return;
-  }
-  location.href = url;
+  Object.keys(ctx).forEach(k => { if(ctx[k] !== '') u.searchParams.set(k, ctx[k]); });
+  location.href = u.toString();
 });
 
 /* ----- Deep-link support ----------------------------------- */

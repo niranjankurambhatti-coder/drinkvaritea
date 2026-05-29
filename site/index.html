@@ -432,7 +432,7 @@
       <p class="hero-sub" data-reveal data-d="2" id="hero-subhead" hidden></p>
     </div>
     <div class="copy">
-      <a href="/picking" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin" data-analytics-event="hero_cta_click" data-cta-label="Build your ritual" data-dest="picking" id="hero-cta">
+      <a href="#s2" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin" data-analytics-event="hero_cta_click" data-cta-label="Build your ritual" data-dest="scroll" id="hero-cta">
         <span class="cta__text">Build your ritual</span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -467,8 +467,8 @@
       <h2 data-reveal data-d="2">Take it home.</h2>
       <p class="reassure" data-reveal data-d="3" id="hero-reassure" hidden></p>
       <div class="cta-stack" data-reveal data-d="3">
-        <a href="/picking" class="cta cta--primary" data-analytics="s4_checkout" data-analytics-event="checkout_cta_click" data-cta-label="Build your pack" data-dest="picking" id="checkout-cta">
-          <span class="cta__text">Build your pack</span>
+        <a href="/picking" class="cta cta--primary" data-analytics="s4_checkout" data-analytics-event="checkout_cta_click" data-cta-label="Curate my tea" data-dest="picking" id="checkout-cta">
+          <span class="cta__text">Curate my tea</span>
           <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -782,12 +782,22 @@ if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     // Hard navigate — location.assign forces a fresh page load.
     window.location.assign(href);
   }
+  // Smooth in-page scroll for CTAs that stay on the landing (e.g. the
+  // hero "Build your ritual" CTA). Scroll-snap can otherwise hard-jump.
+  function goScroll(e, anchor){
+    var id = (anchor.getAttribute('href') || '').replace('#','');
+    var target = id && document.getElementById(id);
+    if (!target) return; // fall back to native anchor behavior
+    if (e && e.preventDefault) e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
   // Capture-phase listener catches the click before app.js or any
   // delegated handler on document.body can interfere.
   document.addEventListener('click', function(e){
-    var a = e.target && e.target.closest('a[data-dest="picking"]');
-    if (!a) return;
-    goPicking(e, a);
+    var pick = e.target && e.target.closest('a[data-dest="picking"]');
+    if (pick) { goPicking(e, pick); return; }
+    var scroll = e.target && e.target.closest('a[data-dest="scroll"]');
+    if (scroll) { goScroll(e, scroll); return; }
   }, true);
 })();
 </script>
