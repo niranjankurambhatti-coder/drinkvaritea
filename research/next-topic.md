@@ -2,7 +2,7 @@
 
 > Written by the most recent blog's "suggested next topic" section. Read by the next morning's research stage. One topic only.
 
-**Status:** ACTIVE (set by blog 2026-05-29: "Caffeine-free evening tea that tastes like a treat")
+**Status:** ACTIVE (set by blog 2026-05-28: "Caffeine-free evening tea that tastes like a treat")
 
 **Suggested topic:** How to anchor a caffeine-free evening cup to an existing bedtime routine so the habit actually sticks — the behavioral / ritual side of the wind-down occasion.
 

@@ -26,7 +26,9 @@ Apify (Reddit/X/web)  +  Complaint Box (first-party)  +  next-topic.md  +  last 
 
 ## Stage A — Evidence + Research
 
-1. Collect fresh evidence via Apify (tea subreddits, X queries, web complaints) → `data/evidence/raw/YYYY-MM-DD/`.
+> **Canonical actor (one source of truth):** `trudax/reddit-scraper-lite`. This is the single Apify actor that mines ground truth — and it *is* our emerging ICP (the segment it surfaces is the one we build for). Any X/web mining is supplementary color only and never overrides the canonical Reddit signal or the first-party complaint box. Do not swap or fan out the canonical actor without an explicit, documented change.
+
+1. Collect fresh evidence via the canonical Apify actor (tea subreddits) → `data/evidence/raw/YYYY-MM-DD/`. Optionally add supplementary X/web color, clearly labeled as secondary.
 2. Load first-party `data/customer-complaints/complaints.jsonl` (weighted highest).
 3. Synthesize gaps vs. prior research; read `research/next-topic.md` and prioritize it unless stronger evidence emerges.
 4. Update `research/varitea-deep-research.md` and append a dated block to its evidence ledger.

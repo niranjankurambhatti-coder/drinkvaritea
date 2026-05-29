@@ -14,7 +14,7 @@ One JSON object per line:
 ```json
 {
   "id": "uuid-or-hash",
-  "date": "2026-05-29",
+  "date": "2026-05-28",
   "source": "site_form | email | reddit | x | review | other",
   "channel_url": "https://... (if public)",
   "text": "verbatim customer words",

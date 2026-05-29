@@ -16,6 +16,10 @@ Score = Σ (weightᵢ × criterion_scoreᵢ)
 
 Each criterion has: a clear definition of "good," a 1–5 scale, a weight (sums to 100% per domain), and a **measurement method** grounded in external signal — primarily **complaint mining (Reddit / public reviews)** so the loop scores against real ground truth and does not hallucinate quality upward.
 
+### Canonical signal source (one actor)
+
+The loop mines ground truth through **one canonical Apify actor: `trudax/reddit-scraper-lite`** (Reddit). This is deliberately a single source of truth — Reddit is where caffeine-free tea ritual + sustainability language lives richest, and keeping one actor makes the ICP signal consistent and comparable night-over-night. **This canonical actor *is* our emerging ICP** — the population it surfaces becomes the segment we build the pipeline for. Do not silently swap or fan out to other actors; if a second source is ever added it must be an explicit, documented change, never an ad-hoc substitution. (X and web actors, if used at all, are supplementary color only and never override the canonical Reddit signal or the first-party complaint box.)
+
 **Universal hard gate (binary eliminator, applies to every domain):**
 - ❌ **No caffeine-free fit** — if winning the candidate requires caffeinated tea/coffee, it is disqualified regardless of score. Off-brand for Varitea.
 
