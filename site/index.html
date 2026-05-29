@@ -473,7 +473,7 @@
             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        <a href="/picking?ritual=twice" class="cta cta--ghost" data-analytics="s4_routine" data-analytics-event="routine_cta_click" data-cta-label="Twice-a-day routine">Twice-a-day routine →</a>
+        <a href="/picking?ritual=twice" class="cta cta--ghost" data-analytics="s4_routine" data-analytics-event="routine_cta_click" data-cta-label="Twice-a-day routine" data-dest="picking">Twice-a-day routine →</a>
       </div>
     </div>
   </section>
@@ -752,5 +752,44 @@ if(matchMedia('(prefers-reduced-motion: reduce)').matches){
 
 <!-- Analytics + event bridge (UTM capture, GA4/GTM/PostHog fanout, Stripe link decoration) -->
 <script src="js/app.js" defer></script>
+
+<!--
+  Hard-navigation guard for /picking CTAs.
+  ------------------------------------------------------------
+  The landing uses scroll-snap, has an embedded iframe (s2-v2),
+  and ships an analytics click interceptor in js/app.js. Any one
+  of those can let a CTA click "scroll the landing" instead of
+  navigating to /picking. This script runs at capture phase so it
+  fires BEFORE every other listener, kills scroll-snap, kills the
+  iframe-driven scroll on the s2 section, and forces a hard route
+  change to /picking. Result: clicking any [data-dest="picking"]
+  CTA on the landing always lands the user on a brand-new page.
+-->
+<script>
+(function(){
+  function goPicking(e, anchor){
+    var href = anchor.getAttribute('href') || '/picking';
+    // Stop every other handler (analytics, scroll-snap, iframe events)
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    // Kill scroll-snap immediately so the browser doesn't snap mid-navigation
+    try {
+      document.documentElement.style.scrollSnapType = 'none';
+      document.body.style.scrollSnapType = 'none';
+      document.body.style.overflow = 'hidden';
+    } catch (_) {}
+    // Hard navigate — location.assign forces a fresh page load.
+    window.location.assign(href);
+  }
+  // Capture-phase listener catches the click before app.js or any
+  // delegated handler on document.body can interfere.
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest('a[data-dest="picking"]');
+    if (!a) return;
+    goPicking(e, a);
+  }, true);
+})();
+</script>
 </body>
 </html>
