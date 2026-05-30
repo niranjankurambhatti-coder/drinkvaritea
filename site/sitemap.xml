@@ -33,5 +33,13 @@
   <url>
     <loc>https://drinkvaritea.com/blog/bedtime-tea-routine</loc>
     <lastmod>2026-05-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://drinkvaritea.com/feedback</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

@@ -7,7 +7,7 @@ One automated morning run (≈6:00 AM CDT) that turns real customer evidence int
 ## The loop
 
 ```
-Apify (Reddit/X/web)  +  Complaint Box (first-party)  +  next-topic.md  +  last few blogs
+Apify (Reddit/X/web)  +  Complaint Box (first-party)  +  ICP personas (seed)  +  next-topic.md  +  last few blogs
             │
             ▼  Stage A — Evidence + Research
    research/varitea-deep-research.md  (canonical, updated)
@@ -30,9 +30,20 @@ Apify (Reddit/X/web)  +  Complaint Box (first-party)  +  next-topic.md  +  last 
 
 1. Collect fresh evidence via the canonical Apify actor (tea subreddits) → `data/evidence/raw/YYYY-MM-DD/`. Optionally add supplementary X/web color, clearly labeled as secondary.
 2. Load first-party `data/customer-complaints/complaints.jsonl` (weighted highest).
-3. Synthesize gaps vs. prior research; read `research/next-topic.md` and prioritize it unless stronger evidence emerges.
-4. Update `research/varitea-deep-research.md` and append a dated block to its evidence ledger.
-5. Write an immutable snapshot to `research/versions/YYYY-MM-DD.md`.
+3. Load the **seed ICP** `data/icp/personas.jsonl` (5 Brand-Brief-validated segments). Tag each piece of evidence with the matching persona `id`/`themes`, and report demand + gaps **per segment**. This seed ICP is the baseline the founding-loop `icp` domain (Stage C) evolves against — it does not override the evolving winner, it grounds it.
+4. Synthesize gaps vs. prior research; read `research/next-topic.md` and prioritize it unless stronger evidence emerges.
+5. Update `research/varitea-deep-research.md` and append a dated block to its evidence ledger (include a per-ICP-segment demand/gap line).
+6. Write an immutable snapshot to `research/versions/YYYY-MM-DD.md`.
+
+### JSONL datasets accounted for in research
+
+| File | Role | Weight in synthesis |
+|---|---|---|
+| `data/customer-complaints/complaints.jsonl` | First-party customer feedback (complaint box) | **Highest** — outranks scraped signal on conflict |
+| `data/icp/personas.jsonl` | Seed ICP — 5 Brand-Brief segments; evidence is tagged to these | Lens for per-segment synthesis; baseline for the founding-loop ICP |
+| `data/evidence/raw/YYYY-MM-DD/*.json` | Daily Apify pulls (canonical Reddit actor + supplementary X/web), raw | Ground-truth external signal (Reddit canonical) |
+
+The complaint box (`theme`) and the ICP (`themes`) share one vocabulary — choice-overload, taste, caffeine, packaging, routine, price, personalization — so the datasets join cleanly. The Stage C founding-loop `icp` domain evolves its own population in `founding/state.json`; `personas.jsonl` is its grounded seed, not a replacement.
 
 ## Stage B — Blog
 

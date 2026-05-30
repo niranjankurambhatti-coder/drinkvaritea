@@ -116,3 +116,11 @@ table.ing tr:last-child td{border-bottom:0}
   html{scroll-behavior:auto}
   .daypart,.cta-band__btn{transition:none}
 }
+
+/* Feedback widget (blog index / footer) */
+.fb-widget{max-width:760px;margin:56px auto 0;padding:0 clamp(20px,5vw,32px)}
+.fb-widget__inner{background:var(--cream-2);border:1px solid rgba(70,48,71,.1);border-radius:24px;padding:clamp(24px,4vw,36px);text-align:center;box-shadow:0 30px 70px -52px rgba(45,36,30,.4)}
+.fb-widget__inner h2{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(24px,4vw,32px);color:var(--plum);margin:0 0 10px}
+.fb-widget__inner p{font-size:15px;color:rgba(45,36,30,.78);max-width:480px;margin:0 auto 20px;line-height:1.6}
+.fb-widget__btn{display:inline-block;background:var(--cta);color:var(--cream-2);text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600;transition:background .2s}
+.fb-widget__btn:hover{background:var(--cta-hover)}

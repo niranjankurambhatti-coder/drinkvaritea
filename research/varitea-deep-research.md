@@ -16,6 +16,7 @@ The best tisanes (caffeine-free) curated for your daily routines — Morning / A
 1. **Stage A (morning, ~6:00 AM CDT)** — Evidence + research refresh:
    - Apify collects fresh customer evidence (tea subreddits, X posts, general web complaints) → saved to `data/evidence/raw/YYYY-MM-DD/`.
    - The site **customer complaint box** dataset (`data/customer-complaints/complaints.jsonl`) is folded in as first-party signal (weighted highest).
+   - The **seed ICP** (`data/icp/personas.jsonl`, 5 Brand-Brief segments) is the lens: evidence is tagged per segment and demand/gaps are reported per segment. It is the grounded baseline the founding-loop `icp` domain evolves against.
    - Synthesis answers: *what does the world need?* and *what gaps remain vs. prior research?*
    - This file is updated; a snapshot is committed to `research/versions/YYYY-MM-DD.md`.
    - The single chosen topic for the day is recorded (see `research/next-topic.md`, written by the prior day's blog).
