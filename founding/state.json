@@ -14,7 +14,11 @@
     "time_box": "per-night cap"
   },
   "hard_gate": "caffeine_free_fit == true",
+  "freeze_rule": "If no fresh ground truth this run (canonical actor returned empty AND no new first-party complaints since last_run), FREEZE: carry prior winners + scores forward verbatim, do NOT mutate or inject, set last_run_ground_truth=false and frozen=true, and state plainly in the run log + PR + founder letter that scores are frozen and no progress is claimed. Only generate/score/mutate when fresh ground truth landed.",
   "last_run": "2026-05-30",
+  "last_run_ground_truth": false,
+  "frozen": true,
+  "freeze_reason": "Canonical actor trudax/reddit-scraper-lite timed out on 2026-05-29 and 2026-05-30; no fresh Reddit dataset ingested and no new first-party complaints. Scores shown below were advanced before the freeze rule existed and must NOT be treated as ground-truth-validated until a run with fresh signal re-scores them.",
   "domains": {
     "icp": {
       "weights": {

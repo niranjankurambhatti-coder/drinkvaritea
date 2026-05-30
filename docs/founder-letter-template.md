@@ -4,6 +4,8 @@ Every PR opened by the Varitea pipeline attaches this letter, filled in for the 
 
 Fill the `{{ }}` slots from the run. Never fabricate findings — if a slot has no grounded evidence, write "no new signal tonight."
 
+**Frozen run (no fresh ground truth):** if the ground-truth gate froze the loop (see `docs/founding-loop-fitness-functions.md`), label each winner line `(frozen, prior score)` and set the `{{TONIGHT}}` line to exactly: *"No fresh ground truth this run — scores frozen, no progress claimed."* Never present a frozen score as tonight's result.
+
 ---
 
 ## How to fill it each run
