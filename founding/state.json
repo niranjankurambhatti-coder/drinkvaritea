@@ -14,7 +14,7 @@
     "time_box": "per-night cap"
   },
   "hard_gate": "caffeine_free_fit == true",
-  "last_run": "2026-05-29",
+  "last_run": "2026-05-30",
   "domains": {
     "icp": {
       "weights": {
@@ -26,7 +26,7 @@
       },
       "winner": {
         "name": "Nightly wind-down ritual drinkers (caffeine-sensitive), tired of meh chamomile/rooibos",
-        "score": 3.9
+        "score": 4.1
       },
       "population": [
         {
@@ -34,12 +34,13 @@
           "caffeine_free_fit": true,
           "mutations": [
             "dessert replacer variant",
-            "screen-off variant"
+            "screen-off variant",
+            "afternoon reset variant"
           ],
           "seed_signal": [
             "complaints.jsonl taste + caffeine items"
           ],
-          "last_score": 3.9
+          "last_score": 4.1
         },
         {
           "name": "Plastic-averse loose-leaf buyers who can\u2019t find non-plastic packaging",
@@ -64,6 +65,18 @@
             "no new signal tonight"
           ],
           "last_score": null
+        },
+        {
+          "name": "Afternoon reset seekers replacing the second coffee (caffeine-avoidant)",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "desk break variant",
+            "post-lunch slump variant"
+          ],
+          "seed_signal": [
+            "research next-topic afternoon reset (needs canonical quotes)"
+          ],
+          "last_score": 3.1
         }
       ]
     },
@@ -76,19 +89,20 @@
       },
       "winner": {
         "name": "Taste that earns the habit (ritual-first, no wellness claims)",
-        "score": 4.7
+        "score": 4.6
       },
       "population": [
         {
           "name": "Taste that earns the habit (ritual-first, no wellness claims)",
           "caffeine_free_fit": true,
           "mutations": [
-            "small-batch freshness that stays vivid"
+            "small-batch freshness that stays vivid",
+            "afternoon break framing"
           ],
           "seed_signal": [
             "research ledger taste-first"
           ],
-          "last_score": 4.7
+          "last_score": 4.6
         },
         {
           "name": "Freshness is part of flavor (packaging-as-taste infrastructure)",
@@ -111,6 +125,17 @@
             "no new signal tonight"
           ],
           "last_score": null
+        },
+        {
+          "name": "One blend per daypart (curation over choice overload)",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "two-week default ritual framing"
+          ],
+          "seed_signal": [
+            "standing theme choice overload"
+          ],
+          "last_score": null
         }
       ]
     },
@@ -123,19 +148,20 @@
       },
       "winner": {
         "name": "Bedtime tea routine mini-course + 14-night tracker \u2192 First Sip Box",
-        "score": 4.6
+        "score": 4.5
       },
       "population": [
         {
           "name": "Bedtime tea routine mini-course + 14-night tracker \u2192 First Sip Box",
           "caffeine_free_fit": true,
           "mutations": [
-            "Afternoon reset tracker variant"
+            "Afternoon reset tracker variant",
+            "afternoon reset 10-day tracker variant"
           ],
           "seed_signal": [
             "routine anchoring theme"
           ],
-          "last_score": 4.6
+          "last_score": 4.5
         },
         {
           "name": "Packaging freshness engineering explainer series",
@@ -158,6 +184,17 @@
             "no new signal tonight"
           ],
           "last_score": null
+        },
+        {
+          "name": "2-week \u201cone blend\u201d afternoon reset experiment (PDF + printable) \u2192 First Sip Box",
+          "caffeine_free_fit": true,
+          "mutations": [
+            "calendar invite cue"
+          ],
+          "seed_signal": [
+            "blog afternoon ritual post + choice overload theme"
+          ],
+          "last_score": 4.0
         }
       ]
     }
