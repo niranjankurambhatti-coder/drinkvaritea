@@ -1,7 +1,7 @@
 # Next Deep-Research Topic
 
-**Suggested topic:** How to build a caffeine-free Afternoon “reset” tea ritual that feels like a real break (without sugar or caffeine).
+**Suggested topic:** How to make caffeine-free herbal tea taste "full" (not thin) — without sweeteners.
 
-**Why:** Our Evening/Night evidence keeps pointing to retention via routine design (cue → brew → sip). The adjacent daypart with similar “habit friction” is Afternoon: people want a non-stimulant break but default to sweets or another coffee. We need grounded language on what makes an afternoon pause feel satisfying (taste, aroma, temperature, and context cues) so Varitea’s daypart curation can cover more than wind-down.
+**Why:** The complaint box and prior evidence repeatedly point to taste disappointment as the main habit killer ("damp leaves" / "hay water"). If we can explain (in regulatory-safe, flavor-first terms) what makes a tisane feel satisfying — blend structure, aroma, steeping variables, and freshness protection — we can improve retention across every daypart.
 
-**Seed keyword:** afternoon herbal tea ritual
+**Seed keyword:** herbal tea taste thin
