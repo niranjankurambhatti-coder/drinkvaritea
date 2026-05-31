@@ -34,15 +34,19 @@
      hint instead of producing a broken Shopify link.
      ---------------------------------------------------------- */
   const CONFIG = {
-    shopDomain: '',                  // e.g. 'drinkvaritea.myshopify.com'
+    shopDomain: 'u0xw6n-yj.myshopify.com',   // Varitea store (Trial plan)
     currency: 'USD',
     // bundleId -> { variantId, sellingPlanId? }
+    // Variant IDs created via Shopify Admin 2026-05-31 (Ops). Numeric IDs
+    // are what cart permalinks consume. sellingPlanId left blank until the
+    // store is upgraded off Trial and the "Subscribe & Save 15%" plan group
+    // is created (see docs/shopify-setup.md §2).
     variants: {
-      A1: { variantId: '', sellingPlanId: '' },
-      A2: { variantId: '', sellingPlanId: '' },
-      A3: { variantId: '', sellingPlanId: '' },
-      B1: { variantId: '', sellingPlanId: '' },
-      B2: { variantId: '', sellingPlanId: '' }
+      A1: { variantId: '48346184286400', sellingPlanId: '' },
+      A2: { variantId: '48346184220864', sellingPlanId: '' },
+      A3: { variantId: '48346184319168', sellingPlanId: '' },
+      B1: { variantId: '48346184188096', sellingPlanId: '' },
+      B2: { variantId: '48346184253632', sellingPlanId: '' }
     },
     // Where to send the buyer after Shopify checkout completes.
     // Configure in Shopify Admin → Settings → Checkout → Order status page → "Additional scripts"
