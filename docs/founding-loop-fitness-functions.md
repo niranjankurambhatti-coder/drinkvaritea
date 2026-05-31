@@ -20,6 +20,21 @@ Each criterion has: a clear definition of "good," a 1–5 scale, a weight (sums 
 
 The loop mines ground truth through **one canonical Apify actor: `trudax/reddit-scraper-lite`** (Reddit). This is deliberately a single source of truth — Reddit is where caffeine-free tea ritual + sustainability language lives richest, and keeping one actor makes the ICP signal consistent and comparable night-over-night. **This canonical actor *is* our emerging ICP** — the population it surfaces becomes the segment we build the pipeline for. Do not silently swap or fan out to other actors; if a second source is ever added it must be an explicit, documented change, never an ad-hoc substitution. (X and web actors, if used at all, are supplementary color only and never override the canonical Reddit signal or the first-party complaint box.)
 
+### FREEZE RULE — no fresh ground truth ⇒ no score movement (mandatory)
+
+A loop that scores winners without new external signal is grading its own homework — scores drift upward on the model's own priors, not reality. To prevent phantom progress:
+
+**Fresh ground truth** = the canonical Reddit actor returned a non-empty dataset **this run** OR new first-party complaints were added to `data/customer-complaints/complaints.jsonl` since the last run.
+
+**If no fresh ground truth lands this run:**
+1. **FREEZE scores.** Do NOT advance, raise, or recompute any domain score. Carry the prior winners and their prior scores forward verbatim from `founding/state.json`.
+2. **Do NOT mutate or inject** new candidates this run (mutation without new signal is noise). The population is held.
+3. **FLAG the run.** Set `founding/state.json` → `last_run_ground_truth: false` and `frozen: true`; record the failure (actor + runId/datasetId or "no first-party delta") in `founding/runs/YYYY-MM-DD.md` under a **GROUND TRUTH: MISSING — SCORES FROZEN** header.
+4. **Surface it in the PR + founder letter.** The PR body and the letter's "what we learned tonight" must say plainly: *"No fresh ground truth this run — scores frozen, no progress claimed."* Never restate a frozen score as if it were tonight's result.
+5. Stage A (research) and Stage B (blog) may still run on existing evidence, but must not imply new validation occurred.
+
+**Only when fresh ground truth lands** does the loop generate, score, select, mutate, and evolve the population as normal (`last_run_ground_truth: true`, `frozen: false`).
+
 **Universal hard gate (binary eliminator, applies to every domain):**
 - ❌ **No caffeine-free fit** — if winning the candidate requires caffeinated tea/coffee, it is disqualified regardless of score. Off-brand for Varitea.
 

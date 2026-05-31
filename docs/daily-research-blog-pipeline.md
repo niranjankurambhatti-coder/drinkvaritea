@@ -59,6 +59,9 @@ Runs the overnight founding decisions as a sequential cascade of fitness-scored 
 
 **Active domains, in cascade order:** ICP → Positioning & Story → Acquisition + Retention/Moat + Whitespace. (Pricing & Format is parked for now.)
 
+### 0. Ground-truth gate (run this check FIRST, before any scoring)
+**Fresh ground truth** = the canonical Reddit actor returned a non-empty dataset this run OR new first-party complaints were added since the last run. **If NO fresh ground truth:** FREEZE — carry prior winners + prior scores forward verbatim, do NOT mutate/inject, set `founding/state.json` → `last_run_ground_truth: false`, `frozen: true`, write a **GROUND TRUTH: MISSING — SCORES FROZEN** header in `founding/runs/YYYY-MM-DD.md`, and state in the PR + founder letter: "No fresh ground truth this run — scores frozen, no progress claimed." Never report a frozen score as tonight's result. Only run the steps below when fresh ground truth landed. (Full rule: `docs/founding-loop-fitness-functions.md`.)
+
 ### 1. Search Declaration (write at top of `founding/runs/YYYY-MM-DD.md`)
 - **Decision:** which founding question this domain resolves.
 - **Fitness function:** the weighted criteria (see formula block / fitness doc).
