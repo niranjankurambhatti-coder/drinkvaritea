@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confirm your cart — Drink Varitea</title>
+<meta name="description" content="One screen, no surprises. Confirm your bundle, lock in Subscribe & Save, head to Shopify checkout.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://drinkvaritea.com/preview/cart/">
+
+<!--
+  EXP-002 Phase 2 — Cart confirm
+  -------------------------------------------------------------
+  One screen: line items, S&S 15% toggle, free-ship progress
+  ($25 threshold), totals, Continue to Shopify Checkout.
+  The Continue button builds a Shopify cart permalink and the
+  buyer leaves the preview site for Shopify-hosted checkout.
+-->
+
+<style>
+  :root{
+    --ink:#2d241e; --cream:#f5efe6; --paper:#fbf7f0;
+    --line:rgba(45,36,30,.14); --moss:#5a6f4f; --rose:#c46a78;
+    --shadow:0 18px 50px -28px rgba(45,36,30,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Inter','SF Pro Text',system-ui,sans-serif;color:var(--ink);background:var(--paper);min-height:100vh}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 22px 80px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  .brand{font-family:'Instrument Serif',Georgia,serif;font-size:24px}
+  .brand a{color:inherit;text-decoration:none}
+  .back{font-size:13px;color:rgba(45,36,30,.6);text-decoration:none}
+
+  h1{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(32px,5vw,46px);margin:0 0 8px;line-height:1.05}
+  .sub{color:rgba(45,36,30,.7);margin:0 0 28px;font-size:15px}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:24px 22px;margin-bottom:18px}
+
+  /* Line item */
+  .item{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start;padding:6px 0}
+  .item h2{font-family:'Instrument Serif',Georgia,serif;font-size:24px;font-weight:400;margin:0 0 6px;line-height:1.1}
+  .item p{margin:0;color:rgba(45,36,30,.7);font-size:14px}
+  .item ul{margin:8px 0 0;padding:0 0 0 18px;font-size:13px;color:rgba(45,36,30,.72)}
+  .item ul li{margin:2px 0}
+  .price{font-size:22px;font-weight:600;white-space:nowrap}
+
+  /* Subscribe toggle */
+  .sub-toggle{
+    margin-top:14px;border:1px dashed var(--line);border-radius:14px;padding:14px 16px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:rgba(90,111,79,.04);
+  }
+  .sub-toggle__txt{font-size:14px;color:var(--ink)}
+  .sub-toggle__txt b{color:var(--moss)}
+  .switch{position:relative;width:46px;height:26px;flex:0 0 auto}
+  .switch input{opacity:0;width:0;height:0}
+  .switch span{position:absolute;inset:0;background:#ddd;border-radius:99px;cursor:pointer;transition:background .2s}
+  .switch span::before{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:99px;transition:left .2s;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .switch input:checked + span{background:var(--moss)}
+  .switch input:checked + span::before{left:23px}
+  .sub-toggle.disabled{opacity:.5}
+
+  /* Free ship progress */
+  .ship{display:flex;align-items:center;gap:14px;font-size:13px;color:rgba(45,36,30,.7)}
+  .ship .bar{flex:1;height:8px;background:#ece5d8;border-radius:99px;overflow:hidden}
+  .ship .bar i{display:block;height:100%;background:var(--moss);width:0;transition:width .3s}
+  .ship.ok{color:var(--moss)} .ship.ok i{background:var(--moss)}
+
+  /* Totals */
+  .totals{display:grid;gap:8px;font-size:14px}
+  .totals .row{display:flex;justify-content:space-between}
+  .totals .row.total{font-size:18px;font-weight:600;border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+  .totals .row.discount{color:var(--moss)}
+
+  .cta{
+    appearance:none;border:0;background:var(--ink);color:var(--cream);
+    width:100%;padding:16px 18px;border-radius:99px;
+    font:600 16px/1 'Inter',sans-serif;cursor:pointer;
+    margin-top:10px;transition:transform .15s,box-shadow .2s,opacity .2s;
+  }
+  .cta:hover{transform:translateY(-1px);box-shadow:0 16px 36px -16px rgba(45,36,30,.55)}
+  .cta[disabled]{opacity:.55;cursor:not-allowed}
+  .cta__sub{display:block;font-weight:400;font-size:12px;opacity:.8;margin-top:6px}
+
+  .notice{
+    margin-top:14px;padding:12px 14px;border-radius:12px;
+    background:rgba(196,106,120,.08);border:1px solid rgba(196,106,120,.25);
+    color:#7a3340;font-size:13px; display:none;
+  }
+  .notice.show{display:block}
+
+  .miss{padding:40px 0;text-align:center;color:rgba(45,36,30,.7)}
+  .miss a{color:var(--ink)}
+
+  .trust{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:18px;font-size:12px;color:rgba(45,36,30,.55)}
+  .trust b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand"><a href="/preview/s2-v2/">Varitea</a></div>
+    <a class="back" href="/preview/s2-v2/bundles/">← back to bundles</a>
+  </header>
+
+  <h1>One last look.</h1>
+  <p class="sub">No account needed. We hand you off to Shopify for the secure card step.</p>
+
+  <div id="root"></div>
+
+</div>
+
+<script src="/preview/shared/bundles.js"></script>
+<script src="/preview/shared/shopify.js"></script>
+<script>
+/* ============================================================
+   Cart confirm controller
+   ============================================================ */
+const { bundleById, fmt, SUBSCRIPTION, effectiveSubPrice, FREE_SHIP_THRESHOLD } = window.VariteaBundles;
+const Shopify = window.VariteaShopify;
+const root = document.getElementById('root');
+
+const qs = new URLSearchParams(location.search);
+const bundleId = qs.get('bundle');
+const ritual   = qs.get('ritual') || 'unknown';
+const routine  = qs.get('routine') || '';
+
+const bundle = bundleId ? bundleById(bundleId) : null;
+let subscribe = false;
+
+function emit(name, detail){
+  try{
+    window.dispatchEvent(new CustomEvent(name, {detail}));
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({type:name, ...detail}, location.origin);
+    }
+  }catch(e){}
+}
+
+if(!bundle){
+  root.innerHTML = `
+    <div class="card miss">
+      <p>We could not find that bundle.</p>
+      <p><a href="/preview/s2-v2/bundles/">← pick a bundle</a></p>
+    </div>`;
+  throw new Error('no bundle');
+}
+
+const subEligible = !!SUBSCRIPTION.eligible[bundle.id];
+const subPrice = effectiveSubPrice(bundle);
+const ritualLabel = ritual === 'once' ? 'Once a day' : ritual === 'twice' ? 'Twice a day' : '';
+
+function render(){
+  const linePrice = subscribe && subPrice != null ? subPrice : bundle.price;
+  const discount  = subscribe && subPrice != null ? (bundle.price - subPrice) : 0;
+  const subtotal  = linePrice;
+  const ship      = subtotal >= FREE_SHIP_THRESHOLD ? 0 : null; // calculated at Shopify if not free
+  const remaining = subtotal >= FREE_SHIP_THRESHOLD ? 0 : (FREE_SHIP_THRESHOLD - subtotal);
+  const pct       = Math.min(100, Math.round(subtotal / FREE_SHIP_THRESHOLD * 100));
+  const wired     = Shopify.isWired();
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="item">
+        <div>
+          <h2>${bundle.title} <small style="font-family:'Inter';font-size:13px;color:rgba(45,36,30,.5);font-weight:400">${bundle.id}</small></h2>
+          <p>${bundle.tagline}</p>
+          <ul>${bundle.contents.map(c => `<li>${c}</li>`).join('')}</ul>
+          ${ritualLabel ? `<p style="margin-top:8px;font-size:13px;color:rgba(45,36,30,.55)">Ritual: <b style="color:var(--ink)">${ritualLabel}</b>${routine ? ' · '+routine : ''}</p>` : ''}
+        </div>
+        <div class="price">${fmt(linePrice)}</div>
+      </div>
+
+      <div class="sub-toggle ${subEligible ? '' : 'disabled'}">
+        <div class="sub-toggle__txt">
+          <b>Subscribe &amp; Save 15%</b><br>
+          ${subEligible
+            ? `Ships every 30 days. Skip or cancel anytime — you save ${fmt(bundle.price - (subPrice||bundle.price))} per order.`
+            : 'Not available on this bundle.'}
+        </div>
+        <label class="switch" aria-label="Subscribe and save 15%">
+          <input id="subToggle" type="checkbox" ${subscribe ? 'checked' : ''} ${subEligible ? '' : 'disabled'}>
+          <span></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ship ${subtotal >= FREE_SHIP_THRESHOLD ? 'ok' : ''}" aria-live="polite">
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div>${subtotal >= FREE_SHIP_THRESHOLD ? 'Free shipping unlocked ✓' : 'Add '+fmt(remaining)+' for free shipping'}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="totals" aria-live="polite">
+        <div class="row"><span>Subtotal</span><span>${fmt(bundle.price)}</span></div>
+        ${subscribe && discount > 0 ? `<div class="row discount"><span>Subscribe &amp; Save (15%)</span><span>−${fmt(discount)}</span></div>` : ''}
+        <div class="row"><span>Shipping</span><span>${ship === 0 ? 'Free' : 'Calculated at Shopify'}</span></div>
+        <div class="row total"><span>Today</span><span>${fmt(subtotal)}</span></div>
+      </div>
+
+      <button class="cta" id="goCheckout" ${wired ? '' : 'disabled'}>
+        ${wired ? 'Continue to secure checkout →' : 'Checkout wiring pending'}
+        <span class="cta__sub">${wired ? 'You will be redirected to Shopify to complete your order.' : 'Shopify variant IDs not yet configured. See docs/shopify-setup.md.'}</span>
+      </button>
+
+      <div class="notice ${wired ? '' : 'show'}" id="notice">
+        ${wired ? '' : 'Ops: paste your shop domain and variant IDs into <code>site/preview/shared/shopify.js</code>, then redeploy. Until then this button stays disabled.'}
+      </div>
+
+      <div class="trust">
+        <span>🔒 Secure checkout on <b>Shopify</b></span>
+        <span>↩ 30-day satisfaction</span>
+        <span>🍵 Caffeine-free options</span>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('subToggle')?.addEventListener('change', (e)=>{
+    subscribe = !!e.target.checked;
+    emit('varitea:cart_subscribe_toggled', {bundleId:bundle.id, subscribe});
+    render();
+  });
+
+  document.getElementById('goCheckout').addEventListener('click', goCheckout);
+}
+
+function goCheckout(){
+  const items = [{ bundleId: bundle.id, qty: 1, subscribe }];
+  const attrs = {
+    ritual: ritual,
+    routine: routine,
+    source: 's2-v2',
+    bundle_id: bundle.id,
+    sub_plan: subscribe ? 'ss-15' : 'one-time'
+  };
+  const url = Shopify.buildCheckoutUrl(items, attrs);
+  emit('varitea:cart_checkout_click', { bundleId: bundle.id, subscribe, ritual });
+  if(!url){
+    document.getElementById('notice').classList.add('show');
+    return;
+  }
+  location.href = url;
+}
+
+render();
+emit('varitea:cart_view', { bundleId: bundle.id, ritual, routine });
+</script>
+</body>
+</html>

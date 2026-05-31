@@ -1077,14 +1077,29 @@ window.addEventListener('keydown', e => {
   if(e.key === 'ArrowLeft')  setActive(active-1, {interaction:'arrow'});
 });
 
-// CTA → bubble the curated routine up to the parent landing page (owns checkout)
+// CTA → forward the curated routine to the bundle picker (EXP-002 Phase 2)
+// Maps frequency 0/1/2 → 'unknown' | 'once' | 'twice' and assembles a
+// human-readable routine string for cart attributes / order notes.
 cta.addEventListener('click', ()=>{
+  const snap = routineSnapshot();
+  const ritualParam = frequency === 1 ? 'once' : frequency === 2 ? 'twice' : '';
+  // snap is [{moment, tea_name}] — build "Dark Morning + Moon Bloom" for cart attrs
+  const routineParam = (snap || [])
+    .map(c => c && c.tea_name).filter(Boolean).join(' + ');
+
+  // Preserve the existing analytics event so dashboards keep working
   postParent({
     type:'varitea:s2_routine_checkout',
     frequency: FREQ_LABEL[frequency],
     cups: frequency === 0 ? 0 : cups.length,
-    routine: routineSnapshot()
+    routine: snap
   });
+
+  // Route to the bundle picker with the routine pre-loaded
+  const u = new URL('/preview/s2-v2/bundles/', location.origin);
+  if(ritualParam)  u.searchParams.set('ritual', ritualParam);
+  if(routineParam) u.searchParams.set('routine', routineParam);
+  location.href = u.toString();
 });
 
 // Pause ambient video when tab is hidden (battery)

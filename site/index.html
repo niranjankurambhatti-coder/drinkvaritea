@@ -455,8 +455,8 @@
       <p class="hero-sub" data-reveal data-d="2" id="hero-subhead" hidden></p>
     </div>
     <div class="copy">
-      <a href="#s2" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin" data-analytics-event="hero_cta_click" data-cta-label="Tap to begin" id="hero-cta">
-        <span class="cta__text">Tap to begin</span>
+      <a href="#s2" class="cta cta--primary pulse" data-reveal data-d="2" data-analytics="s1_begin" data-analytics-event="hero_cta_click" data-cta-label="Build your ritual" data-dest="scroll" id="hero-cta">
+        <span class="cta__text">Build your ritual</span>
         <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -507,13 +507,13 @@
       <h2 data-reveal data-d="2">Take it home.</h2>
       <p class="reassure" data-reveal data-d="3" id="hero-reassure" hidden></p>
       <div class="cta-stack" data-reveal data-d="3">
-        <a href="https://buy.stripe.com/aFa8wQ6Uz5tz0wCeGv5ZC00" class="cta cta--primary" data-analytics="s4_checkout" data-analytics-event="checkout_cta_click" data-cta-label="Get the First Sip Box — $19" data-bundle-id="single" id="checkout-cta">
-          <span class="cta__text">Get the First Sip Box — $19</span>
+        <a href="/picking" class="cta cta--primary" data-analytics="s4_checkout" data-analytics-event="checkout_cta_click" data-cta-label="Curate my tea" data-dest="picking" id="checkout-cta">
+          <span class="cta__text">Curate my tea</span>
           <svg class="cta__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        <a href="#quiz" class="cta cta--ghost" data-analytics="s4_quiz" data-analytics-event="quiz_cta_click" data-cta-label="60-second taste quiz">60-second taste quiz</a>
+        <a href="/picking?ritual=twice" class="cta cta--ghost" data-analytics="s4_routine" data-analytics-event="routine_cta_click" data-cta-label="Twice-a-day routine" data-dest="picking">Twice-a-day routine →</a>
       </div>
     </div>
   </section>
@@ -896,5 +896,54 @@ if(matchMedia('(prefers-reduced-motion: reduce)').matches){
 
 <!-- Analytics + event bridge (UTM capture, GA4/GTM/PostHog fanout, Stripe link decoration) -->
 <script src="js/app.js" defer></script>
+
+<!--
+  Hard-navigation guard for /picking CTAs.
+  ------------------------------------------------------------
+  The landing uses scroll-snap, has an embedded iframe (s2-v2),
+  and ships an analytics click interceptor in js/app.js. Any one
+  of those can let a CTA click "scroll the landing" instead of
+  navigating to /picking. This script runs at capture phase so it
+  fires BEFORE every other listener, kills scroll-snap, kills the
+  iframe-driven scroll on the s2 section, and forces a hard route
+  change to /picking. Result: clicking any [data-dest="picking"]
+  CTA on the landing always lands the user on a brand-new page.
+-->
+<script>
+(function(){
+  function goPicking(e, anchor){
+    var href = anchor.getAttribute('href') || '/picking';
+    // Stop every other handler (analytics, scroll-snap, iframe events)
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    // Kill scroll-snap immediately so the browser doesn't snap mid-navigation
+    try {
+      document.documentElement.style.scrollSnapType = 'none';
+      document.body.style.scrollSnapType = 'none';
+      document.body.style.overflow = 'hidden';
+    } catch (_) {}
+    // Hard navigate — location.assign forces a fresh page load.
+    window.location.assign(href);
+  }
+  // Smooth in-page scroll for CTAs that stay on the landing (e.g. the
+  // hero "Build your ritual" CTA). Scroll-snap can otherwise hard-jump.
+  function goScroll(e, anchor){
+    var id = (anchor.getAttribute('href') || '').replace('#','');
+    var target = id && document.getElementById(id);
+    if (!target) return; // fall back to native anchor behavior
+    if (e && e.preventDefault) e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // Capture-phase listener catches the click before app.js or any
+  // delegated handler on document.body can interfere.
+  document.addEventListener('click', function(e){
+    var pick = e.target && e.target.closest('a[data-dest="picking"]');
+    if (pick) { goPicking(e, pick); return; }
+    var scroll = e.target && e.target.closest('a[data-dest="scroll"]');
+    if (scroll) { goScroll(e, scroll); return; }
+  }, true);
+})();
+</script>
 </body>
 </html>
