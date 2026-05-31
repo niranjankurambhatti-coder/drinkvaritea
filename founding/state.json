@@ -2,7 +2,7 @@
   "schema_version": 1,
   "description": "Evolving population for the Varitea founding-loop search system. Each domain keeps survivors night-over-night; the cron mutates them and injects fresh candidates. Scores are 1-5 weighted; stop at >=4.0 or time box. Hard gate: caffeine-free fit required. All candidates must be grounded in sourced signal (no fabrication, no PII).",
   "canonical_actor": "trudax/reddit-scraper-lite",
-  "canonical_actor_note": "Single source of truth for ground-truth mining. This actor IS our emerging ICP \u2014 the population it surfaces becomes the segment we build for. Do not swap or fan out without an explicit documented change. X/web actors are supplementary color only.",
+  "canonical_actor_note": "Single source of truth for ground-truth mining. This actor IS our emerging ICP — the population it surfaces becomes the segment we build for. Do not swap or fan out without an explicit documented change. X/web actors are supplementary color only.",
   "cascade_order": [
     "icp",
     "positioning",
@@ -15,10 +15,10 @@
   },
   "hard_gate": "caffeine_free_fit == true",
   "freeze_rule": "If no fresh ground truth this run (canonical actor returned empty AND no new first-party complaints since last_run), FREEZE: carry prior winners + scores forward verbatim, do NOT mutate or inject, set last_run_ground_truth=false and frozen=true, and state plainly in the run log + PR + founder letter that scores are frozen and no progress is claimed. Only generate/score/mutate when fresh ground truth landed.",
-  "last_run": "2026-05-30",
+  "last_run": "2026-05-31",
   "last_run_ground_truth": false,
   "frozen": true,
-  "freeze_reason": "Canonical actor trudax/reddit-scraper-lite timed out on 2026-05-29 and 2026-05-30; no fresh Reddit dataset ingested and no new first-party complaints. Scores shown below were advanced before the freeze rule existed and must NOT be treated as ground-truth-validated until a run with fresh signal re-scores them.",
+  "freeze_reason": "Canonical actor returned empty dataset (runId aAlgwpt2QCgxFqjc1 datasetId eZJUT0hI6hdtdJFQt) and no first-party complaint delta.",
   "domains": {
     "icp": {
       "weights": {
@@ -47,7 +47,7 @@
           "last_score": 4.1
         },
         {
-          "name": "Plastic-averse loose-leaf buyers who can\u2019t find non-plastic packaging",
+          "name": "Plastic-averse loose-leaf buyers who can’t find non-plastic packaging",
           "caffeine_free_fit": true,
           "mutations": [
             "bulk-buyers",
@@ -151,12 +151,12 @@
         "mission_funding_margin": 0.15
       },
       "winner": {
-        "name": "Bedtime tea routine mini-course + 14-night tracker \u2192 First Sip Box",
+        "name": "Bedtime tea routine mini-course + 14-night tracker → First Sip Box",
         "score": 4.5
       },
       "population": [
         {
-          "name": "Bedtime tea routine mini-course + 14-night tracker \u2192 First Sip Box",
+          "name": "Bedtime tea routine mini-course + 14-night tracker → First Sip Box",
           "caffeine_free_fit": true,
           "mutations": [
             "Afternoon reset tracker variant",
@@ -190,7 +190,7 @@
           "last_score": null
         },
         {
-          "name": "2-week \u201cone blend\u201d afternoon reset experiment (PDF + printable) \u2192 First Sip Box",
+          "name": "2-week “one blend” afternoon reset experiment (PDF + printable) → First Sip Box",
           "caffeine_free_fit": true,
           "mutations": [
             "calendar invite cue"
